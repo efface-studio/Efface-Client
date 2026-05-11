@@ -79,7 +79,7 @@ export const portfolioItems: PortfolioItem[] = [
     description:
       "한국 커머스 사이트의 친숙한 패턴을 따라 만든 쇼핑몰 데모입니다.\n카테고리·베스트·신상품·오늘의딜 라우팅, 상품 상세, 장바구니 드로어, 검색까지 실제 운영에 가까운 흐름을 구현했습니다.",
     headline: "From discovery to checkout, in one flow.",
-    host: "studio.dev/demo/shop",
+    host: "efface.dev/demo/shop",
     liveUrl: "/demo/shop",
     liveLabel: "데모 사이트 열기",
     isLive: false,
@@ -101,7 +101,7 @@ export const portfolioItems: PortfolioItem[] = [
     description:
       "큰 세리프 타이포와 절제된 사진으로 분위기를 만드는 파인다이닝 사이트.\n메뉴·예약·프라이빗 이벤트·기프트카드·저널까지 실제 운영에 필요한 페이지를 모두 갖췄습니다.",
     headline: "A reservation, set in serif.",
-    host: "studio.dev/demo/restaurant",
+    host: "efface.dev/demo/restaurant",
     liveUrl: "/demo/restaurant",
     liveLabel: "데모 사이트 열기",
     isLive: false,
@@ -123,7 +123,7 @@ export const portfolioItems: PortfolioItem[] = [
     description:
       "한국 종합병원 포털의 정보 밀도와 신뢰감을 모티프로 만든 데모입니다.\n6개 GNB 서브페이지(병원소개·진료안내·의료진·건강검진·예약·고객지원)와 4단계 예약 폼을 갖춘 운영 가능한 구조입니다.",
     headline: "Care, organised at a glance.",
-    host: "studio.dev/demo/clinic",
+    host: "efface.dev/demo/clinic",
     liveUrl: "/demo/clinic",
     liveLabel: "데모 사이트 열기",
     isLive: false,
@@ -145,7 +145,7 @@ export const portfolioItems: PortfolioItem[] = [
     description:
       "스크롤 한 번이면 끝나는 모바일 청첩장입니다.\n풀-블리드 히어로, D-day 카운트다운, 갤러리 라이트박스, 계좌 아코디언, 위치, 방명록까지 실사용 가능한 흐름을 갖췄습니다.",
     headline: "Their day, in everyone's pocket.",
-    host: "studio.dev/demo/wedding",
+    host: "efface.dev/demo/wedding",
     liveUrl: "/demo/wedding",
     liveLabel: "데모 사이트 열기",
     isLive: false,

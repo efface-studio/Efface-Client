@@ -124,7 +124,7 @@ export async function POST(req: Request) {
 
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_EMAIL;
-  const from = process.env.FROM_EMAIL || "Studio <onboarding@resend.dev>";
+  const from = process.env.FROM_EMAIL || "efface <onboarding@resend.dev>";
 
   if (!apiKey || !to) {
     console.error("[apply] Missing RESEND_API_KEY or CONTACT_EMAIL");

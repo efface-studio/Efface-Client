@@ -9,7 +9,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_EMAIL = process.env.FROM_EMAIL || "Studio <onboarding@resend.dev>";
+const FROM_EMAIL = process.env.FROM_EMAIL || "efface <onboarding@resend.dev>";
 const SITE_URL = process.env.SITE_URL || "http://localhost:3000";
 
 if (!WORKER_SECRET || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !ANTHROPIC_API_KEY || !RESEND_API_KEY) {
@@ -34,7 +34,7 @@ REQUIREMENTS — strictly follow these:
 6. Build 5-7 meaningful sections appropriate to the requested service: hero, features/services, pricing or process, testimonials, CTA, footer. Adapt to the service type.
 7. Polished modern design — soft shadows, rounded corners (rounded-xl/2xl), generous whitespace (py-20 md:py-28), tight typography (tracking-tight), motion-aware micro-interactions on hover.
 8. Korean copy. Make headings concise and confident. Avoid Lorem Ipsum.
-9. Top-right corner of the hero (or as a fixed banner) include a small note: "Studio.dev에서 자동 생성된 데모입니다 · {{SLUG}}". Replace {{SLUG}} with the actual slug provided.
+9. Top-right corner of the hero (or as a fixed banner) include a small note: "efface에서 자동 생성된 데모입니다 · {{SLUG}}". Replace {{SLUG}} with the actual slug provided.
 10. Include the user-provided reference URLs as inspiration cues — do not iframe or scrape, just match aesthetic where possible.
 11. Total HTML around 400-700 lines. Self-contained.`;
 

@@ -6,7 +6,7 @@ import { motion, useMotionValue, useSpring, useMotionTemplate } from "motion/rea
 import Reveal from "@/components/Reveal";
 import WordReveal from "@/components/WordReveal";
 import MagneticButton from "@/components/MagneticButton";
-import { ArrowRight, Mail, Phone, MessageCircle } from "lucide-react";
+import { ArrowRight, Mail, MessageCircle } from "lucide-react";
 
 const lines = ["STUDIO . DEV", "BUILT IN SEOUL", "STUDIO . DEV", "READY TO SHIP", "STUDIO . DEV"];
 
@@ -124,35 +124,40 @@ export default function CTA() {
                 <ul className="divide-y divide-[var(--color-line)] text-sm">
                   <li>
                     <a
-                      href="mailto:hello@studio.dev"
+                      href="mailto:sales@efface.dev"
                       className="flex items-center justify-between py-3 hover:text-[var(--color-muted)] transition"
                     >
                       <span className="flex items-center gap-3">
                         <Mail size={15} className="text-[var(--color-muted)]" />
-                        이메일
+                        프로젝트 문의
                       </span>
-                      <span className="text-[var(--color-muted)] font-mono">hello@studio.dev</span>
+                      <span className="text-[var(--color-muted)] font-mono">sales@efface.dev</span>
                     </a>
                   </li>
                   <li>
                     <a
-                      href="tel:010-0000-0000"
+                      href="mailto:contact@efface.dev"
                       className="flex items-center justify-between py-3 hover:text-[var(--color-muted)] transition"
                     >
                       <span className="flex items-center gap-3">
-                        <Phone size={15} className="text-[var(--color-muted)]" />
-                        전화
+                        <Mail size={15} className="text-[var(--color-muted)]" />
+                        일반 연락
                       </span>
-                      <span className="text-[var(--color-muted)] font-mono">010-0000-0000</span>
+                      <span className="text-[var(--color-muted)] font-mono">contact@efface.dev</span>
                     </a>
                   </li>
                   <li>
-                    <a className="flex items-center justify-between py-3 hover:text-[var(--color-muted)] transition cursor-pointer">
+                    <a
+                      href="https://pf.kakao.com/_zxmWKX/chat"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between py-3 hover:text-[var(--color-muted)] transition"
+                    >
                       <span className="flex items-center gap-3">
                         <MessageCircle size={15} className="text-[var(--color-muted)]" />
                         카카오톡 채널
                       </span>
-                      <span className="text-[var(--color-muted)] font-mono">@studio</span>
+                      <span className="text-[var(--color-muted)] font-mono">@efface</span>
                     </a>
                   </li>
                 </ul>

@@ -1,4 +1,4 @@
-# Studio.dev — 웹 외주 제작 사이트
+# efface — 웹 외주 제작 사이트
 
 Next.js 15 + Tailwind v4 기반의 웹 외주 소개 + 신청폼 사이트.
 

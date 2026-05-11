@@ -2,7 +2,7 @@ import ApplyForm from "@/components/ApplyForm";
 import { Clock, FileText, Sparkles, Shield } from "lucide-react";
 
 export const metadata = {
-  title: "프로젝트 신청 — Studio.dev",
+  title: "프로젝트 신청 — efface",
   description: "프로젝트 정보를 보내주세요. 1영업일 내 회신드립니다.",
 };
 
@@ -126,10 +126,10 @@ export default function ApplyPage() {
         <div className="mt-10 text-center text-xs text-[var(--color-muted)]">
           신청을 망설이고 계신가요?{" "}
           <a
-            href="mailto:hello@studio.dev"
+            href="mailto:sales@efface.dev"
             className="underline underline-offset-4 hover:text-[var(--color-ink)] transition"
           >
-            hello@studio.dev
+            sales@efface.dev
           </a>
           로 가볍게 보내주셔도 됩니다.
         </div>

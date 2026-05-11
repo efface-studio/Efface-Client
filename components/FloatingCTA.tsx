@@ -96,7 +96,7 @@ export default function FloatingCTA() {
                       </a>
                     )}
                     <a
-                      href="mailto:hello@studio.dev"
+                      href="mailto:sales@efface.dev"
                       className="flex items-center justify-between gap-2 px-3 h-11 rounded-lg border border-[var(--color-line)] hover:border-[var(--color-ink)] transition text-sm"
                     >
                       <span>이메일로 보내기</span>

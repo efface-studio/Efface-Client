@@ -15,7 +15,7 @@ export async function generateMetadata(
   const item = portfolioItems.find((i) => i.slug.toLowerCase() === slug.toLowerCase());
   if (!item) return { title: "Not found" };
   return {
-    title: `${item.title} — Studio.dev`,
+    title: `${item.title} — efface`,
     description: item.summary,
     openGraph: {
       title: item.title,

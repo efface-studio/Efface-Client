@@ -65,7 +65,7 @@ function Centered({ title, children }: { title: string; children: React.ReactNod
       <div className="max-w-md text-center">
         <div className="inline-flex items-center gap-2 mb-5 text-xs font-mono text-[var(--color-muted)]">
           <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-success)] animate-pulse" />
-          studio.dev / demo
+          efface / demo
         </div>
         <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-3">{title}</h1>
         <div className="text-[var(--color-muted)] leading-relaxed">{children}</div>
