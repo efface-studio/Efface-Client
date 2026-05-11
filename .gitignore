@@ -8,3 +8,4 @@ out
 *.log
 tsconfig.tsbuildinfo
 .vercel
+.claude
