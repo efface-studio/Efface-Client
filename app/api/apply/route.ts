@@ -55,17 +55,29 @@ function escape(s: string) {
 type RawAttachment = { filename: string; contentType: string; base64: string };
 
 export async function POST(req: Request) {
-  // Origin check (basic CSRF defense)
+  // Origin check (CSRF defense). In production, require Origin or Referer to be present
+  // and match the request Host — modern browsers always send Origin on POSTs.
   const origin = req.headers.get("origin") || req.headers.get("referer") || "";
   const host = req.headers.get("host") || "";
-  if (origin && host) {
+  if (process.env.NODE_ENV === "production") {
+    if (!origin) {
+      return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 403 });
+    }
     try {
       const originHost = new URL(origin).host;
       if (originHost !== host) {
         return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 403 });
       }
     } catch {
-      // Malformed origin — reject
+      return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 403 });
+    }
+  } else if (origin && host) {
+    try {
+      const originHost = new URL(origin).host;
+      if (originHost !== host) {
+        return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 403 });
+      }
+    } catch {
       return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 403 });
     }
   }
