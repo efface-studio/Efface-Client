@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>efface 이메일 시그니처</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 48px 24px;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f6f6f4;
+    color: #111;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 4px;
+  }
+  .sub { color: #888; font-size: 13px; margin-bottom: 32px; }
+  .card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 16px;
+  }
+  .card h2 {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #888;
+    margin: 0 0 18px;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+  .preview {
+    padding: 24px;
+    background: #fafaf8;
+    border: 1px dashed #ddd;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  pre {
+    margin: 0;
+    padding: 18px;
+    background: #1a1a1a;
+    color: #eaeaea;
+    border-radius: 8px;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    line-height: 1.55;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  button {
+    background: #111;
+    color: #fff;
+    border: 0;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity .15s;
+  }
+  button:hover { opacity: 0.85; }
+  button.copied { background: #16a34a; }
+  .actions { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
+  .hint { color: #888; font-size: 12px; }
+  .note {
+    margin-top: 24px;
+    padding: 16px 18px;
+    background: #fff7ed;
+    border-left: 3px solid #f59e0b;
+    border-radius: 4px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #5b3a00;
+  }
+  .note code {
+    background: rgba(0,0,0,0.05);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>efface 이메일 시그니처</h1>
+    <div class="sub">아래 미리보기 영역을 그대로 복사하거나, HTML 소스를 가져다 쓰세요.</div>
+
+    <!-- ── 미리보기 ──────────────────────────────── -->
+    <div class="card">
+      <h2>Preview</h2>
+      <div class="preview" id="signature-preview">
+
+        <!-- ★ 여기가 실제 시그니처 본체 ★ -->
+        <table cellpadding="0" cellspacing="0" border="0" style="font-family:-apple-system,'Pretendard',BlinkMacSystemFont,sans-serif;font-size:13px;color:#111;line-height:1.55;border-collapse:collapse;">
+          <tr>
+            <td style="padding-right:18px;border-right:1px solid #e5e5e5;vertical-align:top;">
+              <svg width="44" height="44" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                <rect x="32" y="32" width="58" height="58" rx="10" fill="#3b6dff"/>
+                <rect x="12" y="12" width="58" height="58" rx="10" fill="#0a0a0a"/>
+              </svg>
+            </td>
+            <td style="padding-left:18px;vertical-align:top;">
+              <div style="font-weight:600;font-size:14px;letter-spacing:-0.01em;">
+                서지완 <span style="color:#999;font-weight:400;">· Founder</span>
+              </div>
+              <div style="font-weight:600;font-size:14px;margin-top:2px;">efface</div>
+              <div style="color:#666;margin-top:6px;font-size:12px;">웹사이트 외주 제작 · 랜딩부터 웹앱까지</div>
+              <div style="margin-top:12px;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px;color:#444;line-height:1.75;">
+                <a href="mailto:contact@efface.dev" style="color:#444;text-decoration:none;">contact@efface.dev</a><br>
+                <a href="https://efface.dev" style="color:#444;text-decoration:none;">efface.dev</a>
+              </div>
+            </td>
+          </tr>
+        </table>
+        <!-- ★ 시그니처 끝 ★ -->
+
+      </div>
+      <div class="actions">
+        <button id="copyRich">서식 포함 복사 (Gmail · 메일앱용)</button>
+        <button id="copyHtml">HTML 소스 복사</button>
+        <span class="hint" id="hint"></span>
+      </div>
+    </div>
+
+    <!-- ── HTML 소스 ─────────────────────────────── -->
+    <div class="card">
+      <h2>HTML Source</h2>
+      <pre id="signature-source"></pre>
+    </div>
+
+    <div class="note">
+      <strong>적용 방법</strong><br>
+      • <strong>Gmail</strong>: 위 "서식 포함 복사" 클릭 → 설정 → 일반 → 서명 → 붙여넣기<br>
+      • <strong>Apple Mail</strong>: 환경설정 → 서명 → 새 서명 만든 뒤 위 영역을 드래그 선택 → 복사 → 붙여넣기 (서명 영역 우클릭 → "기본 글꼴 항상 사용" 체크 해제)<br>
+      • <strong>Outlook / Naver / Daum</strong>: HTML 소스 복사 후 서명 설정의 <code>&lt;HTML&gt;</code> 편집 모드에서 붙여넣기
+    </div>
+  </div>
+
+<script>
+  const preview = document.getElementById('signature-preview');
+  const source  = document.getElementById('signature-source');
+  const hint    = document.getElementById('hint');
+
+  // 소스 표시 (preview 내부 HTML을 정리해서 보여줌)
+  const rawHtml = preview.innerHTML
+    .replace(/^\s*<!--[\s\S]*?-->/g, '')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/^\s+|\s+$/g, '');
+  source.textContent = rawHtml;
+
+  function flash(msg) {
+    hint.textContent = msg;
+    setTimeout(() => { hint.textContent = ''; }, 2200);
+  }
+
+  // 서식 포함 복사 (Clipboard API — text/html)
+  document.getElementById('copyRich').addEventListener('click', async () => {
+    try {
+      const html = preview.innerHTML;
+      const blob = new Blob([html], { type: 'text/html' });
+      const text = preview.innerText;
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'text/html': blob,
+          'text/plain': new Blob([text], { type: 'text/plain' })
+        })
+      ]);
+      flash('✓ 클립보드에 복사됨 — 메일 서명 입력란에 붙여넣으세요');
+    } catch (e) {
+      // 폴백: range selection + execCommand('copy')
+      const range = document.createRange();
+      range.selectNodeContents(preview);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.execCommand('copy');
+      sel.removeAllRanges();
+      flash('✓ 복사됨');
+    }
+  });
+
+  // HTML 소스 복사
+  document.getElementById('copyHtml').addEventListener('click', async () => {
+    await navigator.clipboard.writeText(rawHtml);
+    flash('✓ HTML 소스 복사됨');
+  });
+</script>
+</body>
+</html>
