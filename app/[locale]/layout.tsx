@@ -8,6 +8,9 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+const SITE_URL = "https://efface.dev";
+const OG_IMAGE = `${SITE_URL}/og.png`;
+
 export async function generateMetadata({
   params,
 }: {
@@ -15,9 +18,42 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Meta" });
+  const title = t("title");
+  const description = t("description");
+  const url = locale === routing.defaultLocale ? SITE_URL : `${SITE_URL}/${locale}`;
+
   return {
-    title: t("title"),
-    description: t("description"),
+    metadataBase: new URL(SITE_URL),
+    title,
+    description,
+    alternates: {
+      canonical: url,
+      languages: Object.fromEntries(
+        routing.locales.map((l) => [l, l === routing.defaultLocale ? SITE_URL : `${SITE_URL}/${l}`])
+      ),
+    },
+    openGraph: {
+      type: "website",
+      url,
+      siteName: "efface",
+      title,
+      description,
+      locale: locale === "ko" ? "ko_KR" : "en_US",
+      images: [
+        {
+          url: OG_IMAGE,
+          width: 1200,
+          height: 630,
+          alt: "efface — Erase the complexity. Keep the effect.",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [OG_IMAGE],
+    },
   };
 }
 
