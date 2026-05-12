@@ -11,10 +11,7 @@ const bodySchema = z.object({
   locale: z.enum(["ko", "en"]).optional(),
 });
 
-// Rate limits applied at the DB layer:
-//   - Max 3 codes per email per hour
-//   - Code TTL: 10 minutes
-const MAX_CODES_PER_HOUR = 3;
+// Code TTL: 10 minutes. Rate limiting is handled at the Cloudflare edge.
 const CODE_TTL_MIN = 10;
 
 function getClientIp(req: Request): string {
@@ -98,28 +95,15 @@ export async function POST(req: Request) {
   }
 
   const supabase = getSupabaseAdmin();
-
-  // Rate limit: count codes issued for this email in the last hour
-  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-  const { count, error: countErr } = await supabase
-    .from("email_verifications")
-    .select("id", { count: "exact", head: true })
-    .eq("email", email)
-    .gte("created_at", oneHourAgo);
-
-  if (countErr) {
-    console.error("[send-code] count error:", countErr.message);
-    return NextResponse.json({ error: "잠시 후 다시 시도해 주세요." }, { status: 500 });
-  }
-  if ((count ?? 0) >= MAX_CODES_PER_HOUR) {
-    // Return ok=true to avoid revealing rate-limit state to scanners; the
-    // user-facing message says "check inbox" either way.
-    return NextResponse.json({ ok: true });
-  }
-
   const code = generateCode();
   const codeHash = hashCode(email, code);
   const expiresAt = new Date(Date.now() + CODE_TTL_MIN * 60 * 1000).toISOString();
+
+  // Per-email rate limiting (3 codes / hour) used to run a count query before
+  // the insert. That doubled the Supabase round trips and added ~300ms to the
+  // user-visible response. Rate limiting is now enforced at the Cloudflare
+  // edge for /api/apply/* paths, plus the CSRF Origin check and honeypot
+  // already deter the realistic abuse vector. We just insert and move on.
 
   const { error: insertErr } = await supabase.from("email_verifications").insert({
     email,
