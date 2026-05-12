@@ -11,8 +11,15 @@ const bodySchema = z.object({
   locale: z.enum(["ko", "en"]).optional(),
 });
 
-// Code TTL: 10 minutes. Rate limiting is handled at the Cloudflare edge.
+// Code TTL: 10 minutes.
 const CODE_TTL_MIN = 10;
+// Cap how many Resend sends an email can trigger in a rolling hour. The check
+// runs inside the `after()` callback, so it doesn't add latency to the user-
+// visible response — the row is still inserted; only the outbound email is
+// suppressed once the cap is hit. Pairs with the Cloudflare edge rate limit
+// (which currently only covers /api/apply, not /api/apply/send-code) as
+// defense in depth against OTP spam abusing our Resend quota.
+const MAX_SENDS_PER_EMAIL_PER_HOUR = 5;
 
 function getClientIp(req: Request): string {
   const xff = req.headers.get("x-forwarded-for");
@@ -99,12 +106,6 @@ export async function POST(req: Request) {
   const codeHash = hashCode(email, code);
   const expiresAt = new Date(Date.now() + CODE_TTL_MIN * 60 * 1000).toISOString();
 
-  // Per-email rate limiting (3 codes / hour) used to run a count query before
-  // the insert. That doubled the Supabase round trips and added ~300ms to the
-  // user-visible response. Rate limiting is now enforced at the Cloudflare
-  // edge for /api/apply/* paths, plus the CSRF Origin check and honeypot
-  // already deter the realistic abuse vector. We just insert and move on.
-
   const { error: insertErr } = await supabase.from("email_verifications").insert({
     email,
     code_hash: codeHash,
@@ -119,12 +120,27 @@ export async function POST(req: Request) {
 
   const subject = locale === "ko" ? `[efface] 인증 코드: ${code}` : `[efface] Your verification code: ${code}`;
 
-  // Fire the Resend send asynchronously via `after()` so the response can
-  // return as soon as the DB row is committed (~200ms instead of ~1.5s).
-  // If Resend rejects (e.g. malformed recipient), the user simply won't get
-  // the code and will retry — they would have hit the same UX even with a
-  // synchronous error response, so the latency win is worth it.
+  // Resend send runs in `after()` so the user-visible response returns as soon
+  // as the DB row commits (~200ms). Before sending we check how many rows
+  // exist for this email in the last hour — if it's over the cap, we drop the
+  // send silently. The row still exists (verify-code will still find it for a
+  // legitimate user that hit the cap as a side effect of retries), but
+  // outbound Resend volume is bounded.
   after(async () => {
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count, error: countErr } = await supabase
+      .from("email_verifications")
+      .select("id", { count: "exact", head: true })
+      .eq("email", email)
+      .gte("created_at", oneHourAgo);
+    if (countErr) {
+      console.error("[send-code] rate-check error:", countErr.message);
+      return;
+    }
+    if ((count ?? 0) > MAX_SENDS_PER_EMAIL_PER_HOUR) {
+      console.warn(`[send-code] rate limit hit for ${email} (count=${count})`);
+      return;
+    }
     const resend = new Resend(apiKey);
     try {
       const send = await resend.emails.send({
