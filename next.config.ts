@@ -10,7 +10,7 @@ const cspDirectives = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://efface.dev https://*.efface.dev",
   "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
-  "img-src 'self' data: blob: https:",
+  "img-src 'self' data: blob: https://*.supabase.co",
   "font-src 'self' data: https://cdn.jsdelivr.net",
   "connect-src 'self' https://*.supabase.co https://api.resend.com",
   "frame-src 'self' https://*.supabase.co",

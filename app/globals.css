@@ -31,13 +31,9 @@ html, body {
 
 * { box-sizing: border-box; }
 
-@font-face {
-  font-family: "Pretendard Variable";
-  font-weight: 45 920;
-  font-style: normal;
-  font-display: swap;
-  src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/packages/pretendard/dist/web/variable/woff2/PretendardVariable.woff2") format("woff2-variations");
-}
+/* Pretendard Variable: dynamic-subset is loaded via <link rel="stylesheet"> in
+   app/[locale]/layout.tsx. It uses unicode-range to fetch only the ~5 chunks
+   actually needed for visible text (~200KB) instead of the 2MB full file. */
 
 @font-face {
   font-family: "JetBrains Mono";
