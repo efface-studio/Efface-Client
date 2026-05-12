@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import StructuredData from "@/components/StructuredData";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -89,6 +90,7 @@ export default async function LocaleLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col">
+        <StructuredData />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>
