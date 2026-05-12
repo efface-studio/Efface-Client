@@ -5,7 +5,9 @@ import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations, useLocale } from "next-intl";
 import { buildApplySchema, type ApplyInput, type ApplyErrorMessages } from "@/lib/schema";
-import { Paperclip, X, Check } from "lucide-react";
+import { Paperclip, X, Check, ArrowRight } from "lucide-react";
+import { motion } from "motion/react";
+import { Link } from "@/i18n/navigation";
 import DatePicker from "@/components/DatePicker";
 import { ChevronDown } from "lucide-react";
 
@@ -265,20 +267,121 @@ export default function ApplyForm() {
   };
 
   if (status === "success") {
+    const steps = [
+      { label: t("success.step1"), state: "done" as const },
+      { label: t("success.step2"), state: "current" as const },
+      { label: t("success.step3"), state: "upcoming" as const },
+      { label: t("success.step4"), state: "upcoming" as const },
+    ];
     return (
-      <div className="rounded-2xl border border-[var(--color-line)] p-10 text-center">
-        <h3 className="text-2xl font-semibold mb-3">{t("success.heading")}</h3>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="relative overflow-hidden rounded-2xl border border-[var(--color-line)] bg-gradient-to-br from-white to-[var(--color-paper-2)] px-6 md:px-12 py-12 md:py-16"
+      >
+        {/* Decorative accent line at top */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--color-success)] to-transparent opacity-60"
+        />
+
+        {/* Animated check */}
+        <motion.div
+          initial={{ scale: 0.6, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.15, type: "spring", stiffness: 200, damping: 14 }}
+          className="relative mx-auto w-16 h-16 mb-6"
+        >
+          <span
+            aria-hidden
+            className="absolute inset-0 rounded-full animate-ping"
+            style={{ background: "color-mix(in srgb, var(--color-success) 18%, transparent)" }}
+          />
+          <span
+            className="relative w-16 h-16 rounded-full flex items-center justify-center"
+            style={{ background: "color-mix(in srgb, var(--color-success) 14%, white)" }}
+          >
+            <Check size={32} strokeWidth={2.5} style={{ color: "var(--color-success)" }} />
+          </span>
+        </motion.div>
+
+        {/* Heading */}
+        <h3 className="text-2xl md:text-3xl font-semibold tracking-tight text-center mb-3">
+          {t("success.heading")}
+        </h3>
+        <p className="text-[var(--color-muted)] text-center mb-8 max-w-md mx-auto leading-relaxed">
+          {t("success.body1")}
+        </p>
+
+        {/* Ticket card */}
         {ticketId && (
-          <div className="inline-flex items-center gap-2 px-3 h-7 rounded-full bg-[var(--color-paper-2)] text-xs font-mono mb-4">
-            {t("success.ticketPrefix")} #{ticketId}
+          <div className="mx-auto max-w-[280px] mb-10 px-5 py-4 rounded-xl border border-[var(--color-line)] bg-white text-center shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)]">
+            <div className="text-[10px] font-mono tracking-[0.25em] uppercase text-[var(--color-muted)] mb-1.5">
+              {t("success.ticketPrefix")}
+            </div>
+            <div className="font-mono text-lg font-semibold tracking-wider">
+              #{ticketId}
+            </div>
           </div>
         )}
-        <p className="text-[var(--color-muted)]">
-          {t("success.body1")}
-          <br />
+
+        {/* Process timeline */}
+        <div className="max-w-md mx-auto mb-10">
+          <p className="text-[11px] font-mono tracking-[0.2em] uppercase text-[var(--color-muted)] mb-3 text-center">
+            {t("success.processLabel")}
+          </p>
+          <ol className="space-y-1.5">
+            {steps.map((s, i) => (
+              <li
+                key={i}
+                className={`flex items-center gap-3 py-2.5 px-3.5 rounded-lg transition-colors ${
+                  s.state === "current"
+                    ? "bg-white border border-[var(--color-line)]"
+                    : ""
+                }`}
+              >
+                <span
+                  className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[10px] font-mono ${
+                    s.state === "done"
+                      ? "bg-[var(--color-success)] text-white"
+                      : s.state === "current"
+                      ? "border-2 border-[var(--color-ink)] bg-white text-[var(--color-ink)]"
+                      : "border border-[var(--color-line)] bg-white text-[var(--color-muted)]"
+                  }`}
+                >
+                  {s.state === "done" ? <Check size={11} strokeWidth={3} /> : i + 1}
+                </span>
+                <span
+                  className={`text-sm ${
+                    s.state === "done"
+                      ? "text-[var(--color-muted)] line-through decoration-1"
+                      : s.state === "current"
+                      ? "text-[var(--color-ink)] font-medium"
+                      : "text-[var(--color-muted)]"
+                  }`}
+                >
+                  {s.label}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        {/* Inbox note + CTA */}
+        <p className="text-xs text-[var(--color-muted)] text-center mb-6 max-w-sm mx-auto leading-relaxed">
           {t("success.body2")}
         </p>
-      </div>
+        <div className="flex justify-center">
+          <Link
+            href="/"
+            className="group inline-flex items-center gap-2 h-11 px-5 rounded-full border border-[var(--color-line)] bg-white text-sm font-medium hover:border-[var(--color-ink)] transition"
+          >
+            {t("success.home")}
+            <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
+          </Link>
+        </div>
+      </motion.div>
     );
   }
 
