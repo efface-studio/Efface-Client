@@ -2,6 +2,8 @@
 // rich brand entity ("Knowledge Panel") linking the site to GitHub and
 // KakaoTalk. Inject once per page in the root layout.
 
+import { getTranslations } from "next-intl/server";
+
 const SITE_URL = "https://efface.dev";
 
 const organization = {
@@ -64,6 +66,8 @@ const website = {
   publisher: { "@id": `${SITE_URL}/#organization` },
 };
 
+// Each service we offer becomes an OfferCatalog entry so Google can match
+// keyword queries like "landing page", "쇼핑몰", "사내 관리툴" to specific items.
 const professionalService = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
@@ -76,9 +80,81 @@ const professionalService = {
   areaServed: { "@type": "Country", name: "South Korea" },
   provider: { "@id": `${SITE_URL}/#organization` },
   priceRange: "₩₩",
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Web development services",
+    itemListElement: [
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "랜딩 페이지 / Landing page",
+          description: "신제품·서비스 출시, 캠페인, 채용 페이지 등 1페이지 마케팅 사이트.",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "기업·브랜드 사이트 / Company site",
+          description: "회사 소개, 포트폴리오, 채용까지 다중 페이지 사이트.",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "쇼핑몰 / E-commerce",
+          description: "결제·재고·주문 관리 연동 가능한 자체 운영형 쇼핑몰.",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "사내 관리툴 / Internal tools",
+          description: "데이터 기반 어드민·대시보드·자동화 워크플로.",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "AI 통합 사이트 / AI-powered site",
+          description: "Claude·OpenAI 등 LLM 연동 데모와 제품.",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "모바일 청첩장 / Mobile invitation",
+          description: "결혼식·이벤트용 모바일 1페이지 사이트.",
+        },
+      },
+    ],
+  },
 };
 
-export default function StructuredData() {
+export default async function StructuredData({ locale }: { locale: string }) {
+  // FAQ structured data — Google renders these inline as Q&A accordion on
+  // search results pages, dramatically improving CTR for branded searches.
+  const t = await getTranslations({ locale, namespace: "FAQ" });
+  const items = t.raw("items") as { q: string; a: string }[];
+  const faq = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${SITE_URL}/#faq`,
+    mainEntity: items.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.a,
+      },
+    })),
+  };
+
   return (
     <>
       <script
@@ -95,6 +171,11 @@ export default function StructuredData() {
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(professionalService) }}
+      />
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faq) }}
       />
     </>
   );

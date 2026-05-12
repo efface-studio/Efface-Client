@@ -27,6 +27,16 @@ export async function generateMetadata({
     metadataBase: new URL(SITE_URL),
     title,
     description,
+    applicationName: "efface",
+    authors: [{ name: "Seojiwan Suh", url: SITE_URL }],
+    creator: "efface",
+    publisher: "efface",
+    formatDetection: { telephone: false, email: false, address: false },
+    appleWebApp: {
+      capable: true,
+      title: "efface",
+      statusBarStyle: "black-translucent",
+    },
     alternates: {
       canonical: url,
       languages: Object.fromEntries(
@@ -93,9 +103,12 @@ export default async function LocaleLayout({
           crossOrigin="anonymous"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/packages/pretendard/dist/web/variable/woff2/PretendardVariable.woff2"
         />
+        <meta name="theme-color" content="#0a0a0a" />
+        <link rel="apple-touch-icon" href="/logo.svg" />
+        <link rel="mask-icon" href="/logo.svg" color="#0a0a0a" />
       </head>
       <body className="min-h-screen flex flex-col">
-        <StructuredData />
+        <StructuredData locale={locale} />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>

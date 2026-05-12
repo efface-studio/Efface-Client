@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { ArrowUpRight, ArrowLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { portfolioStatic, mergePortfolioItems, type PortfolioTranslated } from "@/lib/portfolio";
+import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import type { Metadata } from "next";
 
 export function generateStaticParams() {
@@ -42,8 +43,19 @@ export default async function CaseStudyPage(
 
   const tw = await getTranslations({ locale, namespace: "WorkPage" });
 
+  const homeHref = locale === "ko" ? "/" : "/en";
+  const workName = locale === "ko" ? "작업 사례" : "Work";
+  const itemHref = locale === "ko" ? `/work/${slug}` : `/en/work/${slug}`;
+
   return (
     <article className="bg-[var(--color-paper)] text-[var(--color-ink)]">
+      <BreadcrumbSchema
+        items={[
+          { name: "efface", href: homeHref },
+          { name: workName, href: `${homeHref}#work` },
+          { name: item.title, href: itemHref },
+        ]}
+      />
       <div className="max-w-[1280px] mx-auto px-6 md:px-10 pt-20 md:pt-28">
         <Link
           href="/#work"

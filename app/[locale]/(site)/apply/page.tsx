@@ -2,6 +2,7 @@ import ApplyForm from "@/components/ApplyForm";
 import { Clock, FileText, Sparkles, Shield } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
+import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 
 const icons = [FileText, Clock, Sparkles, Shield];
 
@@ -26,8 +27,18 @@ export default async function ApplyPage({ params }: { params: Promise<{ locale: 
 
   const steps = t.raw("steps") as { title: string; desc: string }[];
 
+  const homeHref = locale === "ko" ? "/" : "/en";
+  const applyHref = locale === "ko" ? "/apply" : "/en/apply";
+  const applyName = locale === "ko" ? "프로젝트 신청" : "Apply";
+
   return (
     <section className="relative overflow-hidden">
+      <BreadcrumbSchema
+        items={[
+          { name: "efface", href: homeHref },
+          { name: applyName, href: applyHref },
+        ]}
+      />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"

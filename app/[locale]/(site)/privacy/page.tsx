@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 
 type Locale = "ko" | "en";
 
@@ -260,8 +261,13 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
         meta: "시행일자: 2026년 5월 12일 · 최종 개정일: 2026년 5월 12일",
       };
 
+  const homeHref = locale === "ko" ? "/" : "/en";
+  const pageHref = locale === "ko" ? "/privacy" : "/en/privacy";
+  const pageName = locale === "ko" ? "개인정보처리방침" : "Privacy Policy";
+
   return (
     <main className="bg-[var(--color-paper)]">
+      <BreadcrumbSchema items={[{ name: "efface", href: homeHref }, { name: pageName, href: pageHref }]} />
       <div className="max-w-[760px] mx-auto px-5 md:px-8 py-20 md:py-28">
         <div className="text-xs font-mono text-[var(--color-muted)] mb-3">{t.eyebrow}</div>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">{t.title}</h1>

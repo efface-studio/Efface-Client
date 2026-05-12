@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 
 type Locale = "ko" | "en";
 
@@ -220,8 +221,13 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
     ? { eyebrow: "TERMS OF SERVICE", title: "Terms of Service", meta: "Effective: 12 May 2026 · Last updated: 12 May 2026" }
     : { eyebrow: "TERMS OF SERVICE", title: "이용약관", meta: "시행일자: 2026년 5월 12일 · 최종 개정일: 2026년 5월 12일" };
 
+  const homeHref = locale === "ko" ? "/" : "/en";
+  const pageHref = locale === "ko" ? "/terms" : "/en/terms";
+  const pageName = locale === "ko" ? "이용약관" : "Terms of Service";
+
   return (
     <main className="bg-[var(--color-paper)]">
+      <BreadcrumbSchema items={[{ name: "efface", href: homeHref }, { name: pageName, href: pageHref }]} />
       <div className="max-w-[760px] mx-auto px-5 md:px-8 py-20 md:py-28">
         <div className="text-xs font-mono text-[var(--color-muted)] mb-3">{t.eyebrow}</div>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">{t.title}</h1>
