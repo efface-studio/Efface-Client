@@ -350,7 +350,9 @@
         "hint": "스팸 방지를 위해 신청 전 이메일을 인증해 주세요.",
         "errorBadCode": "코드가 일치하지 않거나 만료되었습니다.",
         "errorRequired": "이메일 인증을 먼저 완료해 주세요.",
-        "errorSendFailed": "메일 전송에 실패했습니다. 이메일 주소를 다시 확인해 주세요."
+        "errorSendFailed": "메일 전송에 실패했습니다. 이메일 주소를 다시 확인해 주세요.",
+        "change": "변경",
+        "verifiedHint": "이 이메일로 회신을 받으실 거예요."
       },
       "submit": "신청 제출",
       "submitting": "제출 중…",

@@ -407,21 +407,57 @@ export default function ApplyForm() {
           <input className={fieldBase} placeholder={t("placeholders.name")} maxLength={50} {...register("name")} />
         </Field>
         <Field label={t("fields.email")} error={errors.email?.message}>
-          <div className="flex gap-2">
-            <input
-              className={`${fieldBase} flex-1 ${verifyStep === "verified" ? "bg-[var(--color-paper-2)] text-[var(--color-muted)]" : ""}`}
-              type="email"
-              placeholder={t("placeholders.email")}
-              maxLength={120}
-              readOnly={verifyStep === "verified"}
-              {...register("email")}
-            />
-            {verifyStep === "verified" ? (
-              <span className="inline-flex items-center gap-1.5 h-12 px-3 rounded-lg bg-[color-mix(in_srgb,var(--color-success)_12%,white)] text-[var(--color-success)] text-xs font-medium shrink-0">
-                <Check size={14} />
-                {t("verify.verified")}
-              </span>
-            ) : (
+          {verifyStep === "verified" ? (
+            <>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.97, y: -2 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                className="flex items-center gap-3 h-12 px-3 rounded-lg bg-white relative overflow-hidden"
+                style={{ boxShadow: "0 0 0 1.5px var(--color-success), 0 1px 3px rgba(0,0,0,0.04)" }}
+              >
+                <span
+                  className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center"
+                  style={{ background: "var(--color-success)" }}
+                >
+                  <Check size={13} className="text-white" strokeWidth={3} />
+                </span>
+                <span className="flex-1 text-sm text-[var(--color-ink)] truncate font-medium tracking-tight">
+                  {verifiedEmail}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setVerifyStep("idle");
+                    setVerifyToken(null);
+                    setVerifiedEmail(null);
+                    setCodeInput("");
+                    setVerifyError("");
+                  }}
+                  className="shrink-0 inline-flex items-center h-7 px-2.5 text-[11px] text-[var(--color-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-paper-2)] rounded-md transition"
+                >
+                  {t("verify.change")}
+                </button>
+              </motion.div>
+              <p
+                className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium"
+                style={{ color: "var(--color-success)" }}
+              >
+                <Check size={12} strokeWidth={3} />
+                {t("verify.verifiedHint")}
+              </p>
+              {/* RHF tracks the value via this hidden input */}
+              <input type="hidden" {...register("email")} />
+            </>
+          ) : (
+            <div className="flex gap-2">
+              <input
+                className={`${fieldBase} flex-1`}
+                type="email"
+                placeholder={t("placeholders.email")}
+                maxLength={120}
+                {...register("email")}
+              />
               <button
                 type="button"
                 onClick={sendCode}
@@ -436,8 +472,8 @@ export default function ApplyForm() {
                   ? t("verify.resend")
                   : t("verify.sendCode")}
               </button>
-            )}
-          </div>
+            </div>
+          )}
           {verifyStep === "sent" || verifyStep === "verifying" ? (
             <div className="mt-3 flex flex-col gap-2 p-3 rounded-lg border border-[var(--color-line)] bg-[var(--color-paper-2)]">
               <p className="text-xs text-[var(--color-muted)]">{t("verify.sentHint")}</p>
