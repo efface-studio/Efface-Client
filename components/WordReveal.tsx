@@ -31,7 +31,10 @@ export default function WordReveal({
   return (
     <As ref={ref as React.Ref<HTMLHeadingElement>} className={className}>
       {lines.map((line, lineIdx) => (
-        <span key={lineIdx} className="block overflow-hidden">
+        // `pb-[0.18em]` adds room for descenders (g, p, y, j) that would
+        // otherwise get clipped by overflow-hidden. `-mb-[0.18em]` removes
+        // the added padding from the layout flow so spacing stays the same.
+        <span key={lineIdx} className="block overflow-hidden pb-[0.18em] -mb-[0.18em]">
           <span className="inline-block">
             {line.split(" ").map((word, wIdx) => {
               const flatIdx =

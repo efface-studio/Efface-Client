@@ -1,9 +1,25 @@
-export const metadata = {
-  title: "개인정보처리방침 — efface",
-  description: "efface의 개인정보 수집·이용·보관·파기에 관한 안내.",
-};
+import type { Metadata } from "next";
 
-const sections = [
+type Locale = "ko" | "en";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return locale === "en"
+    ? {
+        title: "Privacy Policy — efface",
+        description: "How efface collects, uses, retains, and disposes of personal information.",
+      }
+    : {
+        title: "개인정보처리방침 — efface",
+        description: "efface의 개인정보 수집·이용·보관·파기에 관한 안내.",
+      };
+}
+
+const sectionsKo = [
   {
     title: "1. 수집하는 개인정보 항목",
     body: (
@@ -67,6 +83,7 @@ const sections = [
             <tr><td>Resend, Inc.</td><td>이메일 발송</td></tr>
             <tr><td>Anthropic PBC</td><td>데모 자동 생성을 위한 AI 처리</td></tr>
             <tr><td>Railway Corp.</td><td>데모 생성 워커 호스팅</td></tr>
+            <tr><td>Cloudflare, Inc.</td><td>DNS · 이메일 라우팅 · CDN</td></tr>
           </tbody>
         </table>
       </>
@@ -114,15 +131,141 @@ const sections = [
   },
 ];
 
-export default function PrivacyPage() {
+const sectionsEn = [
+  {
+    title: "1. Personal information we collect",
+    body: (
+      <>
+        <p>efface (the &quot;Company&quot;) collects the following information for inquiries, service delivery, and customer support.</p>
+        <ul>
+          <li><strong>Required</strong>: name, email address, project description.</li>
+          <li><strong>Optional</strong>: phone or KakaoTalk handle, company name, reference URLs, budget and timeline.</li>
+          <li><strong>Automatically collected</strong>: IP address, browser type, visit timestamp, and cookies — used for service operation and aggregate analytics only.</li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    title: "2. Purpose of use",
+    body: (
+      <ul>
+        <li>Responding to inquiries about quotes, schedules, and scoping.</li>
+        <li>Contracting, billing, settlement, and project execution.</li>
+        <li>Delivering work product, maintenance, and handover.</li>
+        <li>Customer support and dispute resolution.</li>
+        <li>Anonymous statistical analysis used to improve the service.</li>
+      </ul>
+    ),
+  },
+  {
+    title: "3. Retention period",
+    body: (
+      <>
+        <p>Personal data is deleted without delay once the purpose of collection has been fulfilled, except as required by applicable law:</p>
+        <ul>
+          <li>Records of contract or withdrawal of subscription: 5 years (Korean Act on Consumer Protection in E-commerce).</li>
+          <li>Records of payment and supply of goods: 5 years (same Act).</li>
+          <li>Records of consumer complaints or dispute handling: 3 years (same Act).</li>
+          <li>Access logs and IP addresses: 3 months (Communications Privacy Act).</li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    title: "4. Third-party disclosure",
+    body: (
+      <p>The Company does not disclose user information to third parties as a matter of principle. Disclosure may occur only when required by law, by a lawful investigative request, or when the user has expressly consented.</p>
+    ),
+  },
+  {
+    title: "5. Data processors",
+    body: (
+      <>
+        <p>The Company entrusts the following processors with related processing activities:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Processor</th>
+              <th>Scope</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Vercel Inc.</td><td>Website hosting · CDN</td></tr>
+            <tr><td>Supabase Inc.</td><td>Storage of inquiry and generated-demo data</td></tr>
+            <tr><td>Resend, Inc.</td><td>Email delivery</td></tr>
+            <tr><td>Anthropic PBC</td><td>AI processing for demo auto-generation</td></tr>
+            <tr><td>Railway Corp.</td><td>Demo-generation worker hosting</td></tr>
+            <tr><td>Cloudflare, Inc.</td><td>DNS · email routing · CDN</td></tr>
+          </tbody>
+        </table>
+      </>
+    ),
+  },
+  {
+    title: "6. Your rights",
+    body: (
+      <p>You may request access, correction, deletion, suspension of processing, or withdrawal of consent at any time. Send your request to <a href="mailto:contact@efface.dev">contact@efface.dev</a> and we will respond without delay.</p>
+    ),
+  },
+  {
+    title: "7. Deletion procedure",
+    body: (
+      <p>Personal information is deleted without delay once its retention period has elapsed or its purpose has been fulfilled. Electronic files are removed using a method that prevents recovery; paper records are shredded or incinerated.</p>
+    ),
+  },
+  {
+    title: "8. Security measures",
+    body: (
+      <ul>
+        <li>Administrative: internal management plan in force; least-privilege access.</li>
+        <li>Technical: HTTPS end-to-end; credentials stored separately from data; access logs retained.</li>
+        <li>Physical: compliance with the security policies of our processors (Vercel, Supabase, etc.).</li>
+      </ul>
+    ),
+  },
+  {
+    title: "9. Data protection officer",
+    body: (
+      <>
+        <p>The Company designates the following data protection officer to safeguard personal information and handle complaints:</p>
+        <ul>
+          <li>Officer: Seojiwan Suh (Founder)</li>
+          <li>Email: <a href="mailto:contact@efface.dev">contact@efface.dev</a></li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    title: "10. Notice of changes",
+    body: (
+      <p>If this policy is amended, added to, or removed, we will publish the change on this page at least 7 days before it takes effect. Material changes to your rights will be published at least 30 days in advance.</p>
+    ),
+  },
+];
+
+export default async function PrivacyPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale: localeRaw } = await params;
+  const locale: Locale = localeRaw === "en" ? "en" : "ko";
+  const sections = locale === "en" ? sectionsEn : sectionsKo;
+
+  const t = locale === "en"
+    ? {
+        eyebrow: "PRIVACY POLICY",
+        title: "Privacy Policy",
+        meta: "Effective: 12 May 2026 · Last updated: 12 May 2026",
+      }
+    : {
+        eyebrow: "PRIVACY POLICY",
+        title: "개인정보처리방침",
+        meta: "시행일자: 2026년 5월 12일 · 최종 개정일: 2026년 5월 12일",
+      };
+
   return (
     <main className="bg-[var(--color-paper)]">
       <div className="max-w-[760px] mx-auto px-5 md:px-8 py-20 md:py-28">
-        <div className="text-xs font-mono text-[var(--color-muted)] mb-3">PRIVACY POLICY</div>
-        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">개인정보처리방침</h1>
-        <p className="text-[var(--color-muted)] mb-12 text-sm">
-          시행일자: 2026년 5월 12일 · 최종 개정일: 2026년 5월 12일
-        </p>
+        <div className="text-xs font-mono text-[var(--color-muted)] mb-3">{t.eyebrow}</div>
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">{t.title}</h1>
+        <p className="text-[var(--color-muted)] mb-12 text-sm">{t.meta}</p>
 
         <div className="space-y-12">
           {sections.map((s) => (

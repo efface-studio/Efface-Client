@@ -1,9 +1,19 @@
-export const metadata = {
-  title: "이용약관 — efface",
-  description: "efface 서비스 이용에 관한 약관.",
-};
+import type { Metadata } from "next";
 
-const sections = [
+type Locale = "ko" | "en";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return locale === "en"
+    ? { title: "Terms of Service — efface", description: "Terms governing use of the efface service." }
+    : { title: "이용약관 — efface", description: "efface 서비스 이용에 관한 약관." };
+}
+
+const sectionsKo = [
   {
     title: "제1조 (목적)",
     body: (
@@ -24,9 +34,7 @@ const sections = [
   {
     title: "제3조 (약관의 효력 및 변경)",
     body: (
-      <>
-        <p>본 약관은 서비스 화면에 게시함으로써 효력을 발생합니다. 회사는 관련 법령을 위배하지 않는 범위 내에서 약관을 변경할 수 있으며, 변경 시 시행일 7일 전(이용자에게 불리한 변경의 경우 30일 전)부터 본 페이지를 통해 공지합니다.</p>
-      </>
+      <p>본 약관은 서비스 화면에 게시함으로써 효력을 발생합니다. 회사는 관련 법령을 위배하지 않는 범위 내에서 약관을 변경할 수 있으며, 변경 시 시행일 7일 전(이용자에게 불리한 변경의 경우 30일 전)부터 본 페이지를 통해 공지합니다.</p>
     ),
   },
   {
@@ -100,21 +108,124 @@ const sections = [
   },
   {
     title: "부칙",
-    body: (
-      <p>본 약관은 2026년 5월 12일부터 시행합니다.</p>
-    ),
+    body: <p>본 약관은 2026년 5월 12일부터 시행합니다.</p>,
   },
 ];
 
-export default function TermsPage() {
+const sectionsEn = [
+  {
+    title: "Article 1 — Purpose",
+    body: (
+      <p>These Terms (the &quot;Terms&quot;) govern use of the website operated by efface (the &quot;Company&quot;) at efface.dev and the related custom-development services (the &quot;Service&quot;), and define the rights, obligations, and responsibilities between the Company and the user.</p>
+    ),
+  },
+  {
+    title: "Article 2 — Definitions",
+    body: (
+      <ul>
+        <li><strong>User</strong>: any person who accesses the Service and uses it under these Terms.</li>
+        <li><strong>Client</strong>: a User who has entered into a custom-development agreement with the Company.</li>
+        <li><strong>Deliverable</strong>: code, design, documentation, and any other output produced and delivered by the Company at the Client's request.</li>
+        <li><strong>Demo</strong>: the non-public concept page automatically generated as part of a quote inquiry.</li>
+      </ul>
+    ),
+  },
+  {
+    title: "Article 3 — Effect and amendment",
+    body: (
+      <p>These Terms take effect once posted on the Service. The Company may amend the Terms within the scope permitted by applicable law and will publish such amendments on this page at least 7 days before they take effect, or at least 30 days in advance when the change is unfavorable to Users.</p>
+    ),
+  },
+  {
+    title: "Article 4 — Services provided",
+    body: (
+      <ul>
+        <li>Custom development of websites and web applications.</li>
+        <li>Receipt of quote inquiries with a reply within 1 business day.</li>
+        <li>AI-based automatic demo generation (retained for 7 days).</li>
+        <li>One month of free maintenance on each Deliverable.</li>
+      </ul>
+    ),
+  },
+  {
+    title: "Article 5 — Formation of the contract",
+    body: (
+      <p>The custom-development contract is formed when the Client agrees to the final quote sent by the Company after reviewing the inquiry and pays the upfront amount.</p>
+    ),
+  },
+  {
+    title: "Article 6 — Fees and payment",
+    body: (
+      <ul>
+        <li>Fees are invoiced 50% upfront and 50% on delivery.</li>
+        <li>Tax invoices are available.</li>
+        <li>Title to the Deliverable remains with the Company until the final balance is paid.</li>
+      </ul>
+    ),
+  },
+  {
+    title: "Article 7 — IP and handover",
+    body: (
+      <p>Upon final payment, ownership of the source code, design assets, and copyright in the Deliverable transfers to the Client. The Company transfers GitHub repository access and provides an operations guide alongside the Deliverable. General-purpose libraries and open-source dependencies remain governed by their respective licenses.</p>
+    ),
+  },
+  {
+    title: "Article 8 — Client obligations",
+    body: (
+      <ul>
+        <li>Provide the materials, content, and assets required for production within the agreed schedule.</li>
+        <li>Provide only materials that do not infringe the copyright, publicity, or other rights of third parties.</li>
+        <li>Pay the agreed fees on schedule.</li>
+      </ul>
+    ),
+  },
+  {
+    title: "Article 9 — Limitation of liability",
+    body: (
+      <>
+        <p>The Company is not liable for damages arising from the following:</p>
+        <ul>
+          <li>Acts of God or comparable force-majeure events.</li>
+          <li>Errors or defects in materials supplied by the Client.</li>
+          <li>Outages of hosting, domains, or external APIs operated directly by the Client.</li>
+          <li>Issues caused by code that the Client has changed on their own after delivery.</li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    title: "Article 10 — Termination",
+    body: (
+      <p>Either party may terminate the contract in writing (email is acceptable) upon a material breach by the other party. Settlement for work completed up to the termination date will be by separate agreement.</p>
+    ),
+  },
+  {
+    title: "Article 11 — Disputes and jurisdiction",
+    body: (
+      <p>The parties will work in good faith to resolve any disputes arising under these Terms. If a dispute cannot be resolved through discussion, either party may file suit in a court with jurisdiction under the Korean Civil Procedure Act.</p>
+    ),
+  },
+  {
+    title: "Supplementary provision",
+    body: <p>These Terms take effect on 12 May 2026.</p>,
+  },
+];
+
+export default async function TermsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale: localeRaw } = await params;
+  const locale: Locale = localeRaw === "en" ? "en" : "ko";
+  const sections = locale === "en" ? sectionsEn : sectionsKo;
+
+  const t = locale === "en"
+    ? { eyebrow: "TERMS OF SERVICE", title: "Terms of Service", meta: "Effective: 12 May 2026 · Last updated: 12 May 2026" }
+    : { eyebrow: "TERMS OF SERVICE", title: "이용약관", meta: "시행일자: 2026년 5월 12일 · 최종 개정일: 2026년 5월 12일" };
+
   return (
     <main className="bg-[var(--color-paper)]">
       <div className="max-w-[760px] mx-auto px-5 md:px-8 py-20 md:py-28">
-        <div className="text-xs font-mono text-[var(--color-muted)] mb-3">TERMS OF SERVICE</div>
-        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">이용약관</h1>
-        <p className="text-[var(--color-muted)] mb-12 text-sm">
-          시행일자: 2026년 5월 12일 · 최종 개정일: 2026년 5월 12일
-        </p>
+        <div className="text-xs font-mono text-[var(--color-muted)] mb-3">{t.eyebrow}</div>
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">{t.title}</h1>
+        <p className="text-[var(--color-muted)] mb-12 text-sm">{t.meta}</p>
 
         <div className="space-y-12">
           {sections.map((s) => (
