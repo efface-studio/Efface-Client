@@ -370,10 +370,13 @@
         "heading": "Application received.",
         "ticketPrefix": "Ticket",
         "body1": "We'll reply to the email you provided within 1 business day.",
-        "body2": "An acknowledgement email is on its way — please check your inbox."
-      ,
-        "demoTitle": "Auto-generating a demo concept",
-        "demoSub": "Your concept will be ready in 1–2 minutes · Open"
+        "body2": "An acknowledgement email is on its way — please check your inbox.",
+        "processLabel": "Process",
+        "step1": "Received",
+        "step2": "First review · within 24h",
+        "step3": "Quote and timeline reply",
+        "step4": "Kickoff meeting scheduling",
+        "home": "Back to home"
       },
       "services": [
         { "value": "landing", "label": "Landing page" },
