@@ -140,12 +140,26 @@ export default function Hero() {
 
           <div className="mt-10 flex items-center gap-5 text-xs text-[var(--color-muted)]">
             <div className="flex -space-x-2">
-              {["#fde68a", "#fca5a5", "#bfdbfe", "#bbf7d0"].map((c, i) => (
+              {[
+                { src: "/clients/hivits.svg", alt: "Hi-vits" },
+                { src: "/clients/hinest.svg", alt: "HI-NEST" },
+                { src: "/clients/gomseu.svg", alt: "곰스" },
+              ].map((c) => (
                 <div
-                  key={i}
-                  className="w-7 h-7 rounded-full border-2 border-white"
-                  style={{ background: c }}
-                />
+                  key={c.src}
+                  className="w-7 h-7 rounded-full border-2 border-white bg-white overflow-hidden flex items-center justify-center"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={c.src}
+                    alt={c.alt}
+                    width={28}
+                    height={28}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
               ))}
             </div>
             <span>{t("social")}</span>

@@ -6,7 +6,7 @@ import Reveal from "@/components/Reveal";
 import { useTranslations } from "next-intl";
 
 const statsConfig = [
-  { value: 50, suffix: "+", decimals: 0 },
+  { value: 30, suffix: "+", decimals: 0 },
   { value: 4.9, suffix: " / 5.0", decimals: 1 },
   { value: 62, suffix: "%", decimals: 0 },
   { value: 3, suffix: "h", decimals: 0 },
