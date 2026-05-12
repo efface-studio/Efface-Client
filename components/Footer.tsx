@@ -18,28 +18,36 @@ export default function Footer() {
               {t("tagline")}
             </p>
 
-            <div className="mt-5 pt-5 border-t border-[var(--color-line)] text-xs text-[var(--color-muted)] space-y-1 font-mono">
-              <div>
-                {t("ceoLabel")} · {t("ceoName")}
+            <div className="mt-6 pt-6 border-t border-[var(--color-line)]">
+              {/* Founder line */}
+              <div className="flex items-center gap-2 text-xs text-[var(--color-muted)] mb-5">
+                <span className="tracking-[0.2em] uppercase">{t("ceoLabel")}</span>
+                <span className="h-px flex-1 bg-[var(--color-line)]" />
+                <span className="text-[var(--color-ink)] font-medium tracking-tight">{t("ceoName")}</span>
               </div>
-              <div>
-                {t("contactLabels.project")} ·{" "}
-                <a href="mailto:sales@efface.dev" className="hover:text-[var(--color-ink)] transition">
-                  sales@efface.dev
-                </a>
-              </div>
-              <div>
-                {t("contactLabels.general")} ·{" "}
-                <a href="mailto:contact@efface.dev" className="hover:text-[var(--color-ink)] transition">
-                  contact@efface.dev
-                </a>
-              </div>
-              <div>
-                {t("contactLabels.support")} ·{" "}
-                <a href="mailto:support@efface.dev" className="hover:text-[var(--color-ink)] transition">
-                  support@efface.dev
-                </a>
-              </div>
+
+              {/* Contact emails — stacked label + mono email */}
+              <ul className="space-y-3.5">
+                {[
+                  { label: t("contactLabels.project"), addr: "sales@efface.dev" },
+                  { label: t("contactLabels.general"), addr: "contact@efface.dev" },
+                  { label: t("contactLabels.support"), addr: "support@efface.dev" },
+                ].map(({ label, addr }) => (
+                  <li key={addr}>
+                    <a
+                      href={`mailto:${addr}`}
+                      className="group inline-flex flex-col gap-0.5"
+                    >
+                      <span className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-muted)]">
+                        {label}
+                      </span>
+                      <span className="font-mono text-[13px] text-[var(--color-ink)] group-hover:text-[var(--color-accent)] transition-colors">
+                        {addr}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
