@@ -156,8 +156,16 @@ export default function ApplyForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, locale }),
       });
-      const j = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(j?.error || t("errors.unknown"));
+      const j = await res.json().catch(() => null);
+      if (!res.ok) {
+        // 5xx responses sometimes hit a CDN error page (Cloudflare returns
+        // "error code: 502" as text/plain), so res.json() yields null.
+        // Surface an actionable message instead of the generic "unknown error".
+        const fallback = res.status >= 500
+          ? t("verify.errorSendFailed")
+          : t("errors.unknown");
+        throw new Error(j?.error || fallback);
+      }
       setVerifyStep("sent");
       setResendCooldownSec(60);
     } catch (e: unknown) {

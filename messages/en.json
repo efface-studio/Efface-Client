@@ -349,7 +349,8 @@
         "verified": "Verified",
         "hint": "Verify your email before submitting to prevent spam.",
         "errorBadCode": "Code does not match or has expired.",
-        "errorRequired": "Please verify your email first."
+        "errorRequired": "Please verify your email first.",
+        "errorSendFailed": "Could not send email. Please double-check the address."
       },
       "submit": "Submit",
       "submitting": "Submitting…",
