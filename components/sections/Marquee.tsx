@@ -1,9 +1,10 @@
 import { useTranslations } from "next-intl";
+import { ICON_PATHS } from "@/lib/icon-paths";
 
 type Item = {
   name: string;
-  /** simple-icons slug (https://simpleicons.org). null → text only. */
-  slug?: string;
+  /** simple-icons slug (https://simpleicons.org). null → text-only. */
+  slug?: keyof typeof ICON_PATHS | string;
   /** brand hex without # — used for color reveal on hover */
   color?: string;
   /** official site or docs URL */
@@ -52,31 +53,18 @@ function Chip({ item, ariaLabelSuffix }: { item: Item; ariaLabelSuffix: string }
       aria-label={`${item.name} — ${ariaLabelSuffix}`}
       className="group relative flex items-center gap-2.5 px-4 h-12 rounded-full bg-white border border-[var(--color-line)] shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 hover:border-[var(--color-ink)]"
     >
-      {item.slug ? (
-        <span className="relative w-5 h-5 shrink-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`https://cdn.simpleicons.org/${item.slug}/737373`}
-            alt=""
-            width={20}
-            height={20}
-            loading="lazy"
-            decoding="async"
-            className="absolute inset-0 transition-opacity duration-300 group-hover:opacity-0"
-            draggable={false}
-          />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`https://cdn.simpleicons.org/${item.slug}/${item.color || "000000"}`}
-            alt={item.name}
-            width={20}
-            height={20}
-            loading="lazy"
-            decoding="async"
-            className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-            draggable={false}
-          />
-        </span>
+      {item.slug && ICON_PATHS[item.slug] ? (
+        <svg
+          role="img"
+          aria-label={item.name}
+          viewBox="0 0 24 24"
+          width={20}
+          height={20}
+          className="shrink-0 fill-[#737373] group-hover:fill-[var(--brand)] transition-colors duration-300"
+          style={{ "--brand": `#${item.color || "000000"}` } as React.CSSProperties}
+        >
+          <path d={ICON_PATHS[item.slug]} />
+        </svg>
       ) : (
         <span
           aria-hidden

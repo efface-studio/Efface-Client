@@ -89,19 +89,15 @@ export default async function LocaleLayout({
   return (
     <html lang={locale}>
       <head>
-        {/* Preconnect to font and image CDNs so the first paint isn't blocked
+        {/* Preconnect to font/image CDNs so the first paint isn't blocked
            by DNS / TLS round-trips. `crossOrigin` is required for font fetches. */}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://cdn.simpleicons.org" />
-        <link rel="dns-prefetch" href="https://img.shields.io" />
-        {/* Preload the variable Pretendard font used by the entire UI. */}
+        {/* Pretendard Variable dynamic-subset: browser loads only the unicode
+           ranges actually used on the page (~200KB for KR+Latin vs 2MB full). */}
         <link
-          rel="preload"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/packages/pretendard/dist/web/variable/woff2/PretendardVariable.woff2"
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css"
         />
         <meta name="theme-color" content="#0a0a0a" />
         <link rel="apple-touch-icon" href="/logo.svg" />
