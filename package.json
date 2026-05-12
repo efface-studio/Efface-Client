@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "echo 'Next.js 16 removed `next lint`; run TypeScript check via: npx tsc --noEmit'"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
