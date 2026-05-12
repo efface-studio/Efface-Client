@@ -69,10 +69,11 @@ export default async function ApplyPage({ params }: { params: Promise<{ locale: 
               </span>
               <span className="text-[var(--color-muted)]">{tHero("badge")}</span>
             </div>
-            <h1 className="text-5xl md:text-7xl font-semibold tracking-tight leading-[1.05]">
-              {t("eyebrow")}
-              <br />
-              <span className="text-[var(--color-muted)]">{t("heading")}</span>
+            <h1 className="font-semibold tracking-tight leading-[1.05]">
+              <span className="block text-5xl md:text-7xl">{t("eyebrow")}</span>
+              <span className="block mt-3 text-2xl md:text-4xl text-[var(--color-muted)] font-medium leading-[1.2]">
+                {t("heading")}
+              </span>
             </h1>
             <p className="mt-7 text-base md:text-lg text-[var(--color-muted)] leading-relaxed max-w-xl">
               {t("subheading")}

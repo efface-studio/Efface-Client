@@ -7,7 +7,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { buildApplySchema, type ApplyInput, type ApplyErrorMessages } from "@/lib/schema";
 import { Paperclip, X, Check, ArrowRight } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { Link } from "@/i18n/navigation";
 import DatePicker from "@/components/DatePicker";
 import { ChevronDown } from "lucide-react";
@@ -534,18 +534,24 @@ export default function ApplyForm() {
                 maxLength={120}
                 {...register("email")}
               />
-              <AnimatePresence initial={false}>
-                {(emailLooksValid || verifyStep === "sent" || verifyStep === "verifying" || resendCooldownSec > 0) && (
-                  <motion.button
-                    key="send-code-btn"
+              {(() => {
+                const showBtn =
+                  emailLooksValid ||
+                  verifyStep === "sent" ||
+                  verifyStep === "verifying" ||
+                  resendCooldownSec > 0;
+                return (
+                  <button
                     type="button"
                     onClick={sendCode}
-                    disabled={verifyStep === "sending" || resendCooldownSec > 0}
-                    initial={{ opacity: 0, x: -8, width: 0 }}
-                    animate={{ opacity: 1, x: 0, width: "auto" }}
-                    exit={{ opacity: 0, x: -8, width: 0 }}
-                    transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                    className="inline-flex items-center justify-center h-12 px-4 rounded-lg border border-[var(--color-line)] bg-white hover:border-[var(--color-ink)] disabled:opacity-50 disabled:cursor-not-allowed transition text-sm font-medium shrink-0 overflow-hidden whitespace-nowrap"
+                    disabled={!showBtn || verifyStep === "sending" || resendCooldownSec > 0}
+                    aria-hidden={!showBtn}
+                    tabIndex={showBtn ? 0 : -1}
+                    className={`inline-flex items-center justify-center h-12 rounded-lg border border-[var(--color-line)] bg-white hover:border-[var(--color-ink)] disabled:cursor-not-allowed text-sm font-medium shrink-0 overflow-hidden whitespace-nowrap transition-[max-width,opacity,padding,margin,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                      showBtn
+                        ? "opacity-100 max-w-[200px] px-4 ml-0 translate-x-0"
+                        : "opacity-0 max-w-0 px-0 -ml-2 -translate-x-1 pointer-events-none border-transparent"
+                    }`}
                   >
                     {verifyStep === "sending"
                       ? t("verify.sending")
@@ -554,9 +560,9 @@ export default function ApplyForm() {
                       : verifyStep === "sent"
                       ? t("verify.resend")
                       : t("verify.sendCode")}
-                  </motion.button>
-                )}
-              </AnimatePresence>
+                  </button>
+                );
+              })()}
             </div>
           )}
           {verifyStep === "sent" || verifyStep === "verifying" ? (
