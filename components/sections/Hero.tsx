@@ -138,31 +138,27 @@ export default function Hero() {
             </MagneticButton>
           </motion.div>
 
-          <div className="mt-10 flex items-center gap-5 text-xs text-[var(--color-muted)]">
-            <div className="flex -space-x-2">
+          <div className="mt-10 flex items-center gap-5 text-xs text-[var(--color-muted)] flex-wrap">
+            <div className="flex items-center gap-5">
               {[
-                { src: "/clients/hivits.svg", alt: "Hi-vits" },
-                { src: "/clients/hinest.svg", alt: "HI-NEST" },
-                { src: "/clients/gomseu.svg", alt: "곰스" },
+                { src: "/clients/hivits.svg", alt: "Hi-vits", w: 50 },
+                { src: "/clients/hinest.svg", alt: "HI-NEST", w: 20 },
+                { src: "/clients/gomseu.svg", alt: "곰스", w: 20 },
               ].map((c) => (
-                <div
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
                   key={c.src}
-                  className="w-7 h-7 rounded-full border-2 border-white bg-white overflow-hidden flex items-center justify-center"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={c.src}
-                    alt={c.alt}
-                    width={28}
-                    height={28}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
+                  src={c.src}
+                  alt={c.alt}
+                  title={c.alt}
+                  loading="lazy"
+                  decoding="async"
+                  style={{ width: c.w, height: 20 }}
+                  className="object-contain grayscale opacity-55 hover:grayscale-0 hover:opacity-100 transition duration-300"
+                />
               ))}
             </div>
-            <span>{t("social")}</span>
+            <span className="text-[var(--color-muted)]">{t("social")}</span>
           </div>
         </div>
 
