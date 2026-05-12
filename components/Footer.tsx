@@ -19,15 +19,15 @@ export default function Footer() {
             </p>
 
             <div className="mt-6 pt-6 border-t border-[var(--color-line)]">
-              {/* Founder line */}
-              <div className="flex items-center gap-2 text-xs text-[var(--color-muted)] mb-5">
-                <span className="tracking-[0.2em] uppercase">{t("ceoLabel")}</span>
-                <span className="h-px flex-1 bg-[var(--color-line)]" />
+              {/* Founder line — compact inline */}
+              <div className="inline-flex items-center gap-3 px-3 h-7 rounded-full border border-[var(--color-line)] text-xs mb-5">
+                <span className="tracking-[0.2em] uppercase text-[var(--color-muted)]">{t("ceoLabel")}</span>
+                <span className="w-px h-3 bg-[var(--color-line)]" />
                 <span className="text-[var(--color-ink)] font-medium tracking-tight">{t("ceoName")}</span>
               </div>
 
-              {/* Contact emails — stacked label + mono email */}
-              <ul className="space-y-3.5">
+              {/* Contact emails — vertical accent line + tight inline label+mono */}
+              <ul className="space-y-2">
                 {[
                   { label: t("contactLabels.project"), addr: "sales@efface.dev" },
                   { label: t("contactLabels.general"), addr: "contact@efface.dev" },
@@ -36,9 +36,10 @@ export default function Footer() {
                   <li key={addr}>
                     <a
                       href={`mailto:${addr}`}
-                      className="group inline-flex flex-col gap-0.5"
+                      className="group flex items-center gap-3 py-1.5 pl-3 -ml-3 rounded-md transition-colors hover:bg-[var(--color-paper-2)]"
                     >
-                      <span className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-muted)]">
+                      <span className="w-1 h-4 rounded-full bg-[var(--color-line)] group-hover:bg-[var(--color-accent)] transition-colors shrink-0" />
+                      <span className="text-[11px] text-[var(--color-muted)] w-[68px] shrink-0">
                         {label}
                       </span>
                       <span className="font-mono text-[13px] text-[var(--color-ink)] group-hover:text-[var(--color-accent)] transition-colors">
