@@ -282,7 +282,7 @@ function clientEmailHtml(opts: {
   const T = ko
     ? {
         eyebrow: "Received",
-        title: "신청을 잘 받았습니다.",
+        title: "신청이 정상적으로 접수되었습니다.",
         greeting: (n: string) => `${escape(n)}님, 보내주신 프로젝트 의뢰가 정상 접수되었어요. 1영업일 안에 회신 드릴게요.`,
         ticketLabel: "접수 번호",
         stepsTitle: "진행 단계",
