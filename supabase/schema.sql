@@ -56,6 +56,37 @@ exception when duplicate_object then null; end $$;
 alter table demo_jobs enable row level security;
 -- (No policies = service-role only access via SUPABASE_SERVICE_ROLE_KEY)
 
+-- ─── Email OTP verification (Apply form) ─────────────────────────
+-- Stores hashed 6-digit codes sent during the apply flow. The /api/apply
+-- route refuses to process a submission unless the submitter's email has
+-- a matching `verified_at` row that's still within the JWT validity window.
+create table if not exists email_verifications (
+  id uuid primary key default gen_random_uuid(),
+  email text not null,
+  code_hash text not null,
+  attempts int not null default 0,
+  expires_at timestamptz not null,
+  verified_at timestamptz,
+  ip text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists email_verifications_email_idx
+  on email_verifications(email, created_at desc);
+create index if not exists email_verifications_expires_idx
+  on email_verifications(expires_at);
+
+alter table email_verifications enable row level security;
+-- (No policies = service-role only access via SUPABASE_SERVICE_ROLE_KEY)
+
+create or replace function cleanup_old_verifications() returns void
+language plpgsql security definer as $$
+begin
+  delete from email_verifications
+   where created_at < now() - interval '24 hours';
+end;
+$$;
+
 -- ─── Cleanup function ────────────────────────────────────────────
 -- Deletes demo_jobs rows older than 7 days and their Storage objects.
 -- Schedule via Supabase Dashboard → Database → Cron Jobs:

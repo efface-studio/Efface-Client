@@ -20,12 +20,21 @@ export default function Footer() {
             </p>
 
             <div className="mt-6 pt-6 border-t border-[var(--color-line)]">
-              {/* Founder line — compact inline */}
-              <div className="inline-flex items-center gap-3 px-3 h-7 rounded-full border border-[var(--color-line)] text-xs mb-5">
+              {/* Founder line — clickable, links to LinkedIn */}
+              <a
+                href="https://www.linkedin.com/in/xixn2"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${t("ceoLabel")} ${t("ceoName")} — LinkedIn`}
+                className="group inline-flex items-center gap-3 px-3 h-7 rounded-full border border-[var(--color-line)] text-xs mb-5 transition-colors hover:border-[var(--color-ink)] hover:bg-[var(--color-paper-2)]"
+              >
                 <span className="tracking-[0.2em] uppercase text-[var(--color-muted)]">{t("ceoLabel")}</span>
                 <span className="w-px h-3 bg-[var(--color-line)]" />
                 <span className="text-[var(--color-ink)] font-medium tracking-tight">{t("ceoName")}</span>
-              </div>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="text-[var(--color-muted)] group-hover:text-[var(--color-accent)] transition-colors">
+                  <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.37V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.26 2.37 4.26 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zm-1.78 13.02h3.56V9H3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/>
+                </svg>
+              </a>
 
               {/* Primary contact — sales: bordered card with prominent address + slide-in arrow */}
               <a
