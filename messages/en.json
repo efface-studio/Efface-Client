@@ -311,16 +311,26 @@
       "footerCta": "Send a casual note to sales@efface.dev instead."
     },
     "form": {
+      "optional": "optional",
+      "submitNote": "We'll reply to your email within 1 business day.",
+      "sections": {
+        "contact": "Contact",
+        "contactSub": "How we'll get back to you",
+        "project": "Project",
+        "projectSub": "Scope of the work",
+        "details": "Details",
+        "detailsSub": "Description and references"
+      },
       "fields": {
         "name": "Name",
         "email": "Email",
         "phone": "Phone",
-        "deadline": "Desired deadline (optional)",
+        "deadline": "Desired deadline",
         "service": "Service",
         "budget": "Budget range",
         "description": "Project description",
-        "references": "Reference URLs (optional)",
-        "attachments": "Attachments (optional)"
+        "references": "Reference URLs",
+        "attachments": "Attachments"
       },
       "placeholders": {
         "name": "Your name",

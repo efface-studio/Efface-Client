@@ -311,16 +311,26 @@
       "footerCta": "sales@efface.dev로 가볍게 보내주셔도 됩니다."
     },
     "form": {
+      "optional": "선택",
+      "submitNote": "제출 후 1영업일 안에 입력하신 이메일로 회신드려요.",
+      "sections": {
+        "contact": "연락처",
+        "contactSub": "회신 받을 정보",
+        "project": "프로젝트",
+        "projectSub": "원하시는 작업의 범위",
+        "details": "상세 내용",
+        "detailsSub": "작업 내용과 참고 자료"
+      },
       "fields": {
         "name": "이름",
         "email": "이메일",
         "phone": "연락처",
-        "deadline": "희망 마감일 (선택)",
+        "deadline": "희망 마감일",
         "service": "신청 서비스",
         "budget": "예산 범위",
         "description": "프로젝트 설명",
-        "references": "참고 사이트 URL (선택)",
-        "attachments": "첨부 파일 (선택)"
+        "references": "참고 사이트 URL",
+        "attachments": "첨부 파일"
       },
       "placeholders": {
         "name": "홍길동",

@@ -21,10 +21,10 @@ type AttachmentDraft = {
 };
 
 const fieldBase =
-  "w-full h-12 px-4 rounded-lg border border-[var(--color-line)] bg-white focus:outline-none focus:border-[var(--color-ink)] transition";
+  "w-full h-12 px-4 rounded-lg border border-[var(--color-line)] bg-white hover:border-[var(--color-muted-2)] focus:outline-none focus:border-[var(--color-ink)] focus:ring-2 focus:ring-[var(--color-ink)]/5 transition";
 
 const selectBase =
-  "w-full h-12 px-4 pr-10 rounded-lg border border-[var(--color-line)] bg-white focus:outline-none focus:border-[var(--color-ink)] transition appearance-none cursor-pointer";
+  "w-full h-12 px-4 pr-10 rounded-lg border border-[var(--color-line)] bg-white hover:border-[var(--color-muted-2)] focus:outline-none focus:border-[var(--color-ink)] focus:ring-2 focus:ring-[var(--color-ink)]/5 transition appearance-none cursor-pointer";
 
 const MAX_FILE_BYTES = 5 * 1024 * 1024;
 const MAX_FILES = 3;
@@ -386,7 +386,7 @@ export default function ApplyForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
       {/* Honeypot — invisible to humans */}
       <div
         aria-hidden
@@ -402,11 +402,19 @@ export default function ApplyForm() {
           onChange={(e) => setHoney(e.target.value)}
         />
       </div>
+
+      {/* ─── 01 Contact ────────────────────────────────────────── */}
+      <section className="space-y-6">
+      <SectionHeader number="01" title={t("sections.contact")} subtitle={t("sections.contactSub")} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Field label={t("fields.name")} error={errors.name?.message}>
           <input className={fieldBase} placeholder={t("placeholders.name")} maxLength={50} {...register("name")} />
         </Field>
-        <Field label={t("fields.email")} error={errors.email?.message}>
+        <Field label={t("fields.phone")} error={errors.phone?.message}>
+          <input className={fieldBase} placeholder={t("placeholders.phone")} maxLength={30} {...register("phone")} />
+        </Field>
+      </div>
+      <Field label={t("fields.email")} error={errors.email?.message}>
           {verifyStep === "verified" ? (
             <>
               <motion.div
@@ -504,10 +512,42 @@ export default function ApplyForm() {
             <p className="mt-1.5 text-xs text-[var(--color-muted)]">{t("verify.hint")}</p>
           ) : null}
         </Field>
-        <Field label={t("fields.phone")} error={errors.phone?.message}>
-          <input className={fieldBase} placeholder={t("placeholders.phone")} maxLength={30} {...register("phone")} />
-        </Field>
-        <Field label={t("fields.deadline")} error={errors.deadline?.message}>
+      </section>
+
+      {/* ─── 02 Project ────────────────────────────────────────── */}
+      <section className="space-y-6">
+        <SectionHeader number="02" title={t("sections.project")} subtitle={t("sections.projectSub")} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Field label={t("fields.service")} error={errors.serviceType?.message}>
+            <div className="relative">
+              <select className={selectBase} defaultValue="" {...register("serviceType")}>
+                <option value="" disabled>{t("placeholders.selectDefault")}</option>
+                {services.map((s) => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+              <ChevronDown
+                size={16}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)] pointer-events-none"
+              />
+            </div>
+          </Field>
+          <Field label={t("fields.budget")} error={errors.budget?.message}>
+            <div className="relative">
+              <select className={selectBase} defaultValue="" {...register("budget")}>
+                <option value="" disabled>{t("placeholders.selectDefault")}</option>
+                {budgets.map((b) => (
+                  <option key={b.value} value={b.value}>{b.label}</option>
+                ))}
+              </select>
+              <ChevronDown
+                size={16}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)] pointer-events-none"
+              />
+            </div>
+          </Field>
+        </div>
+        <Field label={t("fields.deadline")} error={errors.deadline?.message} optional optionalLabel={t("optional")}>
           <Controller
             control={control}
             name="deadline"
@@ -520,101 +560,94 @@ export default function ApplyForm() {
             )}
           />
         </Field>
-        <Field label={t("fields.service")} error={errors.serviceType?.message}>
-          <div className="relative">
-            <select className={selectBase} defaultValue="" {...register("serviceType")}>
-              <option value="" disabled>{t("placeholders.selectDefault")}</option>
-              {services.map((s) => (
-                <option key={s.value} value={s.value}>{s.label}</option>
-              ))}
-            </select>
-            <ChevronDown
-              size={16}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)] pointer-events-none"
-            />
-          </div>
-        </Field>
-        <Field label={t("fields.budget")} error={errors.budget?.message}>
-          <div className="relative">
-            <select className={selectBase} defaultValue="" {...register("budget")}>
-              <option value="" disabled>{t("placeholders.selectDefault")}</option>
-              {budgets.map((b) => (
-                <option key={b.value} value={b.value}>{b.label}</option>
-              ))}
-            </select>
-            <ChevronDown
-              size={16}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)] pointer-events-none"
-            />
-          </div>
-        </Field>
-      </div>
+      </section>
 
-      <Field label={t("fields.description")} error={errors.description?.message}>
-        <textarea
-          rows={6}
-          maxLength={2000}
-          className="w-full p-4 rounded-lg border border-[var(--color-line)] bg-white focus:outline-none focus:border-[var(--color-ink)] transition resize-none"
-          placeholder={t("placeholders.description")}
-          {...register("description")}
-        />
-      </Field>
-
-      <Field label={t("fields.references")} error={errors.references?.message}>
-        <input
-          className={fieldBase}
-          maxLength={500}
-          placeholder={t("placeholders.references")}
-          {...register("references")}
-        />
-      </Field>
-
-      <div>
-        <label className="block text-sm font-medium mb-2">
-          {t("fields.attachments")} <span className="text-[var(--color-muted)] font-normal">— {t("attachments.hint", { max: MAX_FILES })}</span>
-        </label>
-        <label className="inline-flex items-center gap-2 h-10 px-4 rounded-lg border border-[var(--color-line)] hover:border-[var(--color-ink)] transition cursor-pointer text-sm bg-white">
-          <Paperclip size={14} />
-          {t("attachments.pickButton")}
-          <input
-            type="file"
-            multiple
-            accept="image/*,application/pdf,.zip,.doc,.docx,.ppt,.pptx"
-            className="hidden"
-            onChange={onPickFiles}
-            disabled={attachments.length >= MAX_FILES}
+      {/* ─── 03 Details ────────────────────────────────────────── */}
+      <section className="space-y-6">
+        <SectionHeader number="03" title={t("sections.details")} subtitle={t("sections.detailsSub")} />
+        <Field label={t("fields.description")} error={errors.description?.message}>
+          <textarea
+            rows={7}
+            maxLength={2000}
+            className="w-full p-4 rounded-lg border border-[var(--color-line)] bg-white hover:border-[var(--color-muted-2)] focus:outline-none focus:border-[var(--color-ink)] focus:ring-2 focus:ring-[var(--color-ink)]/5 transition resize-none leading-relaxed"
+            placeholder={t("placeholders.description")}
+            {...register("description")}
           />
-        </label>
-        {attachments.length > 0 && (
-          <ul className="mt-3 space-y-2">
-            {attachments.map((a, i) => (
-              <li
-                key={i}
-                className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg bg-[var(--color-paper-2)] text-sm"
-              >
-                <span className="truncate flex-1">{a.filename}</span>
-                <span className="text-xs text-[var(--color-muted)] tabular-nums shrink-0">
-                  {(a.size / 1024).toFixed(0)}KB
-                </span>
-                <button
-                  type="button"
-                  onClick={() => removeAttachment(i)}
-                  className="w-6 h-6 rounded-full hover:bg-white flex items-center justify-center shrink-0"
-                  aria-label={t("attachments.remove")}
-                >
-                  <X size={12} />
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+        </Field>
 
-      <div>
-        <label className="flex items-start gap-3 cursor-pointer">
+        <Field label={t("fields.references")} error={errors.references?.message} optional optionalLabel={t("optional")}>
+          <input
+            className={fieldBase}
+            maxLength={500}
+            placeholder={t("placeholders.references")}
+            {...register("references")}
+          />
+        </Field>
+
+        <div>
+          <div className="flex items-baseline justify-between mb-2">
+            <span className="text-sm font-medium">
+              {t("fields.attachments")}{" "}
+              <span className="text-[var(--color-muted)] font-normal text-xs">({t("optional")})</span>
+            </span>
+            <span className="text-[11px] text-[var(--color-muted)] font-mono">
+              {attachments.length}/{MAX_FILES} · 5MB
+            </span>
+          </div>
+          <label
+            className={`group flex flex-col items-center justify-center gap-2 w-full py-7 rounded-xl border-2 border-dashed transition cursor-pointer ${
+              attachments.length >= MAX_FILES
+                ? "border-[var(--color-line)] bg-[var(--color-paper-2)] cursor-not-allowed opacity-60"
+                : "border-[var(--color-line)] bg-[var(--color-paper-2)]/40 hover:border-[var(--color-ink)] hover:bg-[var(--color-paper-2)]"
+            }`}
+          >
+            <Paperclip size={18} className="text-[var(--color-muted)] group-hover:text-[var(--color-ink)] transition-colors" />
+            <span className="text-sm text-[var(--color-ink)] font-medium">{t("attachments.pickButton")}</span>
+            <span className="text-xs text-[var(--color-muted)]">{t("attachments.hint", { max: MAX_FILES })}</span>
+            <input
+              type="file"
+              multiple
+              accept="image/*,application/pdf,.zip,.doc,.docx,.ppt,.pptx"
+              className="hidden"
+              onChange={onPickFiles}
+              disabled={attachments.length >= MAX_FILES}
+            />
+          </label>
+          {attachments.length > 0 && (
+            <ul className="mt-3 space-y-2">
+              {attachments.map((a, i) => (
+                <li
+                  key={i}
+                  className="flex items-center gap-3 px-3.5 py-2.5 rounded-lg border border-[var(--color-line)] bg-white text-sm"
+                >
+                  <span className="shrink-0 w-7 h-7 rounded-md bg-[var(--color-paper-2)] flex items-center justify-center">
+                    <Paperclip size={12} className="text-[var(--color-muted)]" />
+                  </span>
+                  <span className="truncate flex-1">{a.filename}</span>
+                  <span className="text-xs text-[var(--color-muted)] tabular-nums shrink-0">
+                    {(a.size / 1024).toFixed(0)}KB
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeAttachment(i)}
+                    className="w-7 h-7 rounded-md hover:bg-[var(--color-paper-2)] flex items-center justify-center shrink-0 transition"
+                    aria-label={t("attachments.remove")}
+                  >
+                    <X size={13} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </section>
+
+      {/* ─── Agree + Submit ────────────────────────────────────── */}
+      <div className="pt-6 border-t border-[var(--color-line)] space-y-6">
+        <label className="group flex items-start gap-3 cursor-pointer p-4 rounded-xl border border-[var(--color-line)] bg-[var(--color-paper-2)]/50 hover:bg-[var(--color-paper-2)] transition">
           <input
             type="checkbox"
-            className="mt-1 h-4 w-4 accent-[var(--color-ink)]"
+            className="mt-0.5 h-4 w-4 accent-[var(--color-ink)] shrink-0"
             {...register("agree")}
           />
           <span className="text-sm text-[var(--color-muted)] leading-relaxed">
@@ -622,38 +655,80 @@ export default function ApplyForm() {
           </span>
         </label>
         {errors.agree?.message && (
-          <p className="mt-2 text-sm text-red-600">{errors.agree.message}</p>
+          <p className="-mt-3 text-sm text-red-600">{errors.agree.message}</p>
         )}
+
+        {status === "error" && (
+          <p className="text-sm text-red-600">{errorMsg}</p>
+        )}
+
+        <div className="flex flex-col-reverse md:flex-row md:items-center md:justify-between gap-4">
+          <p className="text-xs text-[var(--color-muted)] leading-relaxed">
+            {t("submitNote")}
+          </p>
+          <button
+            type="submit"
+            disabled={status === "submitting" || verifyStep !== "verified"}
+            title={verifyStep !== "verified" ? t("verify.errorRequired") : undefined}
+            className="group inline-flex items-center justify-center gap-2 w-full md:w-auto h-12 px-7 rounded-full bg-[var(--color-ink)] text-white text-sm font-medium hover:bg-[var(--color-ink-2)] transition disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_4px_16px_-4px_rgba(0,0,0,0.2)]"
+          >
+            {status === "submitting" ? t("submitting") : t("submit")}
+            {status !== "submitting" && (
+              <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5 group-disabled:hidden" />
+            )}
+          </button>
+        </div>
       </div>
-
-      {status === "error" && (
-        <p className="text-sm text-red-600">{errorMsg}</p>
-      )}
-
-      <button
-        type="submit"
-        disabled={status === "submitting" || verifyStep !== "verified"}
-        title={verifyStep !== "verified" ? t("verify.errorRequired") : undefined}
-        className="inline-flex items-center justify-center w-full md:w-auto h-12 px-8 rounded-full bg-[var(--color-ink)] text-white hover:opacity-80 transition disabled:opacity-40 disabled:cursor-not-allowed"
-      >
-        {status === "submitting" ? t("submitting") : t("submit")}
-      </button>
     </form>
+  );
+}
+
+function SectionHeader({
+  number,
+  title,
+  subtitle,
+}: {
+  number: string;
+  title: string;
+  subtitle: string;
+}) {
+  return (
+    <div className="flex items-baseline gap-3 pb-3 border-b border-[var(--color-line)]">
+      <span className="text-[11px] font-mono tracking-[0.25em] text-[var(--color-muted)]">
+        {number}
+      </span>
+      <span className="w-px h-3.5 bg-[var(--color-line)]" />
+      <div className="flex-1 min-w-0">
+        <h3 className="text-base md:text-lg font-semibold tracking-tight">{title}</h3>
+      </div>
+      <span className="text-xs text-[var(--color-muted)] truncate hidden sm:inline">
+        {subtitle}
+      </span>
+    </div>
   );
 }
 
 function Field({
   label,
   error,
+  optional,
+  optionalLabel,
   children,
 }: {
   label: string;
   error?: string;
+  optional?: boolean;
+  optionalLabel?: string;
   children: React.ReactNode;
 }) {
   return (
     <label className="block">
-      <span className="block text-sm font-medium mb-2">{label}</span>
+      <span className="flex items-baseline gap-2 mb-2">
+        <span className="text-sm font-medium">{label}</span>
+        {optional && (
+          <span className="text-[11px] text-[var(--color-muted)] font-normal">({optionalLabel ?? "선택"})</span>
+        )}
+      </span>
       {children}
       {error && <span className="block mt-1.5 text-sm text-red-600">{error}</span>}
     </label>
