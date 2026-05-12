@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { ArrowUpRight } from "lucide-react";
 import Logo from "./Logo";
 
 export default function Footer() {
@@ -26,29 +27,49 @@ export default function Footer() {
                 <span className="text-[var(--color-ink)] font-medium tracking-tight">{t("ceoName")}</span>
               </div>
 
-              {/* Contact emails — vertical accent line + tight inline label+mono */}
-              <ul className="space-y-2">
+              {/* Primary contact — sales: bordered card with prominent address + slide-in arrow */}
+              <a
+                href="mailto:sales@efface.dev"
+                className="group relative block max-w-md mb-3 rounded-xl border border-[var(--color-line)] bg-[var(--color-paper-2)] px-4 py-3.5 transition-all hover:border-[var(--color-ink)] hover:shadow-[0_8px_24px_-12px_rgba(0,0,0,0.12)] hover:-translate-y-0.5"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-success)] animate-pulse" />
+                      <span className="text-[10px] font-mono tracking-[0.18em] uppercase text-[var(--color-muted)]">
+                        {t("contactLabels.project")}
+                      </span>
+                    </div>
+                    <div className="font-mono text-[15px] md:text-base text-[var(--color-ink)] truncate group-hover:text-[var(--color-accent)] transition-colors">
+                      sales@efface.dev
+                    </div>
+                  </div>
+                  <span className="shrink-0 flex items-center justify-center w-9 h-9 rounded-lg border border-[var(--color-line)] bg-white text-[var(--color-muted)] group-hover:border-[var(--color-ink)] group-hover:bg-[var(--color-ink)] group-hover:text-white transition-all">
+                    <ArrowUpRight size={16} className="transition-transform group-hover:rotate-45" />
+                  </span>
+                </div>
+              </a>
+
+              {/* Secondary contacts — compact two-column row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-md">
                 {[
-                  { label: t("contactLabels.project"), addr: "sales@efface.dev" },
                   { label: t("contactLabels.general"), addr: "contact@efface.dev" },
                   { label: t("contactLabels.support"), addr: "support@efface.dev" },
                 ].map(({ label, addr }) => (
-                  <li key={addr}>
-                    <a
-                      href={`mailto:${addr}`}
-                      className="group flex items-center gap-3 py-1.5 pl-3 -ml-3 rounded-md transition-colors hover:bg-[var(--color-paper-2)]"
-                    >
-                      <span className="w-1 h-4 rounded-full bg-[var(--color-line)] group-hover:bg-[var(--color-accent)] transition-colors shrink-0" />
-                      <span className="text-[11px] text-[var(--color-muted)] w-[68px] shrink-0">
-                        {label}
-                      </span>
-                      <span className="font-mono text-[13px] text-[var(--color-ink)] group-hover:text-[var(--color-accent)] transition-colors">
-                        {addr}
-                      </span>
-                    </a>
-                  </li>
+                  <a
+                    key={addr}
+                    href={`mailto:${addr}`}
+                    className="group flex flex-col gap-0.5 px-3 py-2 rounded-lg hover:bg-[var(--color-paper-2)] transition-colors"
+                  >
+                    <span className="text-[10px] font-mono tracking-[0.18em] uppercase text-[var(--color-muted)]">
+                      {label}
+                    </span>
+                    <span className="font-mono text-[12.5px] text-[var(--color-ink)] group-hover:text-[var(--color-accent)] transition-colors truncate">
+                      {addr}
+                    </span>
+                  </a>
                 ))}
-              </ul>
+              </div>
             </div>
           </div>
 
