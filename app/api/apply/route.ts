@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { applySchema, SERVICE_VALUES, BUDGET_VALUES, serviceLabel, budgetLabel } from "@/lib/schema";
-import { getSupabaseAdmin, makeSlug } from "@/lib/supabase";
 import { verifyVerifyToken } from "@/lib/otp";
 import koMessages from "@/messages/ko.json";
 import enMessages from "@/messages/en.json";
@@ -416,84 +415,62 @@ export async function POST(req: Request) {
 
   const resend = new Resend(apiKey);
 
-  const adminSend = await resend.emails.send({
-    from,
-    to,
-    replyTo: safeEmail,
-    subject,
-    html: adminHtml,
-    attachments: attachments.length > 0 ? attachments : undefined,
-  });
+  // Race the Resend call against a wall-clock timeout. Vercel's Hobby
+  // function timeout is 10s; if Resend hangs (slow recipient verification,
+  // restricted-recipient retries, etc.) the function would be killed by the
+  // platform and Cloudflare would surface its own opaque 502. Bound it
+  // ourselves so we always return a real JSON body the client can show.
+  const SEND_TIMEOUT_MS = 7000;
+  const withTimeout = <T,>(p: Promise<T>): Promise<T> =>
+    Promise.race([
+      p,
+      new Promise<T>((_, reject) =>
+        setTimeout(() => reject(new Error("send_timeout")), SEND_TIMEOUT_MS)
+      ),
+    ]);
 
-  if (adminSend.error) {
-    // Log type only — do not log message contents (could contain PII)
-    console.error("[apply] admin send failed:", adminSend.error.name);
+  try {
+    const adminSend = await withTimeout(
+      resend.emails.send({
+        from,
+        to,
+        replyTo: safeEmail,
+        subject,
+        html: adminHtml,
+        attachments: attachments.length > 0 ? attachments : undefined,
+      })
+    );
+    if (adminSend.error) {
+      console.error("[apply] admin send failed:", adminSend.error.name);
+      return NextResponse.json(
+        { error: "메일 전송에 실패했습니다. 잠시 후 다시 시도해 주세요." },
+        { status: 502 }
+      );
+    }
+  } catch (e: unknown) {
+    console.error("[apply] admin send threw:", e instanceof Error ? e.message.slice(0, 40) : "unknown");
     return NextResponse.json(
       { error: "메일 전송에 실패했습니다. 잠시 후 다시 시도해 주세요." },
       { status: 502 }
     );
   }
 
-  // Auto-responder — best-effort
+  // Auto-responder — best-effort, also time-bounded
   try {
-    await resend.emails.send({
-      from,
-      to: safeEmail,
-      subject:
-        locale === "ko"
-          ? `[접수 #${ticketId}] 신청이 정상 접수되었습니다`
-          : `[#${ticketId}] Your inquiry has been received`,
-      html: clientHtml,
-    });
+    await withTimeout(
+      resend.emails.send({
+        from,
+        to: safeEmail,
+        subject:
+          locale === "ko"
+            ? `[접수 #${ticketId}] 신청이 정상 접수되었습니다`
+            : `[#${ticketId}] Your inquiry has been received`,
+        html: clientHtml,
+      })
+    );
   } catch (e: unknown) {
-    console.error("[apply] auto-responder failed:", e instanceof Error ? e.name : "unknown");
+    console.error("[apply] auto-responder failed:", e instanceof Error ? e.message.slice(0, 40) : "unknown");
   }
 
-  // Enqueue demo generation (best-effort)
-  let demoSlug: string | null = null;
-  try {
-    if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      const supabase = getSupabaseAdmin();
-      const slug = makeSlug();
-      const { data: job, error: insertErr } = await supabase
-        .from("demo_jobs")
-        .insert({
-          slug,
-          ticket_id: ticketId,
-          email: safeEmail,
-          name: safeName,
-          service_type: data.serviceType,
-          description: data.description,
-          reference_urls: data.references ?? null,
-          status: "pending",
-        })
-        .select("id, slug")
-        .single();
-
-      if (insertErr) {
-        console.error("[apply] supabase insert failed");
-      } else if (job) {
-        demoSlug = job.slug;
-        const workerUrl = process.env.WORKER_URL;
-        const workerSecret = process.env.WORKER_SECRET;
-        if (workerUrl && workerSecret) {
-          fetch(`${workerUrl.replace(/\/$/, "")}/generate`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${workerSecret}`,
-            },
-            body: JSON.stringify({ jobId: job.id }),
-          }).catch(() => {
-            // Don't log content; just signal that the worker trigger failed
-            console.error("[apply] worker trigger failed");
-          });
-        }
-      }
-    }
-  } catch {
-    console.error("[apply] demo enqueue exception");
-  }
-
-  return NextResponse.json({ ok: true, ticketId, demoSlug });
+  return NextResponse.json({ ok: true, ticketId });
 }

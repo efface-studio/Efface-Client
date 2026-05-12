@@ -5,7 +5,7 @@ import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations, useLocale } from "next-intl";
 import { buildApplySchema, type ApplyInput, type ApplyErrorMessages } from "@/lib/schema";
-import { Paperclip, X, Sparkles, ArrowRight, Check } from "lucide-react";
+import { Paperclip, X, Check } from "lucide-react";
 import DatePicker from "@/components/DatePicker";
 import { ChevronDown } from "lucide-react";
 
@@ -94,7 +94,6 @@ export default function ApplyForm() {
   const [errorMsg, setErrorMsg] = useState("");
   const [attachments, setAttachments] = useState<AttachmentDraft[]>([]);
   const [ticketId, setTicketId] = useState<string | null>(null);
-  const [demoSlug, setDemoSlug] = useState<string | null>(null);
   const [honey, setHoney] = useState("");
 
   // ─── Email OTP verification state ───────────────────────────────
@@ -253,7 +252,6 @@ export default function ApplyForm() {
       }
       const j = await res.json().catch(() => ({}));
       if (j?.ticketId) setTicketId(j.ticketId);
-      if (j?.demoSlug) setDemoSlug(j.demoSlug);
       setStatus("success");
       reset();
       setAttachments([]);
@@ -280,29 +278,6 @@ export default function ApplyForm() {
           <br />
           {t("success.body2")}
         </p>
-
-        {demoSlug && (
-          <a
-            href={`/demo/${demoSlug}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group mt-8 inline-flex items-center gap-4 max-w-md w-full px-5 py-4 rounded-xl border border-[var(--color-line)] bg-gradient-to-br from-[var(--color-paper-2)] to-white hover:border-[var(--color-ink)] transition text-left"
-          >
-            <span className="shrink-0 w-10 h-10 rounded-full bg-[var(--color-ink)] text-white flex items-center justify-center">
-              <Sparkles size={16} />
-            </span>
-            <span className="flex-1">
-              <span className="block text-sm font-semibold">{t("success.demoTitle")}</span>
-              <span className="block text-xs text-[var(--color-muted)] mt-0.5">
-                {t("success.demoSub")}
-              </span>
-            </span>
-            <ArrowRight
-              size={16}
-              className="shrink-0 text-[var(--color-muted)] transition-transform group-hover:translate-x-1"
-            />
-          </a>
-        )}
       </div>
     );
   }
