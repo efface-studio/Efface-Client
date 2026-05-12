@@ -1,7 +1,7 @@
 {
   "Meta": {
     "title": "efface — Erase the complexity. Keep the effect.",
-    "description": "A solo web studio shipping landing pages, e-commerce, internal tools, and AI-powered sites — end to end, in 1–3 weeks.",
+    "description": "A web studio shipping landing pages, e-commerce, internal tools, and AI-powered sites — end to end, in 1–3 weeks.",
     "applyTitle": "Get a Quote — efface",
     "applyDescription": "Tell us about your project. We reply within one business day."
   },
@@ -15,7 +15,7 @@
     "kakaoAria": "KakaoTalk channel"
   },
   "Footer": {
-    "tagline": "Websites built fast and clean — landing pages, e-commerce, internal tools, AI sites. A solo studio that takes a project from idea to launch, end to end.",
+    "tagline": "Websites built fast and clean — landing pages, e-commerce, internal tools, AI sites. A web studio that takes a project from idea to launch, end to end.",
     "ceoLabel": "Founder",
     "ceoName": "Seojiwan Suh",
     "sectionSitemap": "Sitemap",
@@ -46,7 +46,7 @@
     "badge": "Now booking Q3 2026 projects",
     "headingLine1": "Web projects,",
     "headingLine2": "delivered cleanly.",
-    "subheading": "Landing pages, e-commerce, internal tools — planned, designed, and built by one person, end to end. A solo web studio.",
+    "subheading": "Landing pages, e-commerce, internal tools — planned, designed, and built end to end, with a clean handover. A web studio shipping production-ready sites.",
     "bullets": [
       "Reply within 1 business day · 24-hour weekday response",
       "Solid Next.js code, smooth handover guaranteed",
@@ -91,8 +91,8 @@
         "desc": "Domain, deployment, and monitoring set up by us. 1 month of free maintenance after delivery."
       },
       {
-        "title": "Solo, so it's fast",
-        "desc": "Planning, design, dev, and deploy all by one person — less communication overhead, tighter timelines."
+        "title": "Fast decisions, tight timelines",
+        "desc": "Planning, design, dev, and deploy under one roof — less communication overhead, schedules that hold."
       }
     ]
   },
@@ -268,7 +268,7 @@
     "items": [
       { "quote": "Nailed the tone I'd only vaguely described. Hardly any design ping-pong.", "metric": "3.2× inquiries in launch month", "author": "M. Kim", "role": "Marketing Director", "company": "Hi-vits Inc." },
       { "quote": "Handover was incredibly clean. Our in-house dev took over and ran with it immediately.", "metric": "70% lower maintenance cost", "author": "J. Lee", "role": "CTO", "company": "Nest" },
-      { "quote": "I was worried about a solo dev, but decisions were fast and the polish was there.", "metric": "Shipped 1 week ahead", "author": "S. Park", "role": "Founder", "company": "Maison Noir" },
+      { "quote": "I was worried at first, but decisions were fast and the polish was there.", "metric": "Shipped 1 week ahead", "author": "S. Park", "role": "Founder", "company": "Maison Noir" },
       { "quote": "Pulled the essentials together in a single planning meeting — kept everything on schedule.", "metric": "Kickoff → designs in 5 days", "author": "J. Jung", "role": "Product Owner", "company": "Rocket Studios" },
       { "quote": "Payments and account integrations were handled end-to-end — almost no work for ops at handover.", "metric": "Payment failure rate < 0.4%", "author": "S. Choi", "role": "Ops Manager", "company": "Daol Commerce" },
       { "quote": "Site feels noticeably faster after the redesign. SEO score climbed too.", "metric": "Lighthouse 92 → 99", "author": "D. Han", "role": "Marketer", "company": "Saerom Lab" },
