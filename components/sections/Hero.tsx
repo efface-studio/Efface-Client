@@ -139,17 +139,17 @@ export default function Hero() {
           </motion.div>
 
           <div className="mt-10 flex items-center gap-4 text-xs text-[var(--color-muted)] flex-wrap">
-            <div className="flex items-center -space-x-3">
+            <div className="flex items-center -space-x-2">
               {[
-                { src: "/clients/hivits.svg", alt: "Hi-vits" },
-                { src: "/clients/hinest.svg", alt: "HI-NEST" },
-                { src: "/clients/gomseu.svg", alt: "곰스" },
+                { src: "/clients/hivits.svg", alt: "Hi-vits", pad: "p-1.5" },
+                { src: "/clients/hinest.svg", alt: "HI-NEST", pad: "p-0" },
+                { src: "/clients/gomseu.svg", alt: "곰스", pad: "p-0" },
               ].map((c, i) => (
                 <div
                   key={c.src}
                   title={c.alt}
                   style={{ zIndex: 3 - i }}
-                  className="group relative w-10 h-10 rounded-full bg-white border-2 border-white ring-1 ring-[var(--color-line)] shadow-[0_2px_6px_-1px_rgba(0,0,0,0.08)] overflow-hidden flex items-center justify-center hover:z-10 hover:scale-110 transition-transform duration-200"
+                  className={`group relative w-8 h-8 rounded-full bg-white border-2 border-white ring-1 ring-[var(--color-line)] shadow-[0_2px_6px_-1px_rgba(0,0,0,0.08)] overflow-hidden flex items-center justify-center hover:z-10 hover:scale-110 transition-transform duration-200 ${c.pad}`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -157,7 +157,7 @@ export default function Hero() {
                     alt={c.alt}
                     loading="lazy"
                     decoding="async"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 </div>
               ))}
