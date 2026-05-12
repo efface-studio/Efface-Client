@@ -136,16 +136,30 @@ export async function POST(req: Request) {
   const resend = new Resend(apiKey);
   const subject = locale === "ko" ? `[efface] 인증 코드: ${code}` : `[efface] Your verification code: ${code}`;
 
-  const send = await resend.emails.send({
-    from,
-    to: email,
-    subject,
-    html: codeEmailHtml(code, locale, CODE_TTL_MIN),
-  });
-
-  if (send.error) {
-    console.error("[send-code] resend error:", send.error.name);
-    return NextResponse.json({ error: "메일 전송에 실패했습니다." }, { status: 502 });
+  // Resend's SDK throws for some classes of error (e.g. malformed recipient
+  // domain) instead of returning {error}. Wrap so an exception doesn't bubble
+  // up as a Vercel 502 with no body — the client can't surface a useful
+  // message in that case.
+  try {
+    const send = await resend.emails.send({
+      from,
+      to: email,
+      subject,
+      html: codeEmailHtml(code, locale, CODE_TTL_MIN),
+    });
+    if (send.error) {
+      console.error("[send-code] resend error:", send.error.name);
+      return NextResponse.json(
+        { error: "메일 전송에 실패했습니다. 이메일 주소를 다시 확인해 주세요." },
+        { status: 502 }
+      );
+    }
+  } catch (e: unknown) {
+    console.error("[send-code] resend threw:", e instanceof Error ? e.name : "unknown");
+    return NextResponse.json(
+      { error: "메일 전송에 실패했습니다. 이메일 주소를 다시 확인해 주세요." },
+      { status: 502 }
+    );
   }
 
   return NextResponse.json({ ok: true, ttlSec: CODE_TTL_MIN * 60 });
