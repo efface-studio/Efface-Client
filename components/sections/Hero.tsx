@@ -138,24 +138,28 @@ export default function Hero() {
             </MagneticButton>
           </motion.div>
 
-          <div className="mt-10 flex items-center gap-5 text-xs text-[var(--color-muted)] flex-wrap">
-            <div className="flex items-center gap-5">
+          <div className="mt-10 flex items-center gap-4 text-xs text-[var(--color-muted)] flex-wrap">
+            <div className="flex items-center -space-x-3">
               {[
-                { src: "/clients/hivits.svg", alt: "Hi-vits", w: 50 },
-                { src: "/clients/hinest.svg", alt: "HI-NEST", w: 20 },
-                { src: "/clients/gomseu.svg", alt: "곰스", w: 20 },
-              ].map((c) => (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
+                { src: "/clients/hivits.svg", alt: "Hi-vits" },
+                { src: "/clients/hinest.svg", alt: "HI-NEST" },
+                { src: "/clients/gomseu.svg", alt: "곰스" },
+              ].map((c, i) => (
+                <div
                   key={c.src}
-                  src={c.src}
-                  alt={c.alt}
                   title={c.alt}
-                  loading="lazy"
-                  decoding="async"
-                  style={{ width: c.w, height: 20 }}
-                  className="object-contain grayscale opacity-55 hover:grayscale-0 hover:opacity-100 transition duration-300"
-                />
+                  style={{ zIndex: 3 - i }}
+                  className="group relative w-10 h-10 rounded-full bg-white border-2 border-white ring-1 ring-[var(--color-line)] shadow-[0_2px_6px_-1px_rgba(0,0,0,0.08)] overflow-hidden flex items-center justify-center hover:z-10 hover:scale-110 transition-transform duration-200"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={c.src}
+                    alt={c.alt}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               ))}
             </div>
             <span className="text-[var(--color-muted)]">{t("social")}</span>

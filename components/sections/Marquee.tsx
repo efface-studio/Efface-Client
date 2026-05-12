@@ -95,13 +95,15 @@ function Row({ items, direction = "left", ariaLabelSuffix }: { items: Item[]; di
         style={{ background: "linear-gradient(270deg, var(--color-paper-2) 0%, transparent 100%)" }}
       />
       <div
-        className="flex w-max gap-4 py-1.5"
+        className="flex w-max py-1.5 will-change-transform"
         style={{
-          animation: `${direction === "left" ? "marquee" : "marquee-reverse"} 22s linear infinite`,
+          animation: `${direction === "left" ? "marquee" : "marquee-reverse"} 40s linear infinite`,
         }}
       >
         {list.map((it, i) => (
-          <Chip key={`${direction}-${i}`} item={it} ariaLabelSuffix={ariaLabelSuffix} />
+          <div key={`${direction}-${i}`} className="pr-4 shrink-0">
+            <Chip item={it} ariaLabelSuffix={ariaLabelSuffix} />
+          </div>
         ))}
       </div>
     </div>
