@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations, useLocale } from "next-intl";
 import { buildApplySchema, type ApplyInput, type ApplyErrorMessages } from "@/lib/schema";
-import { Paperclip, X, Sparkles, ArrowRight } from "lucide-react";
+import { Paperclip, X, Sparkles, ArrowRight, Check } from "lucide-react";
 import DatePicker from "@/components/DatePicker";
 import { ChevronDown } from "lucide-react";
 
@@ -97,6 +97,16 @@ export default function ApplyForm() {
   const [demoSlug, setDemoSlug] = useState<string | null>(null);
   const [honey, setHoney] = useState("");
 
+  // ─── Email OTP verification state ───────────────────────────────
+  type VerifyStep = "idle" | "sending" | "sent" | "verifying" | "verified";
+  const [verifyStep, setVerifyStep] = useState<VerifyStep>("idle");
+  const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null);
+  const [verifyToken, setVerifyToken] = useState<string | null>(null);
+  const [codeInput, setCodeInput] = useState("");
+  const [verifyError, setVerifyError] = useState("");
+  const [resendCooldownSec, setResendCooldownSec] = useState(0);
+  const cooldownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -107,6 +117,81 @@ export default function ApplyForm() {
     resolver: zodResolver(schema),
     mode: "onBlur",
   });
+
+  // Watch the email field — if the user edits it after verifying,
+  // the verified state must drop (the token is bound to the old email).
+  const watchedEmail = useWatch({ control, name: "email" });
+  useEffect(() => {
+    if (verifiedEmail && watchedEmail?.toLowerCase().trim() !== verifiedEmail) {
+      setVerifyStep("idle");
+      setVerifyToken(null);
+      setVerifiedEmail(null);
+      setCodeInput("");
+      setVerifyError("");
+    }
+  }, [watchedEmail, verifiedEmail]);
+
+  // Resend cooldown ticker
+  useEffect(() => {
+    if (resendCooldownSec <= 0) return;
+    cooldownTimerRef.current = setInterval(() => {
+      setResendCooldownSec((s) => (s <= 1 ? 0 : s - 1));
+    }, 1000);
+    return () => {
+      if (cooldownTimerRef.current) clearInterval(cooldownTimerRef.current);
+    };
+  }, [resendCooldownSec]);
+
+  const sendCode = async () => {
+    setVerifyError("");
+    const email = (watchedEmail || "").trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setVerifyError(t("errors.emailFormat"));
+      return;
+    }
+    setVerifyStep("sending");
+    try {
+      const res = await fetch("/api/apply/send-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, locale }),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(j?.error || t("errors.unknown"));
+      setVerifyStep("sent");
+      setResendCooldownSec(60);
+    } catch (e: unknown) {
+      setVerifyError(e instanceof Error ? e.message : t("errors.unknown"));
+      setVerifyStep("idle");
+    }
+  };
+
+  const submitCode = async () => {
+    setVerifyError("");
+    const email = (watchedEmail || "").trim().toLowerCase();
+    const code = codeInput.replace(/\D/g, "").slice(0, 6);
+    if (code.length !== 6) {
+      setVerifyError(t("verify.errorBadCode"));
+      return;
+    }
+    setVerifyStep("verifying");
+    try {
+      const res = await fetch("/api/apply/verify-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code }),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok || !j?.token) throw new Error(j?.error || t("verify.errorBadCode"));
+      setVerifyToken(j.token);
+      setVerifiedEmail(email);
+      setVerifyStep("verified");
+      setCodeInput("");
+    } catch (e: unknown) {
+      setVerifyError(e instanceof Error ? e.message : t("errors.unknown"));
+      setVerifyStep("sent"); // back to sent state so the user can try again
+    }
+  };
 
   const onPickFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
@@ -140,13 +225,19 @@ export default function ApplyForm() {
   };
 
   const onSubmit = async (data: ApplyInput) => {
+    // Gate submission on a fresh verification token that matches the email.
+    if (verifyStep !== "verified" || !verifyToken || verifiedEmail !== data.email.toLowerCase().trim()) {
+      setStatus("error");
+      setErrorMsg(t("verify.errorRequired"));
+      return;
+    }
     setStatus("submitting");
     setErrorMsg("");
     try {
       const res = await fetch("/api/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, attachments, website: honey, locale }),
+        body: JSON.stringify({ ...data, attachments, website: honey, locale, verifyToken }),
       });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
@@ -158,6 +249,9 @@ export default function ApplyForm() {
       setStatus("success");
       reset();
       setAttachments([]);
+      setVerifyToken(null);
+      setVerifiedEmail(null);
+      setVerifyStep("idle");
     } catch (e: unknown) {
       setStatus("error");
       setErrorMsg(e instanceof Error ? e.message : t("errors.unknown"));
@@ -227,7 +321,66 @@ export default function ApplyForm() {
           <input className={fieldBase} placeholder={t("placeholders.name")} maxLength={50} {...register("name")} />
         </Field>
         <Field label={t("fields.email")} error={errors.email?.message}>
-          <input className={fieldBase} type="email" placeholder={t("placeholders.email")} maxLength={120} {...register("email")} />
+          <div className="flex gap-2">
+            <input
+              className={`${fieldBase} flex-1 ${verifyStep === "verified" ? "bg-[var(--color-paper-2)] text-[var(--color-muted)]" : ""}`}
+              type="email"
+              placeholder={t("placeholders.email")}
+              maxLength={120}
+              readOnly={verifyStep === "verified"}
+              {...register("email")}
+            />
+            {verifyStep === "verified" ? (
+              <span className="inline-flex items-center gap-1.5 h-12 px-3 rounded-lg bg-[color-mix(in_srgb,var(--color-success)_12%,white)] text-[var(--color-success)] text-xs font-medium shrink-0">
+                <Check size={14} />
+                {t("verify.verified")}
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={sendCode}
+                disabled={verifyStep === "sending" || resendCooldownSec > 0}
+                className="inline-flex items-center justify-center h-12 px-4 rounded-lg border border-[var(--color-line)] bg-white hover:border-[var(--color-ink)] disabled:opacity-50 disabled:cursor-not-allowed transition text-sm font-medium shrink-0"
+              >
+                {verifyStep === "sending"
+                  ? t("verify.sending")
+                  : resendCooldownSec > 0
+                  ? t("verify.resendIn", { sec: resendCooldownSec })
+                  : verifyStep === "sent"
+                  ? t("verify.resend")
+                  : t("verify.sendCode")}
+              </button>
+            )}
+          </div>
+          {verifyStep === "sent" || verifyStep === "verifying" ? (
+            <div className="mt-3 flex flex-col gap-2 p-3 rounded-lg border border-[var(--color-line)] bg-[var(--color-paper-2)]">
+              <p className="text-xs text-[var(--color-muted)]">{t("verify.sentHint")}</p>
+              <div className="flex gap-2">
+                <input
+                  inputMode="numeric"
+                  pattern="\d{6}"
+                  maxLength={6}
+                  autoComplete="one-time-code"
+                  placeholder="000000"
+                  value={codeInput}
+                  onChange={(e) => setCodeInput(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  className="flex-1 h-11 px-4 rounded-md border border-[var(--color-line)] bg-white focus:outline-none focus:border-[var(--color-ink)] font-mono tracking-[0.4em] text-center"
+                />
+                <button
+                  type="button"
+                  onClick={submitCode}
+                  disabled={codeInput.length !== 6 || verifyStep === "verifying"}
+                  className="inline-flex items-center justify-center h-11 px-5 rounded-md bg-[var(--color-ink)] text-white hover:opacity-80 disabled:opacity-40 transition text-sm font-medium shrink-0"
+                >
+                  {verifyStep === "verifying" ? t("verify.verifying") : t("verify.confirm")}
+                </button>
+              </div>
+            </div>
+          ) : null}
+          {verifyError ? <p className="mt-2 text-sm text-red-600">{verifyError}</p> : null}
+          {verifyStep === "idle" && !errors.email?.message ? (
+            <p className="mt-1.5 text-xs text-[var(--color-muted)]">{t("verify.hint")}</p>
+          ) : null}
         </Field>
         <Field label={t("fields.phone")} error={errors.phone?.message}>
           <input className={fieldBase} placeholder={t("placeholders.phone")} maxLength={30} {...register("phone")} />
@@ -357,8 +510,9 @@ export default function ApplyForm() {
 
       <button
         type="submit"
-        disabled={status === "submitting"}
-        className="inline-flex items-center justify-center w-full md:w-auto h-12 px-8 rounded-full bg-[var(--color-ink)] text-white hover:opacity-80 transition disabled:opacity-40"
+        disabled={status === "submitting" || verifyStep !== "verified"}
+        title={verifyStep !== "verified" ? t("verify.errorRequired") : undefined}
+        className="inline-flex items-center justify-center w-full md:w-auto h-12 px-8 rounded-full bg-[var(--color-ink)] text-white hover:opacity-80 transition disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {status === "submitting" ? t("submitting") : t("submit")}
       </button>

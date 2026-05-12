@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { applySchema, SERVICE_VALUES, BUDGET_VALUES, serviceLabel, budgetLabel } from "@/lib/schema";
 import { getSupabaseAdmin, makeSlug } from "@/lib/supabase";
+import { verifyVerifyToken } from "@/lib/otp";
 import koMessages from "@/messages/ko.json";
 import enMessages from "@/messages/en.json";
 
@@ -340,6 +341,24 @@ export async function POST(req: Request) {
   }
   if (!(BUDGET_VALUES as readonly string[]).includes(data.budget)) {
     return NextResponse.json({ error: "잘못된 예산 범위입니다." }, { status: 400 });
+  }
+
+  // Email verification gate. The verifyToken comes from /api/apply/verify-code
+  // and is bound to the email + a 30-minute expiry, so a token issued for one
+  // email cannot be replayed against a different submission.
+  const verifyToken = (json as { verifyToken?: unknown }).verifyToken;
+  if (typeof verifyToken !== "string" || verifyToken.length === 0) {
+    return NextResponse.json(
+      { error: "이메일 인증이 필요합니다.", code: "verification_required" },
+      { status: 400 }
+    );
+  }
+  const v = verifyVerifyToken(verifyToken, data.email);
+  if (!v.ok) {
+    return NextResponse.json(
+      { error: "이메일 인증이 만료되었거나 일치하지 않습니다. 코드를 다시 받아 주세요.", code: "verification_failed" },
+      { status: 400 }
+    );
   }
 
   const apiKey = process.env.RESEND_API_KEY;

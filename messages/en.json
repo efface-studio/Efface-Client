@@ -338,6 +338,19 @@
         "tooLarge": "'{name}' exceeds 5MB."
       },
       "agree": "(required) I consent to the collection and use of my personal data (name, email, phone) for the purpose of processing this inquiry. Data is retained for 1 year after closure.",
+      "verify": {
+        "sendCode": "Send code",
+        "sending": "Sending…",
+        "resend": "Resend",
+        "resendIn": "Resend ({sec}s)",
+        "sentHint": "Enter the 6-digit code we just emailed you within 10 minutes.",
+        "confirm": "Verify",
+        "verifying": "Verifying…",
+        "verified": "Verified",
+        "hint": "Verify your email before submitting to prevent spam.",
+        "errorBadCode": "Code does not match or has expired.",
+        "errorRequired": "Please verify your email first."
+      },
       "submit": "Submit",
       "submitting": "Submitting…",
       "errors": {
