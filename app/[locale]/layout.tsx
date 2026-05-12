@@ -55,6 +55,11 @@ export async function generateMetadata({
       description,
       images: [OG_IMAGE],
     },
+    verification: {
+      other: {
+        "naver-site-verification": "4cd76c6893a3dcf9df5480d84196191cc53eaa7a",
+      },
+    },
   };
 }
 
