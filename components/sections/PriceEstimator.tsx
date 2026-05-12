@@ -29,12 +29,18 @@ const featureConfig: { key: string; price: number; weeks: number }[] = [
   { key: "cms", price: 45, weeks: 0.6 },
   { key: "search", price: 25, weeks: 0.4 },
   { key: "ai", price: 50, weeks: 0.6 },
+  { key: "analytics", price: 20, weeks: 0.3 },
+  { key: "booking", price: 40, weeks: 0.6 },
+  { key: "chat", price: 30, weeks: 0.4 },
+  { key: "blog", price: 25, weeks: 0.4 },
+  { key: "seo", price: 15, weeks: 0.2 },
+  { key: "gallery", price: 20, weeks: 0.3 },
 ];
 
-function AnimatedNumber({ value, multiplier }: { value: number; multiplier: number }) {
+function AnimatedNumber({ value, multiplier, prefix = "" }: { value: number; multiplier: number; prefix?: string }) {
   const mv = useMotionValue(value * multiplier);
   const spring = useSpring(mv, { stiffness: 120, damping: 22, mass: 0.6 });
-  const display = useTransform(spring, (v) => Math.round(v).toLocaleString());
+  const display = useTransform(spring, (v) => `${prefix}${Math.round(v).toLocaleString()}`);
 
   useEffect(() => {
     mv.set(value * multiplier);
@@ -49,8 +55,10 @@ export default function PriceEstimator() {
   const services = t.raw("services") as { key: ServiceKey; label: string }[];
   const features = t.raw("features") as { key: string; label: string }[];
 
-  // Display multiplier: KR keeps 만원 (×1), EN converts to K KRW (×10)
-  const multiplier = locale === "ko" ? 1 : 10;
+  // Display: KR keeps 만원 (×1, suffix). EN converts to USD (1 만원 ≈ $8 at
+  // current FX, with a small buffer) and uses a $ prefix.
+  const multiplier = locale === "ko" ? 1 : 8;
+  const currencyPrefix = locale === "ko" ? "" : "$";
 
   const [service, setService] = useState<ServiceKey>("brand");
   const [pages, setPages] = useState(8);
@@ -160,9 +168,9 @@ export default function PriceEstimator() {
                 </div>
 
                 <div className="text-4xl md:text-[44px] font-semibold tracking-tight tabular-nums leading-none">
-                  <AnimatedNumber value={result.lo} multiplier={multiplier} />
+                  <AnimatedNumber value={result.lo} multiplier={multiplier} prefix={currencyPrefix} />
                   <span className="text-[var(--color-muted)] mx-2 font-light">~</span>
-                  <AnimatedNumber value={result.hi} multiplier={multiplier} />
+                  <AnimatedNumber value={result.hi} multiplier={multiplier} prefix={currencyPrefix} />
                   <span className="text-base font-normal text-[var(--color-muted)] ml-2">{t("currencyUnit")}</span>
                 </div>
 
@@ -199,21 +207,21 @@ export default function PriceEstimator() {
                       <li className="flex items-center justify-between">
                         <span>{t("base")}</span>
                         <span className="font-mono tabular-nums">
-                          {(result.basePrice * multiplier).toLocaleString()}{t("currencyUnit")}
+                          {currencyPrefix}{(result.basePrice * multiplier).toLocaleString()}{t("currencyUnit")}
                         </span>
                       </li>
                       {result.extraPages > 0 && (
                         <li className="flex items-center justify-between">
                           <span>{t("extraPages", { n: result.extraPages })}</span>
                           <span className="font-mono tabular-nums">
-                            +{(result.extraPages * result.perPage * multiplier).toLocaleString()}{t("currencyUnit")}
+                            +{currencyPrefix}{(result.extraPages * result.perPage * multiplier).toLocaleString()}{t("currencyUnit")}
                           </span>
                         </li>
                       )}
                       {picked.size > 0 && (
                         <li className="flex items-center justify-between">
                           <span>{t("extraFeatures", { n: picked.size })}</span>
-                          <span className="font-mono tabular-nums">+{(result.featPrice * multiplier).toLocaleString()}{t("currencyUnit")}</span>
+                          <span className="font-mono tabular-nums">+{currencyPrefix}{(result.featPrice * multiplier).toLocaleString()}{t("currencyUnit")}</span>
                         </li>
                       )}
                     </motion.ul>
@@ -221,7 +229,16 @@ export default function PriceEstimator() {
                 </AnimatePresence>
 
                 <Link
-                  href="/apply"
+                  href={{
+                    pathname: "/apply",
+                    query: {
+                      service,
+                      pages: String(pages),
+                      features: [...picked].join(","),
+                      lo: String(Math.round(result.lo * multiplier)),
+                      hi: String(Math.round(result.hi * multiplier)),
+                    },
+                  }}
                   className="group mt-7 inline-flex items-center gap-2 h-11 px-5 rounded-full bg-[var(--color-ink)] text-white text-sm font-medium hover:bg-[var(--color-ink-2)] transition w-full justify-center"
                 >
                   {t("applyCta")}
@@ -402,7 +419,7 @@ export default function PriceEstimator() {
                             on ? "text-white/70" : "text-[var(--color-muted)]"
                           }`}
                         >
-                          +{((cfg?.price ?? 0) * multiplier).toLocaleString()}{t("currencyUnit")}
+                          +{currencyPrefix}{((cfg?.price ?? 0) * multiplier).toLocaleString()}{t("currencyUnit")}
                         </span>
                       </button>
                     );

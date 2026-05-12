@@ -233,7 +233,13 @@
       { "key": "i18n", "label": "다국어 (한/영)" },
       { "key": "cms", "label": "CMS / 관리자" },
       { "key": "search", "label": "검색 · 필터" },
-      { "key": "ai", "label": "AI 기능 연동" }
+      { "key": "ai", "label": "AI 기능 연동" },
+      { "key": "analytics", "label": "분석 · 대시보드" },
+      { "key": "booking", "label": "예약 · 일정 관리" },
+      { "key": "chat", "label": "실시간 채팅" },
+      { "key": "blog", "label": "블로그 · 매거진" },
+      { "key": "seo", "label": "SEO 최적화" },
+      { "key": "gallery", "label": "갤러리 · 포트폴리오" }
     ]
   },
   "Process": {
@@ -313,6 +319,24 @@
     "form": {
       "optional": "선택",
       "submitNote": "제출 후 1영업일 안에 입력하신 이메일로 회신드려요.",
+      "estimatorIntro": "[견적 계산기에서 선택한 사양]",
+      "estimatorPages": "페이지 수: {n}",
+      "estimatorFeatures": "추가 기능",
+      "estimatorReplaceHint": "↑ 위 내용을 지우고 원하시는 프로젝트 설명을 자유롭게 적어 주세요.",
+      "estimatorFeatureLabels": {
+        "auth": "회원가입 · 로그인",
+        "payment": "결제",
+        "i18n": "다국어",
+        "cms": "CMS / 관리자",
+        "search": "검색 · 필터",
+        "ai": "AI 기능 연동",
+        "analytics": "분석 · 대시보드",
+        "booking": "예약 · 일정 관리",
+        "chat": "실시간 채팅",
+        "blog": "블로그 · 매거진",
+        "seo": "SEO 최적화",
+        "gallery": "갤러리 · 포트폴리오"
+      },
       "sections": {
         "contact": "연락처",
         "contactSub": "회신 받을 정보",
