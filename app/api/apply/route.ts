@@ -149,6 +149,73 @@ function labelForBudget(locale: Locale, value: string): string {
 }
 
 // ─── Email templates ──────────────────────────────────────────────────────
+// All styling is inline so Gmail/Naver/Outlook render consistently. Tables
+// are used for layout since flex/grid aren't reliable across mail clients.
+
+const FONT_STACK =
+  "'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
+function emailShell(content: string): string {
+  return `
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light only">
+  <meta name="supported-color-schemes" content="light only">
+  <title>efface</title>
+</head>
+<body style="margin:0;padding:0;background:#f5f5f5;font-family:${FONT_STACK};color:#0a0a0a;-webkit-text-size-adjust:100%">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f5f5f5;padding:32px 16px">
+    <tr><td align="center">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 16px rgba(0,0,0,0.06)">
+        ${content}
+      </table>
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;margin-top:16px">
+        <tr><td align="center" style="padding:8px 16px;color:#a3a3a3;font-size:11px;line-height:1.6;font-family:${FONT_STACK}">
+          efface · <a href="https://efface.dev" style="color:#a3a3a3;text-decoration:none">efface.dev</a><br>
+          서울 · sales@efface.dev
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+function emailHeader(eyebrow: string, accent = "#0a0a0a"): string {
+  return `
+<tr><td style="padding:28px 32px 0;border-bottom:1px solid #f0f0f0">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td style="vertical-align:middle">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td style="width:24px;height:24px;background:${accent};border-radius:5px;position:relative">
+            <div style="width:14px;height:14px;background:#3b6dff;border-radius:3px;margin:5px 0 0 5px"></div>
+          </td>
+          <td style="padding-left:10px;font-size:16px;font-weight:600;letter-spacing:-0.01em;color:#0a0a0a;font-family:${FONT_STACK}">efface</td>
+        </tr></table>
+      </td>
+      <td align="right" style="vertical-align:middle;font-size:10px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:0.18em;text-transform:uppercase;color:#737373">
+        ${eyebrow}
+      </td>
+    </tr>
+  </table>
+  <div style="height:28px"></div>
+</td></tr>`;
+}
+
+function fieldRow(label: string, value: string): string {
+  return `
+<tr>
+  <td style="padding:14px 0;border-bottom:1px solid #f5f5f5;font-family:${FONT_STACK}">
+    <div style="font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:0.18em;text-transform:uppercase;color:#a3a3a3;margin-bottom:4px">${label}</div>
+    <div style="font-size:14px;color:#0a0a0a;line-height:1.5;word-break:break-word">${value}</div>
+  </td>
+</tr>`;
+}
+
 function adminEmailHtml(opts: {
   ticketId: string;
   name: string;
@@ -160,23 +227,47 @@ function adminEmailHtml(opts: {
   references: string;
   description: string;
 }) {
-  const r = (label: string, value: string) =>
-    `<tr><td style="padding:8px 12px;border:1px solid #e5e5e5;background:#fafafa;width:120px;font-weight:600">${label}</td><td style="padding:8px 12px;border:1px solid #e5e5e5">${value}</td></tr>`;
-  return `
-    <div style="font-family:system-ui,-apple-system,sans-serif;line-height:1.6;color:#0a0a0a;max-width:560px">
-      <h2 style="margin:0 0 16px">새 프로젝트 신청 · #${escape(opts.ticketId)}</h2>
-      <table style="width:100%;border-collapse:collapse;font-size:14px"><tbody>
-        ${r("이름", escape(opts.name))}
-        ${r("이메일", `<a href="mailto:${escape(opts.email)}">${escape(opts.email)}</a>`)}
-        ${r("연락처", escape(opts.phone))}
-        ${r("서비스", escape(opts.serviceLabel))}
-        ${r("예산", escape(opts.budgetLabel))}
-        ${r("희망 마감", escape(opts.deadline || "-"))}
-        ${r("참고 자료", opts.references ? escape(opts.references) : "-")}
-        ${r("설명", `<div style="white-space:pre-wrap">${escape(opts.description)}</div>`)}
-      </tbody></table>
-    </div>
-  `;
+  const body = `
+${emailHeader("New inquiry")}
+<tr><td style="padding:24px 32px 8px">
+  <div style="font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:0.2em;text-transform:uppercase;color:#737373;margin-bottom:8px">접수 번호 · #${escape(opts.ticketId)}</div>
+  <h1 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.01em;color:#0a0a0a;font-family:${FONT_STACK};line-height:1.3">
+    새 프로젝트 신청
+  </h1>
+  <p style="margin:8px 0 0;font-size:14px;color:#525252;line-height:1.6;font-family:${FONT_STACK}">
+    ${escape(opts.name)}님이 견적 문의를 보내셨어요.
+  </p>
+</td></tr>
+
+<tr><td style="padding:16px 32px 4px">
+  <a href="mailto:${escape(opts.email)}?subject=Re:%20[%23${escape(opts.ticketId)}]%20${encodeURIComponent(opts.name)}%20%C2%B7%20${encodeURIComponent(opts.serviceLabel)}" style="display:inline-block;background:#0a0a0a;color:#ffffff;text-decoration:none;font-size:14px;font-weight:500;padding:11px 18px;border-radius:8px;font-family:${FONT_STACK}">
+    ↩ ${escape(opts.name)}님께 답장하기
+  </a>
+</td></tr>
+
+<tr><td style="padding:24px 32px 8px">
+  <div style="font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:0.2em;text-transform:uppercase;color:#737373;margin-bottom:4px">연락처</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    ${fieldRow("이메일", `<a href="mailto:${escape(opts.email)}" style="color:#2563eb;text-decoration:none">${escape(opts.email)}</a>`)}
+    ${fieldRow("연락처", `<a href="tel:${escape(opts.phone)}" style="color:#0a0a0a;text-decoration:none">${escape(opts.phone)}</a>`)}
+  </table>
+</td></tr>
+
+<tr><td style="padding:24px 32px 8px">
+  <div style="font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:0.2em;text-transform:uppercase;color:#737373;margin-bottom:4px">프로젝트</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    ${fieldRow("서비스", escape(opts.serviceLabel))}
+    ${fieldRow("예산", escape(opts.budgetLabel))}
+    ${fieldRow("희망 마감", escape(opts.deadline || "-"))}
+    ${fieldRow("참고 자료", opts.references ? escape(opts.references) : '<span style="color:#a3a3a3">-</span>')}
+  </table>
+</td></tr>
+
+<tr><td style="padding:24px 32px 32px">
+  <div style="font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:0.2em;text-transform:uppercase;color:#737373;margin-bottom:10px">프로젝트 설명</div>
+  <div style="background:#fafafa;border:1px solid #f0f0f0;border-radius:10px;padding:18px 20px;font-size:14px;color:#0a0a0a;line-height:1.7;white-space:pre-wrap;font-family:${FONT_STACK};word-break:break-word">${escape(opts.description)}</div>
+</td></tr>`;
+  return emailShell(body);
 }
 
 function clientEmailHtml(opts: {
@@ -188,73 +279,114 @@ function clientEmailHtml(opts: {
   locale: Locale;
 }) {
   const ko = opts.locale === "ko";
-  const r = (label: string, value: string) =>
-    `<tr><td style="padding:8px 12px;border:1px solid #e5e5e5;background:#fafafa;width:120px;font-weight:600">${label}</td><td style="padding:8px 12px;border:1px solid #e5e5e5">${value}</td></tr>`;
-
   const T = ko
     ? {
-        title: "신청이 정상 접수되었습니다.",
-        body1: (n: string) => `${escape(n)}님, 보내주신 프로젝트 의뢰를 잘 받았습니다.`,
-        body2: "아래 단계로 처리되며, <strong>1영업일 내</strong> 본 메일로 회신 드리겠습니다.",
+        eyebrow: "Received",
+        title: "신청을 잘 받았습니다.",
+        greeting: (n: string) => `${escape(n)}님, 보내주신 프로젝트 의뢰가 정상 접수되었어요. 1영업일 안에 회신 드릴게요.`,
         ticketLabel: "접수 번호",
-        stepsTitle: "처리 단계",
+        stepsTitle: "진행 단계",
         steps: [
-          "<strong>접수</strong> · 완료 ✓",
-          "<strong>1차 검토</strong> · 24시간 이내",
-          "<strong>견적 및 일정 회신</strong>",
-          "<strong>킥오프 미팅 일정 조율</strong>",
+          { label: "접수 완료", state: "done" as const },
+          { label: "1차 검토 · 24시간 이내", state: "current" as const },
+          { label: "견적 · 일정 회신", state: "upcoming" as const },
+          { label: "킥오프 미팅 일정 조율", state: "upcoming" as const },
         ],
-        summaryTitle: "신청 내용 요약",
+        summaryTitle: "신청 내용",
         service: "서비스",
         budget: "예산",
         deadline: "희망 마감",
-        footer:
-          "추가로 보내주실 자료(와이어프레임, 레퍼런스, 브랜드 가이드 등)가 있다면 본 메일에 회신해 주세요.<br/>의뢰 진행 여부와 무관하게 보내주신 정보는 처리 완료 후 1년 뒤 안전하게 폐기됩니다.",
+        replyTitle: "추가로 보낼 자료가 있나요?",
+        replyBody:
+          "와이어프레임, 레퍼런스, 브랜드 가이드 등이 있다면 본 메일에 회신해 주세요. 의뢰 진행 여부와 무관하게 받은 정보는 처리 완료 후 1년 뒤 안전하게 폐기합니다.",
       }
     : {
-        title: "Your inquiry has been received.",
-        body1: (n: string) => `${escape(n)}, thanks for sending your project details.`,
-        body2: "Here are the steps. We will reply within <strong>1 business day</strong>.",
+        eyebrow: "Received",
+        title: "We received your inquiry.",
+        greeting: (n: string) => `${escape(n)}, thanks for sending the details. We'll reply within 1 business day.`,
         ticketLabel: "Ticket",
         stepsTitle: "Process",
         steps: [
-          "<strong>Received</strong> · done ✓",
-          "<strong>First review</strong> · within 24 hours",
-          "<strong>Quote and timeline reply</strong>",
-          "<strong>Kickoff meeting scheduling</strong>",
+          { label: "Received", state: "done" as const },
+          { label: "First review · within 24 hours", state: "current" as const },
+          { label: "Quote & timeline reply", state: "upcoming" as const },
+          { label: "Kickoff meeting scheduling", state: "upcoming" as const },
         ],
         summaryTitle: "Summary",
         service: "Service",
         budget: "Budget",
         deadline: "Deadline",
-        footer:
-          "If you have more assets to share (wireframes, references, brand guide), feel free to reply to this email.<br/>Whether or not you proceed, the data you sent is securely deleted 1 year after the project closes.",
+        replyTitle: "Anything else to send?",
+        replyBody:
+          "Wireframes, references, brand guides — just reply to this email. Whether or not you proceed, the data is securely deleted 1 year after the project closes.",
       };
 
-  return `
-    <div style="font-family:system-ui,-apple-system,sans-serif;line-height:1.7;color:#0a0a0a;max-width:560px;padding:24px">
-      <h2 style="margin:0 0 8px;font-size:22px">${T.title}</h2>
-      <p style="color:#525252;margin:0 0 24px">
-        ${T.body1(opts.name)}<br/>
-        ${T.body2}
-      </p>
-      <div style="background:#fafafa;border:1px solid #e5e5e5;border-radius:12px;padding:16px 20px;margin-bottom:24px;font-size:14px">
-        <div style="color:#737373;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">${T.ticketLabel}</div>
-        <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:16px;font-weight:600">#${escape(opts.ticketId)}</div>
-      </div>
-      <h3 style="margin:0 0 12px;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;color:#737373">${T.stepsTitle}</h3>
-      <ol style="margin:0 0 24px;padding-left:18px;color:#0a0a0a">
-        ${T.steps.map((s) => `<li style="margin-bottom:6px">${s}</li>`).join("")}
-      </ol>
-      <h3 style="margin:0 0 12px;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;color:#737373">${T.summaryTitle}</h3>
-      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px"><tbody>
-        ${r(T.service, escape(opts.serviceLabel))}
-        ${r(T.budget, escape(opts.budgetLabel))}
-        ${r(T.deadline, escape(opts.deadline || "-"))}
-      </tbody></table>
-      <p style="color:#525252;font-size:13px;margin:24px 0 0">${T.footer}</p>
-    </div>
-  `;
+  const stepRow = (s: { label: string; state: "done" | "current" | "upcoming" }, idx: number) => {
+    const dot =
+      s.state === "done"
+        ? `<td style="width:24px;vertical-align:top;padding-top:2px"><div style="width:18px;height:18px;background:#16a34a;border-radius:50%;color:#ffffff;font-size:11px;text-align:center;line-height:18px;font-weight:700">✓</div></td>`
+        : s.state === "current"
+        ? `<td style="width:24px;vertical-align:top;padding-top:2px"><div style="width:16px;height:16px;border:2px solid #0a0a0a;border-radius:50%;color:#0a0a0a;font-size:10px;text-align:center;line-height:14px;font-family:ui-monospace,monospace;font-weight:600">${idx + 1}</div></td>`
+        : `<td style="width:24px;vertical-align:top;padding-top:2px"><div style="width:16px;height:16px;border:1px solid #e5e5e5;border-radius:50%;color:#a3a3a3;font-size:10px;text-align:center;line-height:14px;font-family:ui-monospace,monospace">${idx + 1}</div></td>`;
+    const text =
+      s.state === "done"
+        ? `<span style="color:#a3a3a3;text-decoration:line-through">${s.label}</span>`
+        : s.state === "current"
+        ? `<strong style="color:#0a0a0a;font-weight:600">${s.label}</strong>`
+        : `<span style="color:#737373">${s.label}</span>`;
+    return `<tr>${dot}<td style="padding:6px 0 6px 10px;font-size:14px;line-height:1.5;font-family:${FONT_STACK}">${text}</td></tr>`;
+  };
+
+  const body = `
+${emailHeader(T.eyebrow, "#0a0a0a")}
+
+<tr><td style="padding:32px 32px 0;text-align:center">
+  <div style="display:inline-block;width:56px;height:56px;background:#dcfce7;border-radius:50%;line-height:56px;font-size:28px;color:#16a34a;font-weight:700">✓</div>
+</td></tr>
+
+<tr><td style="padding:18px 32px 8px;text-align:center">
+  <h1 style="margin:0 0 8px;font-size:24px;font-weight:600;letter-spacing:-0.01em;color:#0a0a0a;font-family:${FONT_STACK};line-height:1.3">
+    ${T.title}
+  </h1>
+  <p style="margin:0;font-size:14px;color:#525252;line-height:1.7;font-family:${FONT_STACK};max-width:420px;margin-left:auto;margin-right:auto">
+    ${T.greeting(opts.name)}
+  </p>
+</td></tr>
+
+<tr><td style="padding:24px 32px 8px" align="center">
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="background:#fafafa;border:1px solid #f0f0f0;border-radius:12px;padding:14px 22px">
+    <tr>
+      <td align="center" style="font-size:10px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:0.25em;text-transform:uppercase;color:#a3a3a3;padding-bottom:4px">${T.ticketLabel}</td>
+    </tr>
+    <tr>
+      <td align="center" style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:18px;font-weight:600;color:#0a0a0a;letter-spacing:0.05em">#${escape(opts.ticketId)}</td>
+    </tr>
+  </table>
+</td></tr>
+
+<tr><td style="padding:32px 32px 8px">
+  <div style="font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:0.2em;text-transform:uppercase;color:#737373;margin-bottom:14px;text-align:center">${T.stepsTitle}</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:380px;margin:0 auto">
+    ${T.steps.map(stepRow).join("")}
+  </table>
+</td></tr>
+
+<tr><td style="padding:28px 32px 8px">
+  <div style="font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:0.2em;text-transform:uppercase;color:#737373;margin-bottom:4px">${T.summaryTitle}</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    ${fieldRow(T.service, escape(opts.serviceLabel))}
+    ${fieldRow(T.budget, escape(opts.budgetLabel))}
+    ${fieldRow(T.deadline, opts.deadline ? escape(opts.deadline) : '<span style="color:#a3a3a3">-</span>')}
+  </table>
+</td></tr>
+
+<tr><td style="padding:24px 32px 32px">
+  <div style="background:#fafafa;border-left:3px solid #0a0a0a;border-radius:0 8px 8px 0;padding:14px 18px;font-family:${FONT_STACK}">
+    <div style="font-size:13px;font-weight:600;color:#0a0a0a;margin-bottom:4px">${T.replyTitle}</div>
+    <div style="font-size:13px;color:#525252;line-height:1.6">${T.replyBody}</div>
+  </div>
+</td></tr>`;
+  return emailShell(body);
 }
 
 // ─── Main handler ─────────────────────────────────────────────────────────
