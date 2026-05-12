@@ -1,33 +1,33 @@
 import ApplyForm from "@/components/ApplyForm";
 import { Clock, FileText, Sparkles, Shield } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "프로젝트 신청 — efface",
-  description: "프로젝트 정보를 보내주세요. 1영업일 내 회신드립니다.",
-};
+const icons = [FileText, Clock, Sparkles, Shield];
 
-const steps = [
-  {
-    icon: FileText,
-    title: "신청서 제출",
-    desc: "양식을 채워서 보내주세요. 평균 5분 소요.",
-  },
-  {
-    icon: Clock,
-    title: "1영업일 내 회신",
-    desc: "접수 즉시 자동 회신 메일, 1차 검토 후 24시간 내 답변.",
-  },
-  {
-    icon: Sparkles,
-    title: "맞춤 견적·일정",
-    desc: "내용을 검토해 정확한 견적과 일정 초안을 보내드려요.",
-  },
-];
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Meta" });
+  return {
+    title: t("applyTitle"),
+    description: t("applyDescription"),
+  };
+}
 
-export default function ApplyPage() {
+export default async function ApplyPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Apply.page" });
+  const tHero = await getTranslations({ locale, namespace: "Hero" });
+  const tCommon = await getTranslations({ locale });
+
+  const steps = t.raw("steps") as { title: string; desc: string }[];
+
   return (
     <section className="relative overflow-hidden">
-      {/* Background blobs */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
@@ -49,7 +49,6 @@ export default function ApplyPage() {
       </div>
 
       <div className="max-w-[1200px] mx-auto px-5 md:px-8 pt-24 md:pt-32 pb-24">
-        {/* Hero */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 mb-16 md:mb-20">
           <div className="lg:col-span-7">
             <div className="inline-flex items-center gap-2 h-7 pl-2 pr-3 rounded-full border border-[var(--color-line)] bg-white text-xs mb-6">
@@ -57,43 +56,44 @@ export default function ApplyPage() {
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-70" />
               </span>
-              <span className="text-[var(--color-muted)]">지금 신규 프로젝트 모집 중</span>
+              <span className="text-[var(--color-muted)]">{tHero("badge")}</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-semibold tracking-tight leading-[1.05]">
-              프로젝트
+              {t("eyebrow")}
               <br />
-              <span className="text-[var(--color-muted)]">시작하기.</span>
+              <span className="text-[var(--color-muted)]">{t("heading")}</span>
             </h1>
             <p className="mt-7 text-base md:text-lg text-[var(--color-muted)] leading-relaxed max-w-xl">
-              아래 양식을 작성해 주시면 1영업일 내 입력하신 이메일로 회신드립니다.
-              구체적인 내용이 정해지지 않았더라도 괜찮습니다 — 상담 단계에서 함께 정리해 드릴게요.
+              {t("subheading")}
             </p>
           </div>
 
           <div className="lg:col-span-5 space-y-3">
-            {steps.map(({ icon: Icon, title, desc }, i) => (
-              <div
-                key={title}
-                className="group flex items-start gap-4 p-5 rounded-2xl border border-[var(--color-line)] bg-white/60 backdrop-blur-sm hover:border-[var(--color-ink)] transition"
-              >
-                <div className="shrink-0 w-9 h-9 rounded-lg bg-[var(--color-paper-2)] flex items-center justify-center group-hover:bg-[var(--color-ink)] group-hover:text-white transition-colors">
-                  <Icon size={16} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-[10px] tracking-[0.2em] text-[var(--color-muted)] font-mono uppercase">
-                      Step {String(i + 1).padStart(2, "0")}
-                    </span>
+            {steps.map((step, i) => {
+              const Icon = icons[i] ?? FileText;
+              return (
+                <div
+                  key={step.title}
+                  className="group flex items-start gap-4 p-5 rounded-2xl border border-[var(--color-line)] bg-white/60 backdrop-blur-sm hover:border-[var(--color-ink)] transition"
+                >
+                  <div className="shrink-0 w-9 h-9 rounded-lg bg-[var(--color-paper-2)] flex items-center justify-center group-hover:bg-[var(--color-ink)] group-hover:text-white transition-colors">
+                    <Icon size={16} />
                   </div>
-                  <h3 className="text-sm font-semibold mb-1">{title}</h3>
-                  <p className="text-xs text-[var(--color-muted)] leading-relaxed">{desc}</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="text-[10px] tracking-[0.2em] text-[var(--color-muted)] font-mono uppercase">
+                        Step {String(i + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+                    <h3 className="text-sm font-semibold mb-1">{step.title}</h3>
+                    <p className="text-xs text-[var(--color-muted)] leading-relaxed">{step.desc}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
-        {/* Form card */}
         <div
           className="relative rounded-3xl bg-white border border-[var(--color-line)] p-7 md:p-12"
           style={{
@@ -111,27 +111,27 @@ export default function ApplyPage() {
           <div className="flex items-center justify-between mb-8 flex-wrap gap-3">
             <div>
               <p className="text-xs font-mono text-[var(--color-muted)] mb-2">{"// form"}</p>
-              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">신청서</h2>
+              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
+                {tCommon("Apply.page.eyebrow")}
+              </h2>
             </div>
             <div className="inline-flex items-center gap-1.5 text-xs text-[var(--color-muted)]">
               <Shield size={12} />
-              SSL 보호 · 처리 후 1년 뒤 자동 폐기
+              {locale === "ko" ? "SSL 보호 · 처리 후 1년 뒤 자동 폐기" : "SSL secured · auto-deleted after 1 year"}
             </div>
           </div>
 
           <ApplyForm />
         </div>
 
-        {/* Footer note */}
         <div className="mt-10 text-center text-xs text-[var(--color-muted)]">
-          신청을 망설이고 계신가요?{" "}
+          {t("footerNote")}{" "}
           <a
             href="mailto:sales@efface.dev"
             className="underline underline-offset-4 hover:text-[var(--color-ink)] transition"
           >
-            sales@efface.dev
+            {t("footerCta")}
           </a>
-          로 가볍게 보내주셔도 됩니다.
         </div>
       </div>
     </section>

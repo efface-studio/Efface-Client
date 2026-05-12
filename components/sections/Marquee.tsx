@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 type Item = {
   name: string;
   /** simple-icons slug (https://simpleicons.org). null → text only. */
@@ -41,13 +43,13 @@ const row2: Item[] = [
   { name: "Anthropic", slug: "anthropic", color: "191919", href: "https://www.anthropic.com" },
 ];
 
-function Chip({ item }: { item: Item }) {
+function Chip({ item, ariaLabelSuffix }: { item: Item; ariaLabelSuffix: string }) {
   return (
     <a
       href={item.href}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`${item.name} 공식 사이트로 이동`}
+      aria-label={`${item.name} — ${ariaLabelSuffix}`}
       className="group relative flex items-center gap-2.5 px-4 h-12 rounded-full bg-white border border-[var(--color-line)] shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 hover:border-[var(--color-ink)]"
     >
       {item.slug ? (
@@ -86,7 +88,7 @@ function Chip({ item }: { item: Item }) {
   );
 }
 
-function Row({ items, direction = "left" }: { items: Item[]; direction?: "left" | "right" }) {
+function Row({ items, direction = "left", ariaLabelSuffix }: { items: Item[]; direction?: "left" | "right"; ariaLabelSuffix: string }) {
   const list = [...items, ...items];
   return (
     <div className="relative overflow-hidden">
@@ -106,8 +108,8 @@ function Row({ items, direction = "left" }: { items: Item[]; direction?: "left" 
           animation: `${direction === "left" ? "marquee" : "marquee-reverse"} 22s linear infinite`,
         }}
       >
-        {list.map((t, i) => (
-          <Chip key={`${direction}-${i}`} item={t} />
+        {list.map((it, i) => (
+          <Chip key={`${direction}-${i}`} item={it} ariaLabelSuffix={ariaLabelSuffix} />
         ))}
       </div>
     </div>
@@ -115,10 +117,10 @@ function Row({ items, direction = "left" }: { items: Item[]; direction?: "left" 
 }
 
 export default function Marquee() {
+  const t = useTranslations("Marquee");
   const total = row1.length + row2.length;
   return (
-    <section className="relative border-b border-[var(--color-line)] bg-[var(--color-paper-2)] py-16 md:py-20 overflow-hidden">
-      {/* subtle background accent */}
+    <section id="stack" className="relative border-b border-[var(--color-line)] bg-[var(--color-paper-2)] py-16 md:py-20 overflow-hidden">
       <div
         aria-hidden
         className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[200px] pointer-events-none opacity-50"
@@ -128,14 +130,13 @@ export default function Marquee() {
         }}
       />
 
-      {/* Header */}
       <div className="relative max-w-[1200px] mx-auto px-5 md:px-8 mb-10 md:mb-12 flex items-end justify-between gap-6 flex-wrap">
         <div>
           <p className="text-xs font-mono text-[var(--color-muted)] mb-3">{"// stack"}</p>
           <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
-            모든 프로젝트에 같은 기준,
+            {t("heading1")}
             <br />
-            <span className="text-[var(--color-muted)]">검증된 기술만 씁니다.</span>
+            <span className="text-[var(--color-muted)]">{t("heading2")}</span>
           </h2>
         </div>
         <div className="flex items-center gap-6 text-sm">
@@ -143,25 +144,25 @@ export default function Marquee() {
             <div className="text-2xl md:text-3xl font-semibold tabular-nums tracking-tight">
               {total}
             </div>
-            <div className="text-xs text-[var(--color-muted)] uppercase tracking-wider mt-1">tools</div>
+            <div className="text-xs text-[var(--color-muted)] uppercase tracking-wider mt-1">{t("tools")}</div>
           </div>
           <div className="w-px h-8 bg-[var(--color-line)]" />
           <div>
             <div className="text-2xl md:text-3xl font-semibold tabular-nums tracking-tight">
               5<span className="text-base text-[var(--color-muted)] font-normal">+</span>
             </div>
-            <div className="text-xs text-[var(--color-muted)] uppercase tracking-wider mt-1">years</div>
+            <div className="text-xs text-[var(--color-muted)] uppercase tracking-wider mt-1">{t("years")}</div>
           </div>
         </div>
       </div>
 
       <div className="space-y-3">
-        <Row items={row1} direction="left" />
-        <Row items={row2} direction="right" />
+        <Row items={row1} direction="left" ariaLabelSuffix={t("officialSite")} />
+        <Row items={row2} direction="right" ariaLabelSuffix={t("officialSite")} />
       </div>
 
       <p className="relative max-w-[1200px] mx-auto px-5 md:px-8 mt-10 md:mt-12 text-xs text-[var(--color-muted)] font-mono">
-        — 클라이언트가 추후 직접 운영할 수 있도록, 표준 도구만 사용합니다.
+        {t("footnote")}
       </p>
     </section>
   );

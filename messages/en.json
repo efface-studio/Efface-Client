@@ -1,0 +1,394 @@
+{
+  "Meta": {
+    "title": "efface — Erase the complexity. Keep the effect.",
+    "description": "A solo web studio shipping landing pages, e-commerce, internal tools, and AI-powered sites — end to end, in 1–3 weeks.",
+    "applyTitle": "Get a Quote — efface",
+    "applyDescription": "Tell us about your project. We reply within one business day."
+  },
+  "Header": {
+    "navServices": "Services",
+    "navWork": "Work",
+    "navStack": "Stack",
+    "navPricing": "Pricing",
+    "navFaq": "FAQ",
+    "applyCta": "Get a quote",
+    "kakaoAria": "KakaoTalk channel"
+  },
+  "Footer": {
+    "tagline": "Websites built fast and clean — landing pages, e-commerce, internal tools, AI sites. A solo studio that takes a project from idea to launch, end to end.",
+    "ceoLabel": "Founder",
+    "ceoName": "Seojiwan Suh",
+    "sectionSitemap": "Sitemap",
+    "sectionChannels": "Channels",
+    "sitemap": {
+      "services": "Services",
+      "work": "Work",
+      "stack": "Stack",
+      "pricing": "Pricing",
+      "process": "Process",
+      "faq": "FAQ",
+      "apply": "Get a quote"
+    },
+    "contactLabels": {
+      "project": "Projects",
+      "general": "General",
+      "support": "Support"
+    },
+    "channels": {
+      "kakao": "KakaoTalk",
+      "github": "GitHub"
+    },
+    "copyright": "© {year} efface. All rights reserved.",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
+  "Hero": {
+    "badge": "Now booking Q3 2026 projects",
+    "headingLine1": "Web projects,",
+    "headingLine2": "delivered cleanly.",
+    "subheading": "Landing pages, e-commerce, internal tools — planned, designed, and built by one person, end to end. A solo web studio.",
+    "bullets": [
+      "Reply within 1 business day · 24-hour weekday response",
+      "Solid Next.js code, smooth handover guaranteed",
+      "50% upfront / 50% on delivery · tax invoice available"
+    ],
+    "ctaPrimary": "Get a free quote",
+    "ctaSecondary": "See our work",
+    "social": "50+ projects shipped · avg 4.9 / 5.0 rating",
+    "terminal": {
+      "comment": "What you get when you hire us",
+      "type": "Next.js 15 + TypeScript",
+      "design": "Figma · Tailwind CSS",
+      "deploy": "Vercel · domain setup included",
+      "timeline": "1–3 weeks",
+      "repo": "GitHub ownership transfer",
+      "docs": "README · operations guide",
+      "support": "1 month free maintenance",
+      "status": "ready to ship"
+    }
+  },
+  "Stats": {
+    "items": [
+      "Projects shipped",
+      "Avg rating",
+      "Repeat client rate",
+      "Avg reply time (weekday)"
+    ]
+  },
+  "Manifesto": {
+    "heading": "The doubts clients have about outsourcing —\naddressed up front.",
+    "items": [
+      {
+        "title": "Fast response, fast start",
+        "desc": "Reply within 1 business day. Once the quote is confirmed, work starts in ~3 days on average."
+      },
+      {
+        "title": "Code built for handover",
+        "desc": "TypeScript · consistent conventions · README + operations guide. Any developer can pick it up without friction."
+      },
+      {
+        "title": "We finish what we start",
+        "desc": "Domain, deployment, and monitoring set up by us. 1 month of free maintenance after delivery."
+      },
+      {
+        "title": "Solo, so it's fast",
+        "desc": "Planning, design, dev, and deploy all by one person — less communication overhead, tighter timelines."
+      }
+    ]
+  },
+  "Services": {
+    "heading": "What kind of site do you need?",
+    "subheading": "Six common project types we ship. Happy to discuss anything else — just ask.",
+    "periodLabel": "Duration",
+    "fromLabel": "Starts at",
+    "items": [
+      { "title": "Landing page", "desc": "Product launches, campaigns, hiring pages, and more.", "period": "1–2 weeks", "from": "USD 270" },
+      { "title": "Company / brand site", "desc": "About, portfolio, careers — multi-page sites with depth.", "period": "2–3 weeks", "from": "USD 700" },
+      { "title": "E-commerce", "desc": "Payments, inventory, and order management — ready to run yourself.", "period": "3–5 weeks", "from": "USD 1,400" },
+      { "title": "Internal tools / web apps", "desc": "Data-driven services, admin panels, dashboards.", "period": "3+ weeks", "from": "USD 1,200" },
+      { "title": "Mobile invitations", "desc": "Weddings, events, and other invitation pages — mobile-first.", "period": "1–3 days", "from": "USD 40" },
+      { "title": "Site refresh", "desc": "Migrations, redesigns, and feature additions for existing sites.", "period": "Scope-based", "from": "Custom" }
+    ]
+  },
+  "Marquee": {
+    "heading1": "Same standards for every project —",
+    "heading2": "battle-tested tools only.",
+    "tools": "tools",
+    "years": "years",
+    "footnote": "— We use standard tools so clients can run things themselves later.",
+    "officialSite": "Open official site"
+  },
+  "Pricing": {
+    "heading": "Rough pricing.",
+    "subheading": "Real quotes depend on page count, features, and design scope. The numbers below are starting points — we'll send an exact quote when you apply.",
+    "fromSuffix": "from",
+    "durationLabel": "Duration",
+    "popular": "Most chosen",
+    "footnote": "All prices exclude VAT. Domain, third-party APIs, and paid fonts are billed separately.",
+    "tiers": [
+      {
+        "name": "Starter",
+        "desc": "Landing page · single-page site",
+        "price": "USD 270",
+        "period": "from",
+        "weeks": "1–2 weeks",
+        "feats": [
+          "Responsive single page",
+          "Basic SEO · OG tags",
+          "Vercel deploy · domain hookup",
+          "1 design review round",
+          "1 month free maintenance"
+        ],
+        "cta": "Ask about Starter"
+      },
+      {
+        "name": "Standard",
+        "desc": "Company / brand site · 5–10 pages",
+        "price": "USD 700",
+        "period": "from",
+        "weeks": "2–3 weeks",
+        "feats": [
+          "5–10 pages",
+          "CMS integration option",
+          "Multilingual option",
+          "Google Analytics · GTM",
+          "2 design review rounds",
+          "1 month free maintenance"
+        ],
+        "cta": "Ask about Standard"
+      },
+      {
+        "name": "Custom",
+        "desc": "E-commerce · web apps · admin tools",
+        "price": "Custom",
+        "period": "scope-based",
+        "weeks": "3+ weeks",
+        "feats": [
+          "Payments · auth · accounts",
+          "Database · API integration",
+          "Admin · dashboards",
+          "Monthly maintenance option",
+          "Long-term collaboration"
+        ],
+        "cta": "Talk to us"
+      }
+    ]
+  },
+  "WorkPage": {
+    "metaRole": "Role",
+    "metaPlatform": "Platform",
+    "metaYear": "Year",
+    "metaClient": "Client",
+    "stack": "Stack",
+    "liveVisit": "Visit live site",
+    "demoTry": "Open demo",
+    "nextLabel": "Next",
+    "startSimilar": "Start a similar project"
+  },
+  "Portfolio": {
+    "demoLinkLabel": "Open demo site",
+    "sectionHeading": "Sites we've actually built.",
+    "sectionSubheading": "Live projects and case studies by category. Tap a card to see details.",
+    "escHint1": "Press",
+    "escHint2": "to exit fullscreen.",
+    "close": "Close",
+    "caseStudyLink": "Case study page",
+    "liveVisit": "Visit live site",
+    "demoTry": "Open demo",
+    "items": [
+      { "slug": "TEAMHARIBO", "title": "Team branding site", "category": "Team site · Branding", "role": "Strategy · Design · Dev", "platform": "Web", "summary": "Colorful single-page site that captures the team's identity.", "description": "A single-page site introducing the team and their activities.\nMember colors are visualized as gradient badges, conveying the team's diversity. Deployed as a fast static site on Vercel.", "headline": "Built around the team's identity." },
+      { "slug": "NEST", "title": "Internal ops admin", "category": "Internal tools · Admin", "role": "Product Design · Full-stack Dev", "platform": "Web", "summary": "An admin web app that runs the whole ops dashboard from one screen.", "description": "Users, schedules, work logs, meeting notes, approvals, expenses — all the data ops needs in one place.\nIncludes a preview mode you can browse without login, plus role-based access control, fast search, and snappy routing.", "headline": "One screen for the whole operation." },
+      { "slug": "ROCKETSTORE", "title": "Korean-style e-commerce demo", "category": "E-commerce", "role": "Strategy · Design · Dev", "platform": "Web · Responsive", "summary": "A Korean-style e-commerce demo with a Coupang/Musinsa feel.", "description": "An e-commerce demo built around patterns familiar to Korean shoppers.\nIt ships with category/best/new/deal routing, product detail, a cart drawer, and search — all the flow of a production-ready store.", "headline": "From discovery to checkout, in one flow." },
+      { "slug": "MAISONNOIR", "title": "Fine-dining restaurant site", "category": "Restaurant · Fine Dining", "role": "Design · Dev", "platform": "Web", "summary": "A classic restaurant site in the spirit of Eleven Madison Park.", "description": "Large serif type and restrained photography set the mood for a fine-dining site.\nIncludes menu, reservations, private events, gift cards, and a journal — everything an operating restaurant needs.", "headline": "A reservation, set in serif." },
+      { "slug": "SARANG", "title": "General hospital portal", "category": "Hospital · Healthcare Portal", "role": "Strategy · Design · Dev", "platform": "Web", "summary": "A general-hospital portal modeled after Asan Medical Center.", "description": "A demo motivated by the information density and trust-building tone of Korean general hospital portals.\nShips with 6 main subpages (about · departments · doctors · checkup · reservation · support) and a 4-step booking form ready to run.", "headline": "Care, organised at a glance." },
+      { "slug": "WEDDING", "title": "Mobile wedding invitation", "category": "Mobile · Events", "role": "Design · Dev", "platform": "Mobile", "summary": "A mobile wedding invitation in the Mocheong/KakaoTalk style.", "description": "A mobile wedding invitation that fits in a single scroll.\nFull-bleed hero, D-day countdown, lightbox gallery, account accordion, location, and guestbook — every flow you'd actually use.", "headline": "Their day, in everyone's pocket." }
+    ]
+  },
+  "PriceEstimator": {
+    "comment": "// estimate",
+    "headingLine1": "Not sure",
+    "headingLine2": "what it'll cost?",
+    "subheading": "Pick a project type and rough size. Real quotes come after we talk — this is just a starting point.",
+    "estimateLabel": "Estimated price",
+    "realtime": "Live calc",
+    "currencyUnit": "K KRW",
+    "durationLabel": "Estimated {lo}–{hi} weeks",
+    "base": "Base",
+    "extraPages": "Extra pages × {n}",
+    "extraFeatures": "Add-on features × {n}",
+    "applyCta": "Apply with this spec",
+    "siteType": "Site type",
+    "pageCount": "Pages",
+    "addons": "Add-on features",
+    "selected": "{n} selected",
+    "services": [
+      { "key": "landing", "label": "Landing page" },
+      { "key": "brand", "label": "Company / brand" },
+      { "key": "shop", "label": "E-commerce" },
+      { "key": "webapp", "label": "Web app / admin" }
+    ],
+    "features": [
+      { "key": "auth", "label": "Sign-up · auth" },
+      { "key": "payment", "label": "Payments (Toss/PortOne)" },
+      { "key": "i18n", "label": "Multilingual (KR/EN)" },
+      { "key": "cms", "label": "CMS / admin" },
+      { "key": "search", "label": "Search · filters" },
+      { "key": "ai", "label": "AI integration" }
+    ]
+  },
+  "Process": {
+    "heading": "From inquiry to delivery —\nin 4 clean steps.",
+    "subheading": "2–4 weeks on average. We tell you exactly what you'll receive at each step.",
+    "deliverableLabel": "Deliverable",
+    "steps": [
+      { "title": "Inquiry", "desc": "Send your project details. We reply within 1 business day.", "out": "Initial quote · timeline draft", "days": "1–2 days" },
+      { "title": "Scope & contract", "desc": "Once scope, features, and timeline are confirmed — contract sent, 50% upfront.", "out": "Final quote · contract", "days": "1–2 days" },
+      { "title": "Design & build", "desc": "Figma review, then build. Weekly staging previews so you see progress.", "out": "Weekly demo links", "days": "1–3 weeks" },
+      { "title": "Launch & handover", "desc": "Domain, deployment, and ops guide. Final 50% on delivery.", "out": "GitHub · ops docs · 1 month maintenance", "days": "1–2 days" }
+    ]
+  },
+  "FAQ": {
+    "heading": "Frequently asked questions.",
+    "subheading": "Not finding what you need? Add it to the application form — we'll cover the rest in our intro call.",
+    "items": [
+      { "q": "How long does a project take?", "a": "Landing pages 1–2 weeks, company sites 2–3 weeks, e-commerce/web apps 3+ weeks depending on scope. You'll get an exact timeline with the first reply." },
+      { "q": "How is pricing determined?", "a": "Based on page count, features, and design scope. You'll get an initial quote within 1 business day of submitting the form, then a final quote and contract after we align on scope." },
+      { "q": "How many design review rounds are included?", "a": "Standard includes 2 review rounds. Additional rounds are billed per round. Reasonable revisions within scope are no charge." },
+      { "q": "Who owns the code and rights?", "a": "Full source code and copyright transfer to the client after final payment. GitHub repo ownership is transferred along with it." },
+      { "q": "Do you handle domain and hosting?", "a": "Yes — domain purchase, plus Vercel/Cloudflare/AWS setup. We recommend keeping these accounts in your name so you control the recurring costs." },
+      { "q": "Do you offer post-launch maintenance?", "a": "1 month of free bug fixes after delivery. After that, monthly retainers or per-issue support are both available." },
+      { "q": "How does payment work?", "a": "50% upfront, 50% on delivery. Tax invoices available. Projects over USD 2,000 can be split into 3 payments by agreement." },
+      { "q": "Can you redesign an existing site?", "a": "Yes. We review the existing code first and decide together whether migration or a fresh build is the right path." }
+    ]
+  },
+  "Testimonials": {
+    "heading": "What clients actually said.",
+    "privacyBadge": "Privacy first",
+    "privacyNote": "Names and company names are masked.",
+    "items": [
+      { "quote": "Nailed the tone I'd only vaguely described. Hardly any design ping-pong.", "metric": "3.2× inquiries in launch month", "author": "M. Kim", "role": "Marketing Director", "company": "Hi-vits Inc." },
+      { "quote": "Handover was incredibly clean. Our in-house dev took over and ran with it immediately.", "metric": "70% lower maintenance cost", "author": "J. Lee", "role": "CTO", "company": "Nest" },
+      { "quote": "I was worried about a solo dev, but decisions were fast and the polish was there.", "metric": "Shipped 1 week ahead", "author": "S. Park", "role": "Founder", "company": "Maison Noir" },
+      { "quote": "Pulled the essentials together in a single planning meeting — kept everything on schedule.", "metric": "Kickoff → designs in 5 days", "author": "J. Jung", "role": "Product Owner", "company": "Rocket Studios" },
+      { "quote": "Payments and account integrations were handled end-to-end — almost no work for ops at handover.", "metric": "Payment failure rate < 0.4%", "author": "S. Choi", "role": "Ops Manager", "company": "Daol Commerce" },
+      { "quote": "Site feels noticeably faster after the redesign. SEO score climbed too.", "metric": "Lighthouse 92 → 99", "author": "D. Han", "role": "Marketer", "company": "Saerom Lab" },
+      { "quote": "One person for design + dev cut our communication cost in half. Meetings halved.", "metric": "Meetings ↓ 50%", "author": "J. Oh", "role": "Startup Founder", "company": "Onji Inc." },
+      { "quote": "Small post-launch tweaks got fast turnaround. Trust grew — we hired again.", "metric": "Re-hired · 3 projects", "author": "Y. Lim", "role": "Brand Manager", "company": "Boram Studio" },
+      { "quote": "The internal admin is genuinely usable. Our ops team picked it up day one.", "metric": "Data processing time ↓ 60%", "author": "C. Yoon", "role": "Biz Dev Lead", "company": "Mando Tech" },
+      { "quote": "First time outsourcing — clear progress at each step kept me at ease the whole way.", "metric": "First-time client OK", "author": "M. Song", "role": "Founder", "company": "Pado Studio" }
+    ]
+  },
+  "CTA": {
+    "eyebrow": "Reach out now to",
+    "heading": "Ready to\nstart your project?",
+    "description": "Fill out the form below — we'll reply within 1 business day. Specs not finalized? That's fine. We'll work through them with you in the intro call.",
+    "primary": "Get a free quote",
+    "channelsTitle": "Other ways to reach us",
+    "channels": {
+      "sales": "Project inquiries",
+      "general": "General contact",
+      "kakao": "KakaoTalk channel"
+    },
+    "guarantee": {
+      "reply": "Response time",
+      "replyValue": "Within 24 weekday hours",
+      "location": "Based in",
+      "locationValue": "Seoul, South Korea"
+    }
+  },
+  "Apply": {
+    "page": {
+      "eyebrow": "Project inquiry",
+      "heading": "Tell us about your project.",
+      "subheading": "We reply within one business day. Light questions are welcome — feel free to send a draft.",
+      "steps": [
+        { "title": "Submit the form", "desc": "Fill out the form. Takes about 5 minutes." },
+        { "title": "First review", "desc": "We'll send an initial quote and timeline within 1 business day." },
+        { "title": "Kickoff", "desc": "We align on details, then work begins." },
+        { "title": "NDA-friendly", "desc": "Your data is securely deleted 1 year after the project closes." }
+      ],
+      "footerNote": "Hesitating to apply?",
+      "footerCta": "Send a casual note to sales@efface.dev instead."
+    },
+    "form": {
+      "fields": {
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "deadline": "Desired deadline (optional)",
+        "service": "Service",
+        "budget": "Budget range",
+        "description": "Project description",
+        "references": "Reference URLs (optional)",
+        "attachments": "Attachments (optional)"
+      },
+      "placeholders": {
+        "name": "Your name",
+        "email": "you@example.com",
+        "phone": "+82 10-0000-0000",
+        "deadline": "Pick a date",
+        "selectDefault": "Select…",
+        "description": "What kind of site do you need? Reference sites, key features, scope — anything helps. (min. 20 characters)",
+        "references": "https://… (separate with new lines or commas)"
+      },
+      "attachments": {
+        "hint": "Wireframes · references · brand guides / up to {max} files, 5MB each",
+        "pickButton": "Choose file",
+        "remove": "Remove",
+        "tooLarge": "'{name}' exceeds 5MB."
+      },
+      "agree": "(required) I consent to the collection and use of my personal data (name, email, phone) for the purpose of processing this inquiry. Data is retained for 1 year after closure.",
+      "submit": "Submit",
+      "submitting": "Submitting…",
+      "errors": {
+        "submitFailed": "Submission failed. Please try again in a moment.",
+        "unknown": "Something went wrong.",
+        "nameMin": "Name must be at least 2 characters.",
+        "emailFormat": "Please enter a valid email.",
+        "phoneMin": "Please enter a valid phone number.",
+        "phoneFormat": "Only digits and -, +, space, parentheses are allowed.",
+        "serviceRequired": "Please select a service.",
+        "budgetRequired": "Please select a budget range.",
+        "descriptionMin": "Description must be at least 20 characters.",
+        "agreeRequired": "Please consent to the data policy."
+      },
+      "success": {
+        "heading": "Application received.",
+        "ticketPrefix": "Ticket",
+        "body1": "We'll reply to the email you provided within 1 business day.",
+        "body2": "An acknowledgement email is on its way — please check your inbox."
+      ,
+        "demoTitle": "Auto-generating a demo concept",
+        "demoSub": "Your concept will be ready in 1–2 minutes · Open"
+      },
+      "services": [
+        { "value": "landing", "label": "Landing page" },
+        { "value": "brand", "label": "Company / brand site" },
+        { "value": "shop", "label": "E-commerce" },
+        { "value": "webapp", "label": "Web app / admin" },
+        { "value": "other", "label": "Other" }
+      ],
+      "budgets": [
+        { "value": "u30", "label": "Under USD 220" },
+        { "value": "30-70", "label": "USD 220 – 500" },
+        { "value": "70-150", "label": "USD 500 – 1,100" },
+        { "value": "150-300", "label": "USD 1,100 – 2,200" },
+        { "value": "300p", "label": "USD 2,200+" },
+        { "value": "negotiable", "label": "Open" }
+      ]
+    }
+  },
+  "FloatingCTA": {
+    "bubble": "Contact",
+    "title": "Start a project",
+    "description": "Takes 5 minutes. We reply within one business day.",
+    "primary": "Apply for a project",
+    "kakao": "KakaoTalk chat",
+    "email": "Send email",
+    "secure": "Reply within 1 business day · NDA-friendly"
+  },
+  "LanguageSwitcher": {
+    "ko": "한국어",
+    "en": "English"
+  }
+}

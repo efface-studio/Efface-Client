@@ -3,12 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "motion/react";
 import Reveal from "@/components/Reveal";
+import { useTranslations } from "next-intl";
 
-const stats = [
-  { value: 50, suffix: "+", label: "완료한 프로젝트" },
-  { value: 4.9, suffix: " / 5.0", decimals: 1, label: "평균 만족도" },
-  { value: 62, suffix: "%", label: "재의뢰율" },
-  { value: 3, suffix: "h", label: "평균 회신 시간 (평일)" },
+const statsConfig = [
+  { value: 50, suffix: "+", decimals: 0 },
+  { value: 4.9, suffix: " / 5.0", decimals: 1 },
+  { value: 62, suffix: "%", decimals: 0 },
+  { value: 3, suffix: "h", decimals: 0 },
 ];
 
 function Counter({ to, decimals = 0, suffix = "" }: { to: number; decimals?: number; suffix?: string }) {
@@ -40,18 +41,20 @@ function Counter({ to, decimals = 0, suffix = "" }: { to: number; decimals?: num
 }
 
 export default function Stats() {
+  const t = useTranslations("Stats");
+  const labels = t.raw("items") as string[];
   return (
     <section className="border-b border-[var(--color-line)]">
       <div className="max-w-[1200px] mx-auto px-5 md:px-8 py-16 md:py-20">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4">
-          {stats.map((s, i) => (
-            <Reveal key={s.label} delay={i * 0.05}>
+          {statsConfig.map((s, i) => (
+            <Reveal key={i} delay={i * 0.05}>
               <div className="text-center md:text-left">
                 <motion.div className="text-4xl md:text-6xl font-semibold tracking-tight leading-none mb-3">
                   <Counter to={s.value} decimals={s.decimals} suffix={s.suffix} />
                 </motion.div>
                 <p className="text-xs md:text-sm text-[var(--color-muted)] tracking-wide">
-                  {s.label}
+                  {labels[i]}
                 </p>
               </div>
             </Reveal>

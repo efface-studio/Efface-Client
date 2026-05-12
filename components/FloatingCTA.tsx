@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowUpRight, MessageCircle, X } from "lucide-react";
 
 const KAKAO_URL = process.env.NEXT_PUBLIC_KAKAO_URL || "";
 
 export default function FloatingCTA() {
+  const t = useTranslations("FloatingCTA");
+  const tHero = useTranslations("Hero");
   const [visible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
   const [exitShown, setExitShown] = useState(false);
@@ -65,7 +68,7 @@ export default function FloatingCTA() {
                       <p className="text-xs tracking-[0.2em] uppercase text-[var(--color-muted)] mb-1">
                         Get in touch
                       </p>
-                      <p className="text-sm font-semibold">어떻게 시작할까요?</p>
+                      <p className="text-sm font-semibold">{t("title")}</p>
                     </div>
                     <button
                       onClick={() => setOpen(false)}
@@ -81,7 +84,7 @@ export default function FloatingCTA() {
                       onClick={() => setOpen(false)}
                       className="flex items-center justify-between gap-2 px-3 h-11 rounded-lg bg-[var(--color-ink)] text-white hover:opacity-90 transition text-sm font-medium"
                     >
-                      <span>프로젝트 신청하기</span>
+                      <span>{t("primary")}</span>
                       <ArrowUpRight size={14} />
                     </Link>
                     {KAKAO_URL && (
@@ -91,7 +94,7 @@ export default function FloatingCTA() {
                         rel="noopener noreferrer"
                         className="flex items-center justify-between gap-2 px-3 h-11 rounded-lg bg-[#FEE500] text-[#191919] hover:opacity-90 transition text-sm font-medium"
                       >
-                        <span>카카오톡 문의</span>
+                        <span>{t("kakao")}</span>
                         <ArrowUpRight size={14} />
                       </a>
                     )}
@@ -99,13 +102,13 @@ export default function FloatingCTA() {
                       href="mailto:sales@efface.dev"
                       className="flex items-center justify-between gap-2 px-3 h-11 rounded-lg border border-[var(--color-line)] hover:border-[var(--color-ink)] transition text-sm"
                     >
-                      <span>이메일로 보내기</span>
+                      <span>{t("email")}</span>
                       <ArrowUpRight size={14} />
                     </a>
                   </div>
                   <p className="mt-3 text-[11px] text-[var(--color-muted)] flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    평일 1영업일 내 회신
+                    {t("secure")}
                   </p>
                 </motion.div>
               )}
@@ -115,10 +118,10 @@ export default function FloatingCTA() {
             <button
               onClick={() => setOpen((v) => !v)}
               className="group inline-flex items-center gap-2 h-12 pl-5 pr-3 rounded-full bg-[var(--color-ink)] text-white shadow-[0_10px_30px_-5px_rgba(0,0,0,0.25)] hover:opacity-95 transition"
-              aria-label="문의하기"
+              aria-label={t("bubble")}
             >
               <MessageCircle size={16} />
-              <span className="text-sm font-medium">{open ? "닫기" : "문의하기"}</span>
+              <span className="text-sm font-medium">{open ? "×" : t("bubble")}</span>
               <span className="w-7 h-7 rounded-full bg-white text-[var(--color-ink)] flex items-center justify-center transition-transform group-hover:rotate-12">
                 <ArrowUpRight size={14} />
               </span>
@@ -154,18 +157,17 @@ export default function FloatingCTA() {
               </button>
               <p className="text-xs tracking-[0.2em] uppercase text-[var(--color-muted)] mb-2">Wait</p>
               <h3 className="text-2xl font-semibold tracking-tight mb-2">
-                견적이 궁금하셨나요?
+                {t("title")}
               </h3>
               <p className="text-sm text-[var(--color-muted)] mb-6 leading-relaxed">
-                3분만 투자해서 신청해 주시면 1영업일 내에 예상 견적과 일정을 회신해 드립니다.
-                상담은 무료이며, 진행 의무는 없습니다.
+                {t("description")}
               </p>
               <Link
                 href="/apply"
                 onClick={() => setExitOpen(false)}
                 className="inline-flex items-center justify-center gap-2 w-full h-12 rounded-lg bg-[var(--color-ink)] text-white hover:opacity-90 transition font-medium"
               >
-                무료 견적 받기
+                {tHero("ctaPrimary")}
                 <ArrowUpRight size={14} />
               </Link>
             </motion.div>

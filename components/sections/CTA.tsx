@@ -1,16 +1,18 @@
 "use client";
 
-import Link from "next/link";
 import { useRef } from "react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion, useMotionValue, useSpring, useMotionTemplate } from "motion/react";
 import Reveal from "@/components/Reveal";
 import WordReveal from "@/components/WordReveal";
 import MagneticButton from "@/components/MagneticButton";
 import { ArrowRight, Mail, MessageCircle } from "lucide-react";
 
-const lines = ["STUDIO . DEV", "BUILT IN SEOUL", "STUDIO . DEV", "READY TO SHIP", "STUDIO . DEV"];
+const lines = ["EFFACE", "BUILT IN SEOUL", "EFFACE", "READY TO SHIP", "EFFACE"];
 
 export default function CTA() {
+  const t = useTranslations("CTA");
   const ref = useRef<HTMLElement>(null);
 
   const px = useMotionValue(50);
@@ -95,13 +97,11 @@ export default function CTA() {
               as="h2"
               className="text-4xl md:text-6xl font-semibold tracking-tight leading-[1.1]"
             >
-              {"프로젝트,\n시작해 볼까요?"}
+              {t("heading")}
             </WordReveal>
             <Reveal delay={0.4}>
               <p className="mt-6 text-[var(--color-muted)] max-w-xl leading-relaxed">
-                아래 신청폼을 작성해 주시면 1영업일 내 회신드립니다.
-                구체적인 내용이 정해지지 않았더라도 괜찮습니다.
-                상담 단계에서 함께 정리해 드릴게요.
+                {t("description")}
               </p>
               <div className="mt-9 inline-block">
                 <MagneticButton>
@@ -109,7 +109,7 @@ export default function CTA() {
                     href="/apply"
                     className="group inline-flex items-center gap-2 h-12 px-6 rounded-md bg-[var(--color-ink)] text-white font-medium hover:bg-[var(--color-ink-2)] transition shadow-[0_8px_30px_rgba(37,99,235,0.18)]"
                   >
-                    무료 견적 받기
+                    {t("primary")}
                     <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
                   </Link>
                 </MagneticButton>
@@ -120,7 +120,7 @@ export default function CTA() {
           <div className="md:col-span-5">
             <Reveal delay={0.1}>
               <div className="rounded-xl border border-[var(--color-line)] bg-white/70 backdrop-blur-md p-6 md:p-7 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-                <div className="text-xs font-mono text-[var(--color-muted)] mb-4">다른 채널로 문의</div>
+                <div className="text-xs font-mono text-[var(--color-muted)] mb-4">{t("channelsTitle")}</div>
                 <ul className="divide-y divide-[var(--color-line)] text-sm">
                   <li>
                     <a
@@ -129,7 +129,7 @@ export default function CTA() {
                     >
                       <span className="flex items-center gap-3">
                         <Mail size={15} className="text-[var(--color-muted)]" />
-                        프로젝트 문의
+                        {t("channels.sales")}
                       </span>
                       <span className="text-[var(--color-muted)] font-mono">sales@efface.dev</span>
                     </a>
@@ -141,7 +141,7 @@ export default function CTA() {
                     >
                       <span className="flex items-center gap-3">
                         <Mail size={15} className="text-[var(--color-muted)]" />
-                        일반 연락
+                        {t("channels.general")}
                       </span>
                       <span className="text-[var(--color-muted)] font-mono">contact@efface.dev</span>
                     </a>
@@ -155,7 +155,7 @@ export default function CTA() {
                     >
                       <span className="flex items-center gap-3">
                         <MessageCircle size={15} className="text-[var(--color-muted)]" />
-                        카카오톡 채널
+                        {t("channels.kakao")}
                       </span>
                       <span className="text-[var(--color-muted)] font-mono">@efface</span>
                     </a>
@@ -163,12 +163,12 @@ export default function CTA() {
                 </ul>
                 <div className="mt-5 pt-5 border-t border-[var(--color-line)] grid grid-cols-2 gap-4 text-xs">
                   <div>
-                    <div className="text-[var(--color-muted)] mb-1">응답 시간</div>
-                    <div>평일 24시간 내</div>
+                    <div className="text-[var(--color-muted)] mb-1">{t("guarantee.reply")}</div>
+                    <div>{t("guarantee.replyValue")}</div>
                   </div>
                   <div>
-                    <div className="text-[var(--color-muted)] mb-1">위치</div>
-                    <div>서울, 대한민국</div>
+                    <div className="text-[var(--color-muted)] mb-1">{t("guarantee.location")}</div>
+                    <div>{t("guarantee.locationValue")}</div>
                   </div>
                 </div>
               </div>

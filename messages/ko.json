@@ -1,0 +1,393 @@
+{
+  "Meta": {
+    "title": "efface — 웹 외주 제작",
+    "description": "필요한 웹사이트, 빠르고 깔끔하게. 랜딩부터 웹앱까지 1인 제작 스튜디오.",
+    "applyTitle": "프로젝트 신청 — efface",
+    "applyDescription": "프로젝트 정보를 보내주세요. 1영업일 내 회신드립니다."
+  },
+  "Header": {
+    "navServices": "서비스",
+    "navWork": "작업 사례",
+    "navStack": "기술 스택",
+    "navPricing": "가격",
+    "navFaq": "FAQ",
+    "applyCta": "견적 문의",
+    "kakaoAria": "카카오톡 채널"
+  },
+  "Footer": {
+    "tagline": "필요한 웹사이트를 빠르고 깔끔하게. 랜딩 페이지부터 쇼핑몰, 사내 관리툴까지 한 사람이 끝까지 책임지는 1인 개발 스튜디오입니다.",
+    "ceoLabel": "대표",
+    "ceoName": "서지완",
+    "sectionSitemap": "사이트맵",
+    "sectionChannels": "채널",
+    "sitemap": {
+      "services": "서비스",
+      "work": "작업 사례",
+      "stack": "기술 스택",
+      "pricing": "가격",
+      "process": "프로세스",
+      "faq": "FAQ",
+      "apply": "견적 문의"
+    },
+    "contactLabels": {
+      "project": "프로젝트 문의",
+      "general": "일반 연락",
+      "support": "고객 지원"
+    },
+    "channels": {
+      "kakao": "카카오톡 채널",
+      "github": "GitHub"
+    },
+    "copyright": "© {year} efface. All rights reserved.",
+    "privacy": "개인정보처리방침",
+    "terms": "이용약관"
+  },
+  "Hero": {
+    "badge": "2026년 Q3 신규 프로젝트 모집 중",
+    "headingLine1": "웹사이트 외주,",
+    "headingLine2": "막막하셨다면.",
+    "subheading": "랜딩 페이지부터 쇼핑몰, 사내 관리툴까지. 기획·디자인·개발을 한 사람이 끝까지 책임지는 1인 개발 스튜디오입니다.",
+    "bullets": [
+      "1영업일 내 회신 · 평일 24시간 내 응답",
+      "Next.js 기반 견고한 코드, 인수인계 완벽 지원",
+      "선금 50% / 잔금 50% · 세금계산서 발행 가능"
+    ],
+    "ctaPrimary": "무료 견적 받기",
+    "ctaSecondary": "작업 사례 보기",
+    "social": "50개+ 프로젝트 완료 · 평균 만족도 4.9 / 5.0",
+    "terminal": {
+      "comment": "프로젝트 의뢰 시 받게 되는 결과물",
+      "type": "Next.js 15 + TypeScript",
+      "design": "Figma · Tailwind CSS",
+      "deploy": "Vercel · 도메인 세팅 포함",
+      "timeline": "1~3주",
+      "repo": "GitHub 권한 이관",
+      "docs": "README · 운영 가이드",
+      "support": "1개월 무상 유지보수",
+      "status": "ready to ship"
+    }
+  },
+  "Stats": {
+    "items": [
+      "완료한 프로젝트",
+      "평균 만족도",
+      "재의뢰율",
+      "평균 회신 시간 (평일)"
+    ]
+  },
+  "Manifesto": {
+    "heading": "외주 견적 받을 때\n걱정되는 부분,\n먼저 답해드립니다.",
+    "items": [
+      {
+        "title": "빠른 응답, 빠른 시작",
+        "desc": "신청폼 제출 후 1영업일 내 회신, 견적 확정 후 평균 3일 안에 작업 시작."
+      },
+      {
+        "title": "넘겨받기 좋은 코드",
+        "desc": "TypeScript · 일관된 컨벤션 · README와 운영 가이드 동봉. 다른 개발자에게 인계해도 막히지 않습니다."
+      },
+      {
+        "title": "끝까지 책임지는 마감",
+        "desc": "도메인 연결, 배포, 모니터링 세팅까지 직접 처리. 납품 후 1개월 무상 유지보수."
+      },
+      {
+        "title": "혼자 일해서 빠릅니다",
+        "desc": "기획·디자인·개발·배포를 한 사람이 처리해 커뮤니케이션 비용이 적고 일정이 정확합니다."
+      }
+    ]
+  },
+  "Services": {
+    "heading": "어떤 사이트가 필요하신가요?",
+    "subheading": "일반적으로 의뢰가 들어오는 6가지 유형입니다. 해당 분야가 아니어도 상담 가능합니다.",
+    "periodLabel": "기간",
+    "fromLabel": "시작가",
+    "items": [
+      { "title": "랜딩 페이지", "desc": "신제품·서비스 출시, 캠페인, 채용 페이지 등.", "period": "1~2주", "from": "35만원" },
+      { "title": "기업·브랜드 사이트", "desc": "회사 소개, 포트폴리오, 채용까지 다중 페이지.", "period": "2~3주", "from": "90만원" },
+      { "title": "쇼핑몰 / 커머스", "desc": "결제(PG)·재고·주문 관리 연동, 자체 운영 가능.", "period": "3~5주", "from": "180만원" },
+      { "title": "사내 관리툴 / 웹앱", "desc": "데이터 기반 서비스, 어드민, 대시보드.", "period": "3주~", "from": "150만원" },
+      { "title": "모바일 청첩장 / 초대장", "desc": "이벤트, 결혼식, 행사 초대용 모바일 페이지.", "period": "1~3일", "from": "5만원" },
+      { "title": "기존 사이트 리뉴얼", "desc": "느린 사이트 마이그레이션, 디자인 개편, 기능 추가.", "period": "범위에 따라", "from": "협의" }
+    ]
+  },
+  "Marquee": {
+    "heading1": "모든 프로젝트에 같은 기준,",
+    "heading2": "검증된 기술만 씁니다.",
+    "tools": "tools",
+    "years": "years",
+    "footnote": "— 클라이언트가 추후 직접 운영할 수 있도록, 표준 도구만 사용합니다.",
+    "officialSite": "공식 사이트로 이동"
+  },
+  "Pricing": {
+    "heading": "대략적인 가격대.",
+    "subheading": "실제 견적은 페이지 수, 기능, 디자인 작업 범위에 따라 달라집니다. 참고용 가격이며 신청 시 정확한 견적을 보내드립니다.",
+    "fromSuffix": "부터",
+    "durationLabel": "진행 기간",
+    "popular": "가장 많이 의뢰",
+    "footnote": "모든 가격은 부가세 별도. 도메인·외부 API·유료 폰트 등 라이선스 비용은 별도 청구됩니다.",
+    "tiers": [
+      {
+        "name": "Starter",
+        "desc": "랜딩 페이지 · 1페이지 사이트",
+        "price": "35만원",
+        "period": "부터",
+        "weeks": "1~2주",
+        "feats": [
+          "반응형 1페이지",
+          "기본 SEO · OG 태그",
+          "Vercel 배포 · 도메인 연결",
+          "1회 시안 검토",
+          "1개월 무상 유지보수"
+        ],
+        "cta": "Starter 문의"
+      },
+      {
+        "name": "Standard",
+        "desc": "기업 / 브랜드 사이트 · 5~10페이지",
+        "price": "90만원",
+        "period": "부터",
+        "weeks": "2~3주",
+        "feats": [
+          "5~10 페이지",
+          "관리자(CMS) 연동 옵션",
+          "다국어 옵션",
+          "Google Analytics · GTM",
+          "2회 시안 검토",
+          "1개월 무상 유지보수"
+        ],
+        "cta": "Standard 문의"
+      },
+      {
+        "name": "Custom",
+        "desc": "쇼핑몰 · 웹앱 · 관리자 등",
+        "price": "협의",
+        "period": "범위에 따라",
+        "weeks": "3주~",
+        "feats": [
+          "결제(PG) · 회원 · 인증",
+          "데이터베이스 · API 연동",
+          "어드민 · 대시보드",
+          "월 단위 유지보수 옵션",
+          "장기 협업 가능"
+        ],
+        "cta": "상담 신청"
+      }
+    ]
+  },
+  "WorkPage": {
+    "metaRole": "Role",
+    "metaPlatform": "Platform",
+    "metaYear": "Year",
+    "metaClient": "Client",
+    "stack": "Stack",
+    "liveVisit": "라이브 사이트 방문",
+    "demoTry": "데모 둘러보기",
+    "nextLabel": "Next",
+    "startSimilar": "비슷한 프로젝트 시작하기"
+  },
+  "Portfolio": {
+    "demoLinkLabel": "데모 사이트 열기",
+    "sectionHeading": "실제 만든 사이트들.",
+    "sectionSubheading": "운영 중인 사이트와 분야별 케이스 스터디입니다. 카드를 누르면 디테일을 볼 수 있습니다.",
+    "escHint1": "전체 화면을 종료하려면",
+    "escHint2": "키를 누르세요.",
+    "close": "닫기",
+    "caseStudyLink": "케이스 스터디 페이지",
+    "liveVisit": "라이브 사이트 방문",
+    "demoTry": "데모 둘러보기",
+    "items": [
+      { "slug": "TEAMHARIBO", "title": "팀 브랜딩 사이트", "category": "팀 사이트 · 브랜딩", "role": "기획 · 디자인 · 개발", "platform": "웹", "summary": "팀의 정체성을 드러내는 컬러풀한 브랜딩 사이트", "description": "팀 소개와 활동을 담는 단일 페이지 사이트입니다.\n멤버 컬러를 그라데이션 배지로 시각화해 팀의 다양성을 전달했고, 빠르게 로드되는 정적 사이트로 Vercel에 배포해 운영합니다.", "headline": "Built around the team's identity." },
+      { "slug": "NEST", "title": "사내 데이터 관리 어드민", "category": "사내 관리툴 · 어드민", "role": "프로덕트 디자인 · 풀스택 개발", "platform": "웹", "summary": "운영팀의 데이터를 한 화면에서 관리하는 어드민 웹앱", "description": "사용자·일정·업무일지·회의록·결재·지출까지, 운영에 필요한 데이터를 한 곳에 모은 사내 관리 툴입니다.\n로그인 없이도 둘러볼 수 있는 미리보기 모드를 제공하며, 권한별 접근 제어와 빠른 검색·라우팅에 신경 썼습니다.", "headline": "One screen for the whole operation." },
+      { "slug": "ROCKETSTORE", "title": "한국형 커머스 데모", "category": "쇼핑몰 · 커머스", "role": "기획 · 디자인 · 개발", "platform": "웹 · 모바일 반응형", "summary": "쿠팡·무신사 톤의 한국형 커머스 데모", "description": "한국 커머스 사이트의 친숙한 패턴을 따라 만든 쇼핑몰 데모입니다.\n카테고리·베스트·신상품·오늘의딜 라우팅, 상품 상세, 장바구니 드로어, 검색까지 실제 운영에 가까운 흐름을 구현했습니다.", "headline": "From discovery to checkout, in one flow." },
+      { "slug": "MAISONNOIR", "title": "파인다이닝 레스토랑", "category": "레스토랑 · 파인다이닝", "role": "디자인 · 개발", "platform": "웹", "summary": "Eleven Madison Park 톤의 클래식 레스토랑 사이트", "description": "큰 세리프 타이포와 절제된 사진으로 분위기를 만드는 파인다이닝 사이트.\n메뉴·예약·프라이빗 이벤트·기프트카드·저널까지 실제 운영에 필요한 페이지를 모두 갖췄습니다.", "headline": "A reservation, set in serif." },
+      { "slug": "SARANG", "title": "종합병원 웹 포털", "category": "병원 · 의료기관 포털", "role": "기획 · 디자인 · 개발", "platform": "웹", "summary": "서울아산병원 톤의 종합병원 포털", "description": "한국 종합병원 포털의 정보 밀도와 신뢰감을 모티프로 만든 데모입니다.\n6개 GNB 서브페이지(병원소개·진료안내·의료진·건강검진·예약·고객지원)와 4단계 예약 폼을 갖춘 운영 가능한 구조입니다.", "headline": "Care, organised at a glance." },
+      { "slug": "WEDDING", "title": "모바일 청첩장", "category": "모바일 · 이벤트", "role": "디자인 · 개발", "platform": "모바일", "summary": "모청 · 카카오톡 청첩장 톤의 모바일 청첩장", "description": "스크롤 한 번이면 끝나는 모바일 청첩장입니다.\n풀-블리드 히어로, D-day 카운트다운, 갤러리 라이트박스, 계좌 아코디언, 위치, 방명록까지 실사용 가능한 흐름을 갖췄습니다.", "headline": "Their day, in everyone's pocket." }
+    ]
+  },
+  "PriceEstimator": {
+    "comment": "// estimate",
+    "headingLine1": "견적이",
+    "headingLine2": "막연하다면.",
+    "subheading": "프로젝트 종류와 분량을 골라보세요. 실제 진행 시에는 상세 협의 후 정확한 견적을 드리며, 이 추정치는 참고용입니다.",
+    "estimateLabel": "예상 견적",
+    "realtime": "실시간 계산",
+    "currencyUnit": "만원",
+    "durationLabel": "예상 기간 {lo}~{hi}주",
+    "base": "기본",
+    "extraPages": "추가 페이지 × {n}",
+    "extraFeatures": "추가 기능 × {n}",
+    "applyCta": "이 사양으로 신청하기",
+    "siteType": "사이트 종류",
+    "pageCount": "페이지 수",
+    "addons": "추가 기능",
+    "selected": "{n}개 선택됨",
+    "services": [
+      { "key": "landing", "label": "랜딩 페이지" },
+      { "key": "brand", "label": "기업·브랜드 사이트" },
+      { "key": "shop", "label": "쇼핑몰" },
+      { "key": "webapp", "label": "웹앱·관리자" }
+    ],
+    "features": [
+      { "key": "auth", "label": "회원가입 · 로그인" },
+      { "key": "payment", "label": "결제 (토스/포트원)" },
+      { "key": "i18n", "label": "다국어 (한/영)" },
+      { "key": "cms", "label": "CMS / 관리자" },
+      { "key": "search", "label": "검색 · 필터" },
+      { "key": "ai", "label": "AI 기능 연동" }
+    ]
+  },
+  "Process": {
+    "heading": "상담부터 납품까지,\n4단계로 진행됩니다.",
+    "subheading": "평균 2~4주 소요. 단계마다 어떤 결과물을 받게 되는지 미리 알려드립니다.",
+    "deliverableLabel": "결과물",
+    "steps": [
+      { "title": "상담 신청", "desc": "신청폼으로 프로젝트 정보 전달, 1영업일 내 회신.", "out": "1차 견적 · 일정 초안", "days": "1~2일" },
+      { "title": "범위 · 계약", "desc": "범위·기능·일정 확정 후 계약서 발송, 선금 50% 입금.", "out": "확정 견적 · 계약서", "days": "1~2일" },
+      { "title": "디자인 · 개발", "desc": "Figma 시안 검토 후 개발. 매주 스테이징 미리보기 공유.", "out": "주 1회 데모 링크", "days": "1~3주" },
+      { "title": "배포 · 인계", "desc": "도메인 연결, 배포, 운영 가이드 전달. 잔금 50% 입금.", "out": "GitHub · 운영 문서 · 1개월 무상 유지보수", "days": "1~2일" }
+    ]
+  },
+  "FAQ": {
+    "heading": "자주 묻는 질문.",
+    "subheading": "여기 답이 없다면 신청폼에 함께 적어주세요. 상담 단계에서 자세히 안내드립니다.",
+    "items": [
+      { "q": "작업 기간은 얼마나 걸리나요?", "a": "랜딩 페이지 1~2주, 일반 기업 사이트 2~3주, 쇼핑몰·웹앱은 범위에 따라 3주 이상입니다. 신청 후 첫 회신 시 정확한 일정을 안내드립니다." },
+      { "q": "비용은 어떻게 책정되나요?", "a": "페이지 수·기능·디자인 작업 범위 기준으로 계산합니다. 신청폼 제출 후 1영업일 내 1차 견적을 보내드리며, 협의 후 확정 견적과 계약서를 발송합니다." },
+      { "q": "디자인 시안은 몇 번 검토할 수 있나요?", "a": "Standard 패키지 기준 2회까지 시안 검토가 포함됩니다. 추가 검토는 회당 비용으로 진행하며, 합리적 범위 내 수정은 추가 비용 없이 진행합니다." },
+      { "q": "코드와 저작권은 누구에게 있나요?", "a": "잔금 결제 완료 후 모든 소스 코드와 저작권은 의뢰인 측으로 이전됩니다. GitHub 저장소 권한도 함께 이관됩니다." },
+      { "q": "도메인 · 호스팅도 함께 처리해 주시나요?", "a": "네, 도메인 구매부터 Vercel·Cloudflare·AWS 등 호스팅 환경 세팅까지 포함해 진행할 수 있습니다. 운영 비용은 의뢰인 명의로 직접 결제하시는 것을 권장드립니다." },
+      { "q": "납품 후 유지보수도 가능한가요?", "a": "납품 시점부터 1개월간 무상 버그 대응이 포함됩니다. 이후에는 월 단위 유지보수 계약 또는 건별 대응이 가능합니다." },
+      { "q": "결제는 어떻게 진행되나요?", "a": "계약 시 선금 50%, 납품 시 잔금 50%로 진행되며 세금계산서 발행이 가능합니다. 300만원 이상 프로젝트는 3분할 결제도 협의 가능합니다." },
+      { "q": "기존 사이트 리뉴얼도 가능한가요?", "a": "가능합니다. 기존 코드 분석 후 마이그레이션 또는 신규 구축 중 적합한 방향을 함께 결정합니다." }
+    ]
+  },
+  "Testimonials": {
+    "heading": "클라이언트가 직접 남긴 후기.",
+    "privacyBadge": "개인정보 보호",
+    "privacyNote": "이름·회사명은 가림 처리되었습니다",
+    "items": [
+      { "quote": "제가 막연히 그리던 톤을 정확하게 잡아주셨어요. 디자인 수정 핑퐁이 거의 없었습니다.", "metric": "런칭 첫 달 문의 3.2배 증가", "author": "김민지", "role": "마케팅 디렉터", "company": "Hi-vits Inc." },
+      { "quote": "코드 인수인계가 정말 깔끔했습니다. 사내 개발자가 바로 이어받아 운영할 수 있었어요.", "metric": "유지보수 비용 70% 절감", "author": "이재훈", "role": "CTO", "company": "Nest 운영팀" },
+      { "quote": "1인이라 걱정했는데, 오히려 의사결정이 빠르고 디테일까지 챙겨주셔서 만족도가 높았습니다.", "metric": "예정보다 1주 빠른 런칭", "author": "박수연", "role": "대표", "company": "Maison Noir" },
+      { "quote": "기획 미팅 한 번에 핵심을 정리해주셔서 의사결정 속도가 빨라졌어요. 일정 지연이 없었습니다.", "metric": "킥오프 → 시안까지 5일", "author": "정지훈", "role": "프로덕트 오너", "company": "Rocket Studios" },
+      { "quote": "결제·계좌 연동까지 한 번에 처리해주셔서 운영팀이 이관 받을 때 추가 작업이 거의 없었습니다.", "metric": "결제 실패율 0.4% 미만", "author": "최서윤", "role": "운영 매니저", "company": "Daol Commerce" },
+      { "quote": "리뉴얼 후 사이트 속도가 체감될 만큼 빨라졌습니다. SEO 점수도 같이 올랐어요.", "metric": "Lighthouse 92 → 99", "author": "한도연", "role": "마케터", "company": "Saerom Lab" },
+      { "quote": "디자인·개발이 한 번에 되니 커뮤니케이션 비용이 확 줄었어요. 회의가 절반으로 줄었습니다.", "metric": "회의 횟수 50% 감소", "author": "오준호", "role": "스타트업 대표", "company": "Onji Inc." },
+      { "quote": "납품 후에도 작은 수정 요청에 빠르게 대응해주셨습니다. 신뢰가 쌓여서 다음 프로젝트도 의뢰했어요.", "metric": "재의뢰 · 누적 3건", "author": "임예린", "role": "브랜드 매니저", "company": "Boram Studio" },
+      { "quote": "사내 어드민이 진짜 쓰기 편해졌어요. 운영팀이 실무에서 바로 쓸 수 있는 수준이었습니다.", "metric": "데이터 처리 시간 60% 단축", "author": "윤채린", "role": "사업개발 리드", "company": "Mando Tech" },
+      { "quote": "처음 외주를 맡겨봤는데 단계마다 무엇이 진행되는지 명확해서 안심하고 진행할 수 있었습니다.", "metric": "초보 클라이언트 OK", "author": "송민재", "role": "개인사업자", "company": "Pado Studio" }
+    ]
+  },
+  "CTA": {
+    "eyebrow": "지금 문의하시면",
+    "heading": "프로젝트,\n시작해 볼까요?",
+    "description": "아래 신청폼을 작성해 주시면 1영업일 내 회신드립니다. 구체적인 내용이 정해지지 않았더라도 괜찮습니다. 상담 단계에서 함께 정리해 드릴게요.",
+    "primary": "무료 견적 받기",
+    "channelsTitle": "다른 채널로 문의",
+    "channels": {
+      "sales": "프로젝트 문의",
+      "general": "일반 연락",
+      "kakao": "카카오톡 채널"
+    },
+    "guarantee": {
+      "reply": "응답 시간",
+      "replyValue": "평일 24시간 내",
+      "location": "위치",
+      "locationValue": "서울, 대한민국"
+    }
+  },
+  "Apply": {
+    "page": {
+      "eyebrow": "프로젝트 신청",
+      "heading": "프로젝트 정보를 보내주세요.",
+      "subheading": "1영업일 내 회신드립니다. 작성하기 어려우면 가벼운 질문도 환영합니다.",
+      "steps": [
+        { "title": "신청서 제출", "desc": "양식을 채워서 보내주세요. 평균 5분 소요." },
+        { "title": "1차 검토", "desc": "1영업일 내 견적과 일정 초안을 보내드립니다." },
+        { "title": "킥오프", "desc": "디테일을 맞춘 뒤 작업이 시작됩니다." },
+        { "title": "보안 · 비밀 보장", "desc": "공유해주신 정보는 처리 완료 후 1년 뒤 폐기합니다." }
+      ],
+      "footerNote": "신청을 망설이고 계신가요?",
+      "footerCta": "sales@efface.dev로 가볍게 보내주셔도 됩니다."
+    },
+    "form": {
+      "fields": {
+        "name": "이름",
+        "email": "이메일",
+        "phone": "연락처",
+        "deadline": "희망 마감일 (선택)",
+        "service": "신청 서비스",
+        "budget": "예산 범위",
+        "description": "프로젝트 설명",
+        "references": "참고 사이트 URL (선택)",
+        "attachments": "첨부 파일 (선택)"
+      },
+      "placeholders": {
+        "name": "홍길동",
+        "email": "you@example.com",
+        "phone": "010-0000-0000",
+        "deadline": "원하시는 마감일 선택",
+        "selectDefault": "선택해 주세요",
+        "description": "어떤 사이트가 필요하신가요? 참고 사이트, 핵심 기능, 분량 등을 자유롭게 적어주세요. (최소 20자)",
+        "references": "https://... (여러 개는 줄바꿈 또는 콤마로 구분)"
+      },
+      "attachments": {
+        "hint": "와이어프레임 · 레퍼런스 · 브랜드 가이드 / 최대 {max}개, 각 5MB",
+        "pickButton": "파일 선택",
+        "remove": "제거",
+        "tooLarge": "'{name}'은 5MB를 초과합니다."
+      },
+      "agree": "(필수) 신청 처리 및 회신 목적의 개인정보(이름·이메일·연락처) 수집·이용에 동의합니다. 보관 기간은 처리 완료 후 1년이며, 동의 거부 시 신청이 어렵습니다.",
+      "submit": "신청 제출",
+      "submitting": "제출 중…",
+      "errors": {
+        "submitFailed": "제출에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+        "unknown": "알 수 없는 오류가 발생했습니다.",
+        "nameMin": "이름을 2자 이상 입력해 주세요.",
+        "emailFormat": "올바른 이메일 형식이 아닙니다.",
+        "phoneMin": "연락처를 정확히 입력해 주세요.",
+        "phoneFormat": "숫자와 -, +, 공백, 괄호만 사용할 수 있습니다.",
+        "serviceRequired": "서비스 종류를 선택해 주세요.",
+        "budgetRequired": "예산 범위를 선택해 주세요.",
+        "descriptionMin": "프로젝트 설명을 20자 이상 입력해 주세요.",
+        "agreeRequired": "개인정보 수집·이용에 동의해 주세요."
+      },
+      "success": {
+        "heading": "신청이 접수되었습니다.",
+        "ticketPrefix": "접수 번호",
+        "body1": "1영업일 내 입력하신 이메일로 회신드리겠습니다.",
+        "body2": "접수 확인 메일을 함께 보내드렸으니 받은 편지함을 확인해 주세요.",
+        "demoTitle": "데모 시안을 자동 생성 중입니다",
+        "demoSub": "보내주신 정보로 1~2분 안에 시안이 준비됩니다 · 보러가기"
+      },
+      "services": [
+        { "value": "landing", "label": "랜딩 페이지" },
+        { "value": "brand", "label": "기업·브랜드 사이트" },
+        { "value": "shop", "label": "쇼핑몰" },
+        { "value": "webapp", "label": "웹앱·관리자 페이지" },
+        { "value": "other", "label": "기타" }
+      ],
+      "budgets": [
+        { "value": "u30", "label": "30만원 이하" },
+        { "value": "30-70", "label": "30~70만원" },
+        { "value": "70-150", "label": "70~150만원" },
+        { "value": "150-300", "label": "150~300만원" },
+        { "value": "300p", "label": "300만원 이상" },
+        { "value": "negotiable", "label": "협의" }
+      ]
+    }
+  },
+  "FloatingCTA": {
+    "bubble": "문의하기",
+    "title": "프로젝트 시작하기",
+    "description": "5분이면 충분합니다. 1영업일 내 회신드립니다.",
+    "primary": "프로젝트 신청하기",
+    "kakao": "카카오톡 문의",
+    "email": "이메일로 보내기",
+    "secure": "1영업일 내 회신 · 비밀 보장"
+  },
+  "LanguageSwitcher": {
+    "ko": "한국어",
+    "en": "English"
+  }
+}

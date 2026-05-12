@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useRef } from "react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion, useMotionValue, useSpring, useMotionTemplate } from "motion/react";
 import { ArrowRight, Check } from "lucide-react";
 import MagneticButton from "@/components/MagneticButton";
@@ -9,6 +10,8 @@ import MagneticButton from "@/components/MagneticButton";
 const ease = [0.22, 1, 0.36, 1] as const;
 
 export default function Hero() {
+  const t = useTranslations("Hero");
+  const bullets = t.raw("bullets") as string[];
   const ref = useRef<HTMLElement>(null);
   const px = useMotionValue(50);
   const py = useMotionValue(40);
@@ -72,7 +75,7 @@ export default function Hero() {
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-success)]" />
               <span className="absolute inset-0 rounded-full bg-[var(--color-success)] animate-ping" />
             </span>
-            <span className="text-[var(--color-muted)]">2026년 Q3 신규 프로젝트 모집 중</span>
+            <span className="text-[var(--color-muted)]">{t("badge")}</span>
           </motion.div>
 
           <motion.h1
@@ -81,8 +84,8 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.05, ease }}
             className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight leading-[1.1]"
           >
-            웹사이트 외주,<br />
-            <span className="text-[var(--color-muted)]">막막하셨다면.</span>
+            {t("headingLine1")}<br />
+            <span className="text-[var(--color-muted)]">{t("headingLine2")}</span>
           </motion.h1>
 
           <motion.p
@@ -91,9 +94,7 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.15, ease }}
             className="mt-6 text-base md:text-lg text-[var(--color-muted)] leading-relaxed max-w-xl"
           >
-            랜딩 페이지부터 쇼핑몰, 사내 관리툴까지.
-            기획·디자인·개발을 한 사람이 끝까지 책임지는
-            1인 개발 스튜디오입니다.
+            {t("subheading")}
           </motion.p>
 
           <motion.ul
@@ -102,16 +103,12 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.25, ease }}
             className="mt-7 space-y-2 text-[15px]"
           >
-            {[
-              "1영업일 내 회신 · 평일 24시간 내 응답",
-              "Next.js 기반 견고한 코드, 인수인계 완벽 지원",
-              "선금 50% / 잔금 50% · 세금계산서 발행 가능",
-            ].map((t) => (
-              <li key={t} className="flex items-center gap-2.5">
+            {bullets.map((bullet) => (
+              <li key={bullet} className="flex items-center gap-2.5">
                 <span className="w-5 h-5 rounded-full bg-[var(--color-ink)] text-white flex items-center justify-center shrink-0">
                   <Check size={12} strokeWidth={3} />
                 </span>
-                {t}
+                {bullet}
               </li>
             ))}
           </motion.ul>
@@ -127,7 +124,7 @@ export default function Hero() {
                 href="/apply"
                 className="group inline-flex items-center gap-2 h-12 px-6 rounded-md bg-[var(--color-ink)] text-white font-medium hover:bg-[var(--color-ink-2)] transition"
               >
-                무료 견적 받기
+                {t("ctaPrimary")}
                 <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
               </Link>
             </MagneticButton>
@@ -136,7 +133,7 @@ export default function Hero() {
                 href="#work"
                 className="inline-flex items-center h-12 px-6 rounded-md border border-[var(--color-line)] hover:border-[var(--color-ink)] transition font-medium bg-white/80 backdrop-blur-sm"
               >
-                작업 사례 보기
+                {t("ctaSecondary")}
               </a>
             </MagneticButton>
           </motion.div>
@@ -151,7 +148,7 @@ export default function Hero() {
                 />
               ))}
             </div>
-            <span>50개+ 프로젝트 완료 · 평균 만족도 4.9 / 5.0</span>
+            <span>{t("social")}</span>
           </div>
         </div>
 
@@ -176,33 +173,33 @@ export default function Hero() {
             </div>
             <pre className="p-5 md:p-6 text-[13px] leading-[1.7] font-mono overflow-x-auto">
               <code>
-                <span className="text-[var(--color-muted)]">// 프로젝트 의뢰 시 받게 되는 결과물</span>
+                <span className="text-[var(--color-muted)]">// {t("terminal.comment")}</span>
                 {"\n"}
                 <span className="text-[var(--color-accent)]">const</span>{" "}
                 <span>project</span> = {"{"}
                 {"\n  "}
                 <span className="text-pink-600">type</span>:{" "}
-                <span className="text-emerald-700">&quot;Next.js 15 + TypeScript&quot;</span>,
+                <span className="text-emerald-700">&quot;{t("terminal.type")}&quot;</span>,
                 {"\n  "}
                 <span className="text-pink-600">design</span>:{" "}
-                <span className="text-emerald-700">&quot;Figma · Tailwind CSS&quot;</span>,
+                <span className="text-emerald-700">&quot;{t("terminal.design")}&quot;</span>,
                 {"\n  "}
                 <span className="text-pink-600">deploy</span>:{" "}
-                <span className="text-emerald-700">&quot;Vercel · 도메인 세팅 포함&quot;</span>,
+                <span className="text-emerald-700">&quot;{t("terminal.deploy")}&quot;</span>,
                 {"\n  "}
                 <span className="text-pink-600">timeline</span>:{" "}
-                <span className="text-emerald-700">&quot;1~3주&quot;</span>,
+                <span className="text-emerald-700">&quot;{t("terminal.timeline")}&quot;</span>,
                 {"\n  "}
                 <span className="text-pink-600">handoff</span>: {"{"}
                 {"\n    "}
                 <span className="text-pink-600">repo</span>:{" "}
-                <span className="text-emerald-700">&quot;GitHub 권한 이관&quot;</span>,
+                <span className="text-emerald-700">&quot;{t("terminal.repo")}&quot;</span>,
                 {"\n    "}
                 <span className="text-pink-600">docs</span>:{" "}
-                <span className="text-emerald-700">&quot;README · 운영 가이드&quot;</span>,
+                <span className="text-emerald-700">&quot;{t("terminal.docs")}&quot;</span>,
                 {"\n    "}
                 <span className="text-pink-600">support</span>:{" "}
-                <span className="text-emerald-700">&quot;1개월 무상 유지보수&quot;</span>,
+                <span className="text-emerald-700">&quot;{t("terminal.support")}&quot;</span>,
                 {"\n  "}
                 {"}"},
                 {"\n"}
@@ -212,7 +209,7 @@ export default function Hero() {
             <div className="border-t border-[var(--color-line)] bg-[var(--color-paper-2)] px-4 py-3 flex items-center justify-between text-xs font-mono text-[var(--color-muted)]">
               <span className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-success)]" />
-                ready to ship
+                {t("terminal.status")}
               </span>
               <span>v0.0.1</span>
             </div>

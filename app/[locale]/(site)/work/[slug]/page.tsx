@@ -1,18 +1,26 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import Image from "next/image";
+import { Link } from "@/i18n/navigation";
 import { ArrowUpRight, ArrowLeft } from "lucide-react";
-import { portfolioItems } from "@/lib/portfolio";
+import { getTranslations } from "next-intl/server";
+import { portfolioStatic, mergePortfolioItems, type PortfolioTranslated } from "@/lib/portfolio";
 import type { Metadata } from "next";
 
 export function generateStaticParams() {
-  return portfolioItems.map((it) => ({ slug: it.slug.toLowerCase() }));
+  return portfolioStatic.map((it) => ({ slug: it.slug.toLowerCase() }));
+}
+
+async function getItem(slug: string, locale: string) {
+  const tp = await getTranslations({ locale, namespace: "Portfolio" });
+  const items = mergePortfolioItems(tp.raw("items") as PortfolioTranslated[], tp("demoLinkLabel"));
+  return items.find((i) => i.slug.toLowerCase() === slug.toLowerCase());
 }
 
 export async function generateMetadata(
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ locale: string; slug: string }> }
 ): Promise<Metadata> {
-  const { slug } = await params;
-  const item = portfolioItems.find((i) => i.slug.toLowerCase() === slug.toLowerCase());
+  const { slug, locale } = await params;
+  const item = await getItem(slug, locale);
   if (!item) return { title: "Not found" };
   return {
     title: `${item.title} — efface`,
@@ -26,15 +34,16 @@ export async function generateMetadata(
 }
 
 export default async function CaseStudyPage(
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ locale: string; slug: string }> }
 ) {
-  const { slug } = await params;
-  const item = portfolioItems.find((i) => i.slug.toLowerCase() === slug.toLowerCase());
+  const { slug, locale } = await params;
+  const item = await getItem(slug, locale);
   if (!item) notFound();
+
+  const tw = await getTranslations({ locale, namespace: "WorkPage" });
 
   return (
     <article className="bg-[var(--color-paper)] text-[var(--color-ink)]">
-      {/* Title block */}
       <div className="max-w-[1280px] mx-auto px-6 md:px-10 pt-20 md:pt-28">
         <Link
           href="/#work"
@@ -51,10 +60,10 @@ export default async function CaseStudyPage(
         </h1>
 
         <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
-          <Meta label="Role" value={item.role} />
-          <Meta label="Platform" value={item.platform} />
-          <Meta label="Year" value={item.year} />
-          <Meta label="Client" value={item.client} />
+          <Meta label={tw("metaRole")} value={item.role} />
+          <Meta label={tw("metaPlatform")} value={item.platform} />
+          <Meta label={tw("metaYear")} value={item.year} />
+          <Meta label={tw("metaClient")} value={item.client} />
         </div>
 
         <p className="mt-16 text-base md:text-lg text-[var(--color-ink-2)] leading-loose max-w-3xl whitespace-pre-line">
@@ -62,7 +71,6 @@ export default async function CaseStudyPage(
         </p>
       </div>
 
-      {/* Showcase */}
       <div className="relative mt-24 md:mt-36 pb-32 overflow-hidden">
         <div
           aria-hidden
@@ -111,24 +119,23 @@ export default async function CaseStudyPage(
               <div className="w-12 shrink-0" />
             </div>
             <div className="relative bg-white">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={item.image}
                 alt={item.title}
                 width={item.imageWidth}
                 height={item.imageHeight}
                 className="w-full h-auto block"
+                sizes="(max-width: 1024px) 100vw, 1024px"
               />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stack + CTA */}
       <div className="relative max-w-[1280px] mx-auto px-6 md:px-10 pb-32">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-end border-t border-[var(--color-line)] pt-12">
           <div className="md:col-span-7">
-            <p className="text-xs tracking-[0.3em] text-[var(--color-muted)] uppercase mb-4">— Stack</p>
+            <p className="text-xs tracking-[0.3em] text-[var(--color-muted)] uppercase mb-4">— {tw("stack")}</p>
             <div className="flex flex-wrap gap-2">
               {item.stack.map((s) => (
                 <span
@@ -147,7 +154,7 @@ export default async function CaseStudyPage(
               rel={item.isLive ? "noopener noreferrer" : undefined}
               className="group inline-flex items-center gap-3 h-12 pl-6 pr-2 rounded-full bg-[var(--color-ink)] text-white font-medium hover:bg-[var(--color-ink-2)] transition"
             >
-              {item.isLive ? "라이브 사이트 방문" : "데모 둘러보기"}
+              {item.isLive ? tw("liveVisit") : tw("demoTry")}
               <span className="font-mono text-xs text-white/50">{item.liveLabel}</span>
               <span className="w-9 h-9 rounded-full bg-white text-[var(--color-ink)] flex items-center justify-center group-hover:rotate-45 transition-transform duration-500">
                 <ArrowUpRight size={16} />
@@ -156,14 +163,13 @@ export default async function CaseStudyPage(
           </div>
         </div>
 
-        {/* Next case CTA */}
         <div className="mt-24 text-center border-t border-[var(--color-line)] pt-16">
-          <p className="text-xs tracking-[0.3em] uppercase text-[var(--color-muted)] mb-4">Next</p>
+          <p className="text-xs tracking-[0.3em] uppercase text-[var(--color-muted)] mb-4">{tw("nextLabel")}</p>
           <Link
             href="/apply"
             className="inline-flex items-center gap-3 text-3xl md:text-5xl font-semibold tracking-tight hover:opacity-70 transition"
           >
-            비슷한 프로젝트 시작하기
+            {tw("startSimilar")}
             <ArrowUpRight size={32} />
           </Link>
         </div>

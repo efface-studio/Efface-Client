@@ -1,16 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import Reveal from "@/components/Reveal";
 import WordReveal from "@/components/WordReveal";
+import { useTranslations } from "next-intl";
 import { ArrowUpRight, X } from "lucide-react";
-import Link from "next/link";
-import { portfolioItems, type PortfolioItem as Item } from "@/lib/portfolio";
-
-const items = portfolioItems;
+import { Link } from "@/i18n/navigation";
+import { mergePortfolioItems, type PortfolioItem as Item, type PortfolioTranslated } from "@/lib/portfolio";
 
 export default function Portfolio() {
+  const tp = useTranslations("Portfolio");
+  const items = useMemo(
+    () => mergePortfolioItems(tp.raw("items") as PortfolioTranslated[], tp("demoLinkLabel")),
+    [tp]
+  );
   const [active, setActive] = useState<Item | null>(null);
 
   useEffect(() => {
@@ -38,13 +43,12 @@ export default function Portfolio() {
               as="h2"
               className="text-3xl md:text-5xl font-semibold tracking-tight"
             >
-              실제 만든 사이트들.
+              {tp("sectionHeading")}
             </WordReveal>
           </div>
           <Reveal delay={0.1}>
             <p className="text-[var(--color-muted)] max-w-md">
-              운영 중인 사이트와 분야별 케이스 스터디입니다.
-              카드를 누르면 디테일을 볼 수 있습니다.
+              {tp("sectionSubheading")}
             </p>
           </Reveal>
         </div>
@@ -94,12 +98,14 @@ export default function Portfolio() {
                       whileHover={{ y: "-30%" }}
                       transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
                     >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <Image
                         src={it.image}
                         alt={it.title}
+                        width={it.imageWidth}
+                        height={it.imageHeight}
                         className="w-full h-auto block select-none"
                         draggable={false}
+                        sizes="(max-width: 768px) 100vw, 50vw"
                       />
                     </motion.div>
 
@@ -159,6 +165,7 @@ export default function Portfolio() {
 }
 
 function Detail({ item, onClose }: { item: Item; onClose: () => void }) {
+  const tp = useTranslations("Portfolio");
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -176,14 +183,14 @@ function Detail({ item, onClose }: { item: Item; onClose: () => void }) {
           ← Close
         </button>
         <div className="hidden md:flex items-center gap-2 px-3 h-7 rounded-md bg-[var(--color-paper-2)] text-[11px] text-[var(--color-muted)]">
-          전체 화면을 종료하려면
+          {tp("escHint1")}
           <kbd className="px-1.5 py-0.5 rounded bg-white border border-[var(--color-line)] text-[var(--color-ink)] font-mono">esc</kbd>
-          키를 누르세요.
+          {tp("escHint2")}
         </div>
         <button
           onClick={onClose}
           className="w-9 h-9 rounded-full hover:bg-[var(--color-paper-2)] flex items-center justify-center"
-          aria-label="닫기"
+          aria-label={tp("close")}
         >
           <X size={16} />
         </button>
@@ -290,13 +297,13 @@ function Detail({ item, onClose }: { item: Item; onClose: () => void }) {
             </div>
             {/* Screen content — full-page natural height */}
             <div className="relative bg-white">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={item.image}
                 alt={item.title}
                 width={item.imageWidth}
                 height={item.imageHeight}
                 className="w-full h-auto block"
+                sizes="(max-width: 1024px) 100vw, 1024px"
               />
             </div>
           </motion.div>
@@ -325,7 +332,7 @@ function Detail({ item, onClose }: { item: Item; onClose: () => void }) {
               onClick={onClose}
               className="inline-flex items-center gap-2 h-12 px-5 rounded-full border border-[var(--color-line)] hover:border-[var(--color-ink)] transition text-sm"
             >
-              케이스 스터디 페이지
+              {tp("caseStudyLink")}
             </Link>
             <a
               href={item.liveUrl}
@@ -333,7 +340,7 @@ function Detail({ item, onClose }: { item: Item; onClose: () => void }) {
               rel={item.isLive ? "noopener noreferrer" : undefined}
               className="group inline-flex items-center gap-3 h-12 pl-6 pr-2 rounded-full bg-[var(--color-ink)] text-white font-medium hover:bg-[var(--color-ink-2)] transition"
             >
-              {item.isLive ? "라이브 사이트 방문" : "데모 둘러보기"}
+              {item.isLive ? tp("liveVisit") : tp("demoTry")}
               <span className="font-mono text-xs text-white/50">{item.liveLabel}</span>
               <span className="w-9 h-9 rounded-full bg-white text-[var(--color-ink)] flex items-center justify-center group-hover:rotate-45 transition-transform duration-500">
                 <ArrowUpRight size={16} />
