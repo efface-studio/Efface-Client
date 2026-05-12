@@ -211,7 +211,7 @@
     "subheading": "Pick a project type and rough size. Real quotes come after we talk — this is just a starting point.",
     "estimateLabel": "Estimated price",
     "realtime": "Live calc",
-    "currencyUnit": "K KRW",
+    "currencyUnit": "",
     "durationLabel": "Estimated {lo}–{hi} weeks",
     "base": "Base",
     "extraPages": "Extra pages × {n}",
@@ -233,7 +233,13 @@
       { "key": "i18n", "label": "Multilingual (KR/EN)" },
       { "key": "cms", "label": "CMS / admin" },
       { "key": "search", "label": "Search · filters" },
-      { "key": "ai", "label": "AI integration" }
+      { "key": "ai", "label": "AI integration" },
+      { "key": "analytics", "label": "Analytics · dashboard" },
+      { "key": "booking", "label": "Booking · scheduling" },
+      { "key": "chat", "label": "Live chat" },
+      { "key": "blog", "label": "Blog · magazine" },
+      { "key": "seo", "label": "SEO optimization" },
+      { "key": "gallery", "label": "Gallery · portfolio" }
     ]
   },
   "Process": {
@@ -313,6 +319,24 @@
     "form": {
       "optional": "optional",
       "submitNote": "We'll reply to your email within 1 business day.",
+      "estimatorIntro": "[From the price estimator]",
+      "estimatorPages": "Pages: {n}",
+      "estimatorFeatures": "Add-on features",
+      "estimatorReplaceHint": "↑ Feel free to replace this with your own project description.",
+      "estimatorFeatureLabels": {
+        "auth": "Sign-up · auth",
+        "payment": "Payments",
+        "i18n": "Multilingual",
+        "cms": "CMS / admin",
+        "search": "Search · filters",
+        "ai": "AI integration",
+        "analytics": "Analytics · dashboard",
+        "booking": "Booking · scheduling",
+        "chat": "Live chat",
+        "blog": "Blog · magazine",
+        "seo": "SEO optimization",
+        "gallery": "Gallery · portfolio"
+      },
       "sections": {
         "contact": "Contact",
         "contactSub": "How we'll get back to you",

@@ -4,12 +4,30 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations, useLocale } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { buildApplySchema, type ApplyInput, type ApplyErrorMessages } from "@/lib/schema";
 import { Paperclip, X, Check, ArrowRight } from "lucide-react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { Link } from "@/i18n/navigation";
 import DatePicker from "@/components/DatePicker";
 import { ChevronDown } from "lucide-react";
+
+// Map an estimated KRW (만원) price into one of the apply form's budget
+// buckets so the PriceEstimator → apply autofill picks a sensible default.
+function budgetFromEstimate(estLoMan: number): string {
+  if (estLoMan < 30) return "u30";
+  if (estLoMan < 70) return "30-70";
+  if (estLoMan < 150) return "70-150";
+  if (estLoMan < 300) return "150-300";
+  return "300p";
+}
+
+const ESTIMATOR_SERVICES: Record<string, string> = {
+  landing: "landing",
+  brand: "brand",
+  shop: "shop",
+  webapp: "webapp",
+};
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -113,11 +131,48 @@ export default function ApplyForm() {
     handleSubmit,
     reset,
     control,
+    setValue,
     formState: { errors },
   } = useForm<ApplyInput>({
     resolver: zodResolver(schema),
     mode: "onBlur",
   });
+
+  // Prefill from PriceEstimator query params: ?service=brand&pages=8
+  //   &features=cms,auth&lo=171&hi=231 (lo/hi in 만원).
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const qService = searchParams.get("service");
+    const qPages = searchParams.get("pages");
+    const qFeatures = searchParams.get("features");
+    const qLo = searchParams.get("lo");
+    if (qService && ESTIMATOR_SERVICES[qService]) {
+      setValue("serviceType", ESTIMATOR_SERVICES[qService] as ApplyInput["serviceType"]);
+    }
+    if (qLo) {
+      const lo = parseInt(qLo, 10);
+      if (Number.isFinite(lo) && lo > 0) {
+        setValue("budget", budgetFromEstimate(lo) as ApplyInput["budget"]);
+      }
+    }
+    if (qService || qPages || qFeatures) {
+      const featureLabels = (t.raw("estimatorFeatureLabels") as Record<string, string>) ?? {};
+      const serviceLabel = (t.raw("services") as { value: string; label: string }[])
+        .find((s) => s.value === ESTIMATOR_SERVICES[qService || ""])?.label ?? qService;
+      const featList = (qFeatures || "")
+        .split(",")
+        .filter(Boolean)
+        .map((k) => featureLabels[k] || k);
+      const lines: string[] = [t("estimatorIntro")];
+      if (serviceLabel) lines.push(`· ${t("fields.service")}: ${serviceLabel}`);
+      if (qPages) lines.push(`· ${t("estimatorPages", { n: qPages })}`);
+      if (featList.length > 0) lines.push(`· ${t("estimatorFeatures")}: ${featList.join(", ")}`);
+      lines.push("", t("estimatorReplaceHint"));
+      setValue("description", lines.join("\n"));
+    }
+    // We only want this to run once after mount when query params exist.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Watch the email field — if the user edits it after verifying,
   // the verified state must drop (the token is bound to the old email).
@@ -130,7 +185,20 @@ export default function ApplyForm() {
       setCodeInput("");
       setVerifyError("");
     }
+    // Also clear lingering verifyError when the email field changes — so
+    // typos that triggered the "올바른 이메일 형식이 아닙니다." inline message
+    // disappear once the user fixes the address.
+    if (verifyError) setVerifyError("");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchedEmail, verifiedEmail]);
+
+  // Light client-side validity for the email format — used to decide whether
+  // to surface the "코드 받기" button. Keep regex coarse on purpose; the
+  // server-side Zod is the source of truth.
+  const emailLooksValid = useMemo(
+    () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((watchedEmail || "").trim()),
+    [watchedEmail]
+  );
 
   // Resend cooldown ticker
   useEffect(() => {
@@ -414,7 +482,7 @@ export default function ApplyForm() {
           <input className={fieldBase} placeholder={t("placeholders.phone")} maxLength={30} {...register("phone")} />
         </Field>
       </div>
-      <Field label={t("fields.email")} error={errors.email?.message}>
+      <Field label={t("fields.email")} error={verifyError ? undefined : errors.email?.message}>
           {verifyStep === "verified" ? (
             <>
               <motion.div
@@ -466,20 +534,29 @@ export default function ApplyForm() {
                 maxLength={120}
                 {...register("email")}
               />
-              <button
-                type="button"
-                onClick={sendCode}
-                disabled={verifyStep === "sending" || resendCooldownSec > 0}
-                className="inline-flex items-center justify-center h-12 px-4 rounded-lg border border-[var(--color-line)] bg-white hover:border-[var(--color-ink)] disabled:opacity-50 disabled:cursor-not-allowed transition text-sm font-medium shrink-0"
-              >
-                {verifyStep === "sending"
-                  ? t("verify.sending")
-                  : resendCooldownSec > 0
-                  ? t("verify.resendIn", { sec: resendCooldownSec })
-                  : verifyStep === "sent"
-                  ? t("verify.resend")
-                  : t("verify.sendCode")}
-              </button>
+              <AnimatePresence initial={false}>
+                {(emailLooksValid || verifyStep === "sent" || verifyStep === "verifying" || resendCooldownSec > 0) && (
+                  <motion.button
+                    key="send-code-btn"
+                    type="button"
+                    onClick={sendCode}
+                    disabled={verifyStep === "sending" || resendCooldownSec > 0}
+                    initial={{ opacity: 0, x: -8, width: 0 }}
+                    animate={{ opacity: 1, x: 0, width: "auto" }}
+                    exit={{ opacity: 0, x: -8, width: 0 }}
+                    transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                    className="inline-flex items-center justify-center h-12 px-4 rounded-lg border border-[var(--color-line)] bg-white hover:border-[var(--color-ink)] disabled:opacity-50 disabled:cursor-not-allowed transition text-sm font-medium shrink-0 overflow-hidden whitespace-nowrap"
+                  >
+                    {verifyStep === "sending"
+                      ? t("verify.sending")
+                      : resendCooldownSec > 0
+                      ? t("verify.resendIn", { sec: resendCooldownSec })
+                      : verifyStep === "sent"
+                      ? t("verify.resend")
+                      : t("verify.sendCode")}
+                  </motion.button>
+                )}
+              </AnimatePresence>
             </div>
           )}
           {verifyStep === "sent" || verifyStep === "verifying" ? (
