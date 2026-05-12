@@ -49,9 +49,30 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: securityHeaders,
       },
+      {
+        // Long-term cache for portfolio images and other static public assets
+        // that have stable content (we re-deploy when they change).
+        source: "/portfolio/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+      {
+        source: "/(.*)\\.(svg|woff|woff2|ico)",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
     ];
   },
-  // Trim build size by tree-shaking lucide-react icons
+  images: {
+    // Prefer AVIF (smaller) and fall back to WebP. Browsers that support neither
+    // get the original (rare in 2026 for our audience).
+    formats: ["image/avif", "image/webp"],
+    // Generated <Image> variants get cached at the CDN for a year.
+    minimumCacheTTL: 31536000,
+  },
+  // Tree-shake icon/animation libs so unused exports don't ship.
   experimental: {
     optimizePackageImports: ["lucide-react", "motion"],
   },

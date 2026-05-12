@@ -60,6 +60,8 @@ function Chip({ item, ariaLabelSuffix }: { item: Item; ariaLabelSuffix: string }
             alt=""
             width={20}
             height={20}
+            loading="lazy"
+            decoding="async"
             className="absolute inset-0 transition-opacity duration-300 group-hover:opacity-0"
             draggable={false}
           />
@@ -69,6 +71,8 @@ function Chip({ item, ariaLabelSuffix }: { item: Item; ariaLabelSuffix: string }
             alt={item.name}
             width={20}
             height={20}
+            loading="lazy"
+            decoding="async"
             className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
             draggable={false}
           />
