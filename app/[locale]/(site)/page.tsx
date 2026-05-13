@@ -3,6 +3,11 @@ import Marquee from "@/components/sections/Marquee";
 import Stats from "@/components/sections/Stats";
 import Manifesto from "@/components/sections/Manifesto";
 import Services from "@/components/sections/Services";
+
+// ISR: render once at build, revalidate every 5 minutes. Combined with the
+// Cache-Control header in next.config.ts this lets Cloudflare + Vercel cache
+// the HTML at edge so repeat visitors don't pay the us-east-1 SSR round-trip.
+export const revalidate = 300;
 import Portfolio from "@/components/sections/Portfolio";
 import Testimonials from "@/components/sections/Testimonials";
 import Pricing from "@/components/sections/Pricing";
