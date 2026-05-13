@@ -24,7 +24,7 @@ export async function generateMetadata(
   const item = await getItem(slug, locale);
   if (!item) return { title: "Not found" };
   return {
-    title: `${item.title} — efface`,
+    title: item.title,
     description: item.summary,
     openGraph: {
       title: item.title,
