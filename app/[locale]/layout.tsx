@@ -28,7 +28,7 @@ export async function generateMetadata({
   return {
     metadataBase: new URL(SITE_URL),
     title: {
-      default: "efface",
+      default: fullTitle,
       template: "%s | efface",
     },
     description,
