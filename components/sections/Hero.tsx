@@ -14,8 +14,6 @@ import {
 import { ArrowRight, Check } from "lucide-react";
 import MagneticButton from "@/components/MagneticButton";
 
-const ease = [0.22, 1, 0.36, 1] as const;
-
 export default function Hero() {
   const t = useTranslations("Hero");
   const bullets = t.raw("bullets") as string[];
@@ -87,44 +85,30 @@ export default function Hero() {
         className="relative max-w-[1200px] mx-auto px-5 md:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center"
       >
         <div>
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="inline-flex items-center gap-2 h-7 pl-2 pr-3 rounded-full border border-[var(--color-line)] bg-white text-xs"
-          >
+          {/* Foreground Hero content used to fade in from opacity:0 with a
+             stagger up to ~1s. On a cross-Pacific first paint that read as
+             "site is still loading" because the SSR'd HTML was hidden until
+             motion hydrated. Render the content immediately visible instead;
+             the cursor/scroll parallax layers + Reveal on lower sections
+             carry the motion language. */}
+          <div className="inline-flex items-center gap-2 h-7 pl-2 pr-3 rounded-full border border-[var(--color-line)] bg-white text-xs">
             <span className="relative inline-flex">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-success)]" />
               <span className="absolute inset-0 rounded-full bg-[var(--color-success)] animate-ping" />
             </span>
             <span className="text-[var(--color-muted)]">{t("badge")}</span>
-          </motion.div>
+          </div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.05, ease }}
-            className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight leading-[1.1]"
-          >
+          <h1 className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight leading-[1.1]">
             {t("headingLine1")}<br />
             <span className="text-[var(--color-muted)]">{t("headingLine2")}</span>
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15, ease }}
-            className="mt-6 text-base md:text-lg text-[var(--color-muted)] leading-relaxed max-w-xl"
-          >
+          <p className="mt-6 text-base md:text-lg text-[var(--color-muted)] leading-relaxed max-w-xl">
             {t("subheading")}
-          </motion.p>
+          </p>
 
-          <motion.ul
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25, ease }}
-            className="mt-7 space-y-2 text-[15px]"
-          >
+          <ul className="mt-7 space-y-2 text-[15px]">
             {bullets.map((bullet) => (
               <li key={bullet} className="flex items-center gap-2.5">
                 <span className="w-5 h-5 rounded-full bg-[var(--color-ink)] text-white flex items-center justify-center shrink-0">
@@ -133,14 +117,9 @@ export default function Hero() {
                 {bullet}
               </li>
             ))}
-          </motion.ul>
+          </ul>
 
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35, ease }}
-            className="mt-9 flex flex-wrap gap-3"
-          >
+          <div className="mt-9 flex flex-wrap gap-3">
             <MagneticButton>
               <Link
                 href="/apply"
@@ -158,7 +137,7 @@ export default function Hero() {
                 {t("ctaSecondary")}
               </a>
             </MagneticButton>
-          </motion.div>
+          </div>
 
           <div className="mt-10 flex items-center gap-4 text-xs text-[var(--color-muted)] flex-wrap">
             <div className="flex items-center -space-x-2">
@@ -188,13 +167,8 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Terminal-style card */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2, ease }}
-          className="relative"
-        >
+        {/* Terminal-style card — visible immediately on first paint */}
+        <div className="relative">
           <div className="rounded-xl border border-[var(--color-line)] bg-white shadow-[0_8px_40px_rgba(37,99,235,0.08)] overflow-hidden">
             <div className="flex items-center justify-between px-4 h-9 border-b border-[var(--color-line)] bg-[var(--color-paper-2)]">
               <div className="flex items-center gap-1.5">
@@ -254,7 +228,7 @@ export default function Hero() {
           <div className="absolute -top-3 -right-3 md:-right-5 inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[var(--color-ink)] text-white text-xs font-medium shadow-lg">
             <span className="font-mono">$</span> npm run build
           </div>
-        </motion.div>
+        </div>
       </motion.div>
     </section>
   );
