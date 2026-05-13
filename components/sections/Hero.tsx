@@ -85,13 +85,12 @@ export default function Hero() {
         className="relative max-w-[1200px] mx-auto px-5 md:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center"
       >
         <div>
-          {/* Foreground Hero content used to fade in from opacity:0 with a
-             stagger up to ~1s. On a cross-Pacific first paint that read as
-             "site is still loading" because the SSR'd HTML was hidden until
-             motion hydrated. Render the content immediately visible instead;
-             the cursor/scroll parallax layers + Reveal on lower sections
-             carry the motion language. */}
-          <div className="inline-flex items-center gap-2 h-7 pl-2 pr-3 rounded-full border border-[var(--color-line)] bg-white text-xs">
+          {/* Foreground Hero content uses CSS-driven `rise-in` so it
+             animates as soon as the stylesheet parses — no waiting on
+             framer-motion hydration. Each successive element gets a tiny
+             stagger via rise-in-dN. Reduced-motion users get the
+             non-animated final state via the @media query. */}
+          <div className="rise-in inline-flex items-center gap-2 h-7 pl-2 pr-3 rounded-full border border-[var(--color-line)] bg-white text-xs">
             <span className="relative inline-flex">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-success)]" />
               <span className="absolute inset-0 rounded-full bg-[var(--color-success)] animate-ping" />
@@ -99,16 +98,16 @@ export default function Hero() {
             <span className="text-[var(--color-muted)]">{t("badge")}</span>
           </div>
 
-          <h1 className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight leading-[1.1]">
+          <h1 className="rise-in rise-in-d1 mt-6 text-4xl md:text-6xl font-semibold tracking-tight leading-[1.1]">
             {t("headingLine1")}<br />
             <span className="text-[var(--color-muted)]">{t("headingLine2")}</span>
           </h1>
 
-          <p className="mt-6 text-base md:text-lg text-[var(--color-muted)] leading-relaxed max-w-xl">
+          <p className="rise-in rise-in-d2 mt-6 text-base md:text-lg text-[var(--color-muted)] leading-relaxed max-w-xl">
             {t("subheading")}
           </p>
 
-          <ul className="mt-7 space-y-2 text-[15px]">
+          <ul className="rise-in rise-in-d3 mt-7 space-y-2 text-[15px]">
             {bullets.map((bullet) => (
               <li key={bullet} className="flex items-center gap-2.5">
                 <span className="w-5 h-5 rounded-full bg-[var(--color-ink)] text-white flex items-center justify-center shrink-0">
@@ -119,7 +118,7 @@ export default function Hero() {
             ))}
           </ul>
 
-          <div className="mt-9 flex flex-wrap gap-3">
+          <div className="rise-in rise-in-d4 mt-9 flex flex-wrap gap-3">
             <MagneticButton>
               <Link
                 href="/apply"
@@ -167,8 +166,8 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Terminal-style card — visible immediately on first paint */}
-        <div className="relative">
+        {/* Terminal-style card — CSS rise-in keeps it lightweight */}
+        <div className="rise-in rise-in-d2 relative">
           <div className="rounded-xl border border-[var(--color-line)] bg-white shadow-[0_8px_40px_rgba(37,99,235,0.08)] overflow-hidden">
             <div className="flex items-center justify-between px-4 h-9 border-b border-[var(--color-line)] bg-[var(--color-paper-2)]">
               <div className="flex items-center gap-1.5">
