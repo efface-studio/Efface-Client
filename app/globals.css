@@ -70,6 +70,27 @@ html, body {
 @keyframes blink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
 .animate-blink { animation: blink 1.1s step-end infinite; }
 
+/* Lightweight CSS entry animation for above-the-fold elements. Runs as soon
+   as the browser parses the stylesheet — no JS hydration wait. Starts at
+   85% opacity + 6px down so the SSR'd content is already readable even
+   before the animation completes. */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise-in {
+  animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.rise-in-d1 { animation-delay: 0.06s; }
+.rise-in-d2 { animation-delay: 0.12s; }
+.rise-in-d3 { animation-delay: 0.18s; }
+.rise-in-d4 { animation-delay: 0.24s; }
+.rise-in-d5 { animation-delay: 0.30s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rise-in { animation: none; opacity: 1; transform: none; }
+}
+
 /* Underline reveal */
 .link-underline {
   background-image: linear-gradient(currentColor, currentColor);
