@@ -3,7 +3,14 @@
 import { useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { motion, useMotionValue, useSpring, useMotionTemplate } from "motion/react";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useMotionTemplate,
+  useScroll,
+  useTransform,
+} from "motion/react";
 import { ArrowRight, Check } from "lucide-react";
 import MagneticButton from "@/components/MagneticButton";
 
@@ -17,6 +24,14 @@ export default function Hero() {
   const py = useMotionValue(40);
   const sx = useSpring(px, { stiffness: 140, damping: 24, mass: 0.6 });
   const sy = useSpring(py, { stiffness: 140, damping: 24, mass: 0.6 });
+
+  // Scroll-driven parallax. As the visitor scrolls down past the hero, the
+  // dot grid drifts down at half-speed (depth illusion) and the content
+  // glides up + fades slightly. Same useScroll instance for both layers.
+  const { scrollY } = useScroll();
+  const dotsY = useTransform(scrollY, [0, 800], [0, 120]);
+  const contentY = useTransform(scrollY, [0, 600], [0, -40]);
+  const contentOpacity = useTransform(scrollY, [0, 400, 700], [1, 1, 0.7]);
 
   const onMove = (e: React.MouseEvent) => {
     const rect = ref.current?.getBoundingClientRect();
@@ -34,8 +49,12 @@ export default function Hero() {
       onMouseMove={onMove}
       className="relative pt-28 md:pt-36 pb-16 md:pb-24 border-b border-[var(--color-line)] overflow-hidden"
     >
-      {/* Base dot grid (faint) */}
-      <div className="absolute inset-0 bg-dot pointer-events-none [mask-image:linear-gradient(180deg,white,transparent)]" />
+      {/* Base dot grid (faint) — scrolls slower than the foreground for depth */}
+      <motion.div
+        aria-hidden
+        style={{ y: dotsY }}
+        className="absolute inset-0 bg-dot pointer-events-none [mask-image:linear-gradient(180deg,white,transparent)]"
+      />
 
       {/* Brighter dot grid revealed near cursor */}
       <motion.div
@@ -63,7 +82,10 @@ export default function Hero() {
         className="absolute inset-0 pointer-events-none"
       />
 
-      <div className="relative max-w-[1200px] mx-auto px-5 md:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <motion.div
+        style={{ y: contentY, opacity: contentOpacity }}
+        className="relative max-w-[1200px] mx-auto px-5 md:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center"
+      >
         <div>
           <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -233,7 +255,7 @@ export default function Hero() {
             <span className="font-mono">$</span> npm run build
           </div>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }
