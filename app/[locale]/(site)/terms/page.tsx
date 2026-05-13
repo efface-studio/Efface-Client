@@ -10,8 +10,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   return locale === "en"
-    ? { title: "Terms of Service — efface", description: "Terms governing use of the efface service." }
-    : { title: "이용약관 — efface", description: "efface 서비스 이용에 관한 약관." };
+    ? { title: "Terms of Service", description: "Terms governing use of the efface service." }
+    : { title: "이용약관", description: "efface 서비스 이용에 관한 약관." };
 }
 
 const sectionsKo = [

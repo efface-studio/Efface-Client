@@ -19,13 +19,18 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Meta" });
-  const title = t("title");
+  // Tab title is short ("efface") so it doesn't get truncated by the browser.
+  // OG / Twitter / SEO get the full tagline-bearing title separately below.
+  const fullTitle = t("title");
   const description = t("description");
   const url = locale === routing.defaultLocale ? SITE_URL : `${SITE_URL}/${locale}`;
 
   return {
     metadataBase: new URL(SITE_URL),
-    title,
+    title: {
+      default: "efface",
+      template: "%s | efface",
+    },
     description,
     applicationName: "efface",
     authors: [{ name: "Seojiwan Suh", url: SITE_URL }],
@@ -47,7 +52,7 @@ export async function generateMetadata({
       type: "website",
       url,
       siteName: "efface",
-      title,
+      title: fullTitle,
       description,
       locale: locale === "ko" ? "ko_KR" : "en_US",
       images: [
@@ -61,7 +66,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: fullTitle,
       description,
       images: [OG_IMAGE],
     },

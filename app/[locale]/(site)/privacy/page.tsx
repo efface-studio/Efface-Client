@@ -11,11 +11,11 @@ export async function generateMetadata({
   const { locale } = await params;
   return locale === "en"
     ? {
-        title: "Privacy Policy — efface",
+        title: "Privacy Policy",
         description: "How efface collects, uses, retains, and disposes of personal information.",
       }
     : {
-        title: "개인정보처리방침 — efface",
+        title: "개인정보처리방침",
         description: "efface의 개인정보 수집·이용·보관·파기에 관한 안내.",
       };
 }
