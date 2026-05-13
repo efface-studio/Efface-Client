@@ -58,6 +58,42 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        // Marketing pages — SSR'd on every request because next-intl
+        // middleware runs, but the rendered HTML is identical for everyone
+        // until we redeploy. Let the CDN (Vercel + Cloudflare) cache it for
+        // 5 min and serve stale up to an hour while revalidating, so visitors
+        // from Korea/elsewhere don't pay the round-trip to us-east-1 SSR on
+        // every page load.
+        source: "/",
+        headers: [
+          {
+            key: "Cache-Control",
+            value:
+              "public, max-age=0, s-maxage=300, stale-while-revalidate=3600",
+          },
+        ],
+      },
+      {
+        source: "/(en|ko)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value:
+              "public, max-age=0, s-maxage=300, stale-while-revalidate=3600",
+          },
+        ],
+      },
+      {
+        source: "/:locale(en|ko)?/(apply|privacy|terms)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value:
+              "public, max-age=0, s-maxage=300, stale-while-revalidate=3600",
+          },
+        ],
+      },
+      {
         source: "/(.*)\\.(svg|woff|woff2|ico)",
         headers: [
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
