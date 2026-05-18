@@ -275,6 +275,7 @@
     "pageCount": "Pages",
     "addons": "Add-on features",
     "selected": "{n} selected",
+    "included": "Included",
     "services": [
       { "key": "landing", "label": "Landing page" },
       { "key": "brand", "label": "Company / brand" },
@@ -292,7 +293,8 @@
       { "key": "booking", "label": "Booking · scheduling" },
       { "key": "chat", "label": "Live chat" },
       { "key": "blog", "label": "Blog · magazine" },
-      { "key": "gallery", "label": "Gallery · portfolio" }
+      { "key": "gallery", "label": "Gallery · portfolio" },
+      { "key": "seo", "label": "Basic SEO" }
     ]
   },
   "Process": {
@@ -387,7 +389,8 @@
         "booking": "Booking · scheduling",
         "chat": "Live chat",
         "blog": "Blog · magazine",
-        "gallery": "Gallery · portfolio"
+        "gallery": "Gallery · portfolio",
+        "seo": "Basic SEO"
       },
       "sections": {
         "contact": "Contact",

@@ -38,6 +38,9 @@ const featureConfig: { key: string; price: number; weeks: number }[] = [
   { key: "chat", price: 6, weeks: 0.4 },
   { key: "blog", price: 6, weeks: 0.4 },
   { key: "gallery", price: 4, weeks: 0.3 },
+  // Basic SEO·OG tags ship with every package, so it's a 0-cost item —
+  // shown as "included" and pre-selected, toggling it never moves the total.
+  { key: "seo", price: 0, weeks: 0 },
 ];
 
 function AnimatedNumber({ value, multiplier, prefix = "" }: { value: number; multiplier: number; prefix?: string }) {
@@ -65,7 +68,7 @@ export default function PriceEstimator() {
 
   const [service, setService] = useState<ServiceKey>("brand");
   const [pages, setPages] = useState(8);
-  const [picked, setPicked] = useState<Set<string>>(new Set(["cms"]));
+  const [picked, setPicked] = useState<Set<string>>(new Set(["cms", "seo"]));
 
   const result = useMemo(() => {
     const s = serviceConfig.find((x) => x.key === service)!;
@@ -422,7 +425,9 @@ export default function PriceEstimator() {
                             on ? "text-white/70" : "text-[var(--color-muted)]"
                           }`}
                         >
-                          +{currencyPrefix}{((cfg?.price ?? 0) * multiplier).toLocaleString()}{t("currencyUnit")}
+                          {(cfg?.price ?? 0) === 0
+                            ? t("included")
+                            : `+${currencyPrefix}${((cfg?.price ?? 0) * multiplier).toLocaleString()}${t("currencyUnit")}`}
                         </span>
                       </button>
                     );
