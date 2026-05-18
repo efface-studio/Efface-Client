@@ -37,7 +37,6 @@ const featureConfig: { key: string; price: number; weeks: number }[] = [
   { key: "booking", price: 14, weeks: 0.6 },
   { key: "chat", price: 6, weeks: 0.4 },
   { key: "blog", price: 6, weeks: 0.4 },
-  { key: "seo", price: 2, weeks: 0.2 },
   { key: "gallery", price: 4, weeks: 0.3 },
 ];
 

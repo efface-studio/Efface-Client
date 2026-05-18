@@ -292,7 +292,6 @@
       { "key": "booking", "label": "Booking · scheduling" },
       { "key": "chat", "label": "Live chat" },
       { "key": "blog", "label": "Blog · magazine" },
-      { "key": "seo", "label": "SEO optimization" },
       { "key": "gallery", "label": "Gallery · portfolio" }
     ]
   },
@@ -388,7 +387,6 @@
         "booking": "Booking · scheduling",
         "chat": "Live chat",
         "blog": "Blog · magazine",
-        "seo": "SEO optimization",
         "gallery": "Gallery · portfolio"
       },
       "sections": {
