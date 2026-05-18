@@ -16,8 +16,8 @@ const serviceConfig: {
   perPage: number;
   weeksPerPage: number;
 }[] = [
-  { key: "landing", basePrice: 12, baseWeeks: 1, perPage: 2, weeksPerPage: 0.2 },
-  { key: "brand", basePrice: 35, baseWeeks: 2, perPage: 3, weeksPerPage: 0.15 },
+  { key: "landing", basePrice: 35, baseWeeks: 1, perPage: 2, weeksPerPage: 0.2 },
+  { key: "brand", basePrice: 60, baseWeeks: 2, perPage: 3, weeksPerPage: 0.15 },
   { key: "shop", basePrice: 70, baseWeeks: 3, perPage: 4, weeksPerPage: 0.2 },
   { key: "webapp", basePrice: 85, baseWeeks: 3, perPage: 5, weeksPerPage: 0.25 },
 ];
@@ -33,7 +33,8 @@ const featureConfig: { key: string; price: number; weeks: number }[] = [
   { key: "cms", price: 15, weeks: 0.6 },
   { key: "search", price: 5, weeks: 0.4 },
   { key: "ai", price: 18, weeks: 0.6 },
-  { key: "analytics", price: 3, weeks: 0.3 },
+  // Google Analytics·GTM hookup ships with every package — 0-cost, included.
+  { key: "analytics", price: 0, weeks: 0 },
   { key: "booking", price: 14, weeks: 0.6 },
   { key: "chat", price: 6, weeks: 0.4 },
   { key: "blog", price: 6, weeks: 0.4 },
@@ -67,8 +68,12 @@ export default function PriceEstimator() {
   const currencyPrefix = locale === "ko" ? "" : "$";
 
   const [service, setService] = useState<ServiceKey>("brand");
-  const [pages, setPages] = useState(8);
-  const [picked, setPicked] = useState<Set<string>>(new Set(["cms", "seo"]));
+  // Default 5 pages = the brand tier's minimum, so the estimator opens at
+  // exactly the Standard card price (base features only, no extra pages).
+  const [pages, setPages] = useState(5);
+  // Default selection = the included (0-cost) features only, so the estimator
+  // opens at exactly the package base price. Paid add-ons start unchecked.
+  const [picked, setPicked] = useState<Set<string>>(new Set(["seo", "analytics"]));
 
   const result = useMemo(() => {
     const s = serviceConfig.find((x) => x.key === service)!;

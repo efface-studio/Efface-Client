@@ -102,10 +102,10 @@
     "periodLabel": "기간",
     "fromLabel": "시작가",
     "items": [
-      { "title": "랜딩 페이지", "desc": "신제품·서비스 출시, 캠페인, 채용 페이지 등.", "period": "1~2주", "from": "12만원" },
-      { "title": "기업·브랜드 사이트", "desc": "회사 소개, 포트폴리오, 채용까지 다중 페이지.", "period": "2~3주", "from": "35만원" },
+      { "title": "랜딩 페이지", "desc": "신제품·서비스 출시, 캠페인, 채용 페이지 등.", "period": "1~2주", "from": "35만원" },
+      { "title": "기업·브랜드 사이트", "desc": "회사 소개, 포트폴리오, 채용까지 다중 페이지.", "period": "2~3주", "from": "60만원" },
       { "title": "쇼핑몰 / 커머스", "desc": "결제(PG)·재고·주문 관리 연동, 자체 운영 가능.", "period": "3~5주", "from": "70만원" },
-      { "title": "사내 관리툴 / 웹앱", "desc": "데이터 기반 서비스, 어드민, 대시보드.", "period": "3주~", "from": "65만원" },
+      { "title": "사내 관리툴 / 웹앱", "desc": "데이터 기반 서비스, 어드민, 대시보드.", "period": "3주~", "from": "85만원" },
       { "title": "모바일 청첩장 / 초대장", "desc": "이벤트, 결혼식, 행사 초대용 모바일 페이지.", "period": "1~3일", "from": "2만원" },
       { "title": "기존 사이트 리뉴얼", "desc": "느린 사이트 마이그레이션, 디자인 개편, 기능 추가.", "period": "범위에 따라", "from": "협의" }
     ]
@@ -289,7 +289,7 @@
       { "key": "cms", "label": "CMS / 관리자" },
       { "key": "search", "label": "검색 · 필터" },
       { "key": "ai", "label": "AI 기능 연동" },
-      { "key": "analytics", "label": "분석 · 대시보드" },
+      { "key": "analytics", "label": "Google Analytics 연동" },
       { "key": "booking", "label": "예약 · 일정 관리" },
       { "key": "chat", "label": "실시간 채팅" },
       { "key": "blog", "label": "블로그 · 매거진" },
@@ -385,7 +385,7 @@
         "cms": "CMS / 관리자",
         "search": "검색 · 필터",
         "ai": "AI 기능 연동",
-        "analytics": "분석 · 대시보드",
+        "analytics": "Google Analytics 연동",
         "booking": "예약 · 일정 관리",
         "chat": "실시간 채팅",
         "blog": "블로그 · 매거진",
