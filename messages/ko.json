@@ -275,6 +275,7 @@
     "pageCount": "페이지 수",
     "addons": "추가 기능",
     "selected": "{n}개 선택됨",
+    "included": "포함",
     "services": [
       { "key": "landing", "label": "랜딩 페이지" },
       { "key": "brand", "label": "기업·브랜드 사이트" },
@@ -292,7 +293,8 @@
       { "key": "booking", "label": "예약 · 일정 관리" },
       { "key": "chat", "label": "실시간 채팅" },
       { "key": "blog", "label": "블로그 · 매거진" },
-      { "key": "gallery", "label": "갤러리 · 포트폴리오" }
+      { "key": "gallery", "label": "갤러리 · 포트폴리오" },
+      { "key": "seo", "label": "기본 SEO 최적화" }
     ]
   },
   "Process": {
@@ -387,7 +389,8 @@
         "booking": "예약 · 일정 관리",
         "chat": "실시간 채팅",
         "blog": "블로그 · 매거진",
-        "gallery": "갤러리 · 포트폴리오"
+        "gallery": "갤러리 · 포트폴리오",
+        "seo": "기본 SEO 최적화"
       },
       "sections": {
         "contact": "연락처",
