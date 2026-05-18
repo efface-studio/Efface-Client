@@ -92,22 +92,39 @@ export default function Portfolio() {
 
                   {/* Screenshot — fixed window into the top of the page, parallax on hover */}
                   <div className="aspect-[16/10] relative overflow-hidden bg-white">
-                    <motion.div
-                      className="absolute inset-x-0 top-0"
-                      initial={false}
-                      whileHover={{ y: "-30%" }}
-                      transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
-                    >
-                      <Image
-                        src={it.image}
-                        alt={it.title}
-                        width={it.imageWidth}
-                        height={it.imageHeight}
-                        className="w-full h-auto block select-none"
-                        draggable={false}
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                      />
-                    </motion.div>
+                    {it.image ? (
+                      <motion.div
+                        className="absolute inset-x-0 top-0"
+                        initial={false}
+                        whileHover={{ y: "-30%" }}
+                        transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        <Image
+                          src={it.image}
+                          alt={it.title}
+                          width={it.imageWidth}
+                          height={it.imageHeight}
+                          className="w-full h-auto block select-none"
+                          draggable={false}
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                        />
+                      </motion.div>
+                    ) : (
+                      // Items without a screenshot (e.g. the studio's own site)
+                      // get a branded wordmark placeholder instead.
+                      <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-paper-2)]">
+                        <div
+                          aria-hidden
+                          className="absolute inset-0 opacity-70"
+                          style={{
+                            background: `radial-gradient(ellipse at 50% 40%, ${it.glow} 0%, transparent 70%)`,
+                          }}
+                        />
+                        <span className="relative text-3xl md:text-4xl font-bold tracking-tight text-[var(--color-ink)]">
+                          {it.title}
+                        </span>
+                      </div>
+                    )}
 
                     {/* Status badge */}
                     <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 h-6 px-2.5 rounded-full bg-white/95 backdrop-blur text-[10px] font-medium tracking-wide border border-[var(--color-line)]">
@@ -273,40 +290,42 @@ function Detail({ item, onClose }: { item: Item; onClose: () => void }) {
           </motion.h3>
 
           {/* Browser-chromed screenshot — full bleed product shot */}
-          <motion.div
-            initial={{ y: 40, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="relative rounded-xl md:rounded-2xl overflow-hidden border border-[var(--color-line)] bg-white"
-            style={{
-              boxShadow: `0 40px 120px -20px ${item.glow.replace(/0\.\d+/, "0.5")}, 0 0 0 1px rgba(0,0,0,0.04)`,
-            }}
-          >
-            {/* Browser chrome */}
-            <div className="h-9 md:h-11 bg-[var(--color-paper-2)] flex items-center px-3 md:px-5 gap-3 border-b border-[var(--color-line)]">
-              <div className="flex gap-1.5 shrink-0">
-                <span className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#FF5F57]" />
-                <span className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#FEBC2E]" />
-                <span className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#28C840]" />
+          {item.image ? (
+            <motion.div
+              initial={{ y: 40, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="relative rounded-xl md:rounded-2xl overflow-hidden border border-[var(--color-line)] bg-white"
+              style={{
+                boxShadow: `0 40px 120px -20px ${item.glow.replace(/0\.\d+/, "0.5")}, 0 0 0 1px rgba(0,0,0,0.04)`,
+              }}
+            >
+              {/* Browser chrome */}
+              <div className="h-9 md:h-11 bg-[var(--color-paper-2)] flex items-center px-3 md:px-5 gap-3 border-b border-[var(--color-line)]">
+                <div className="flex gap-1.5 shrink-0">
+                  <span className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#FF5F57]" />
+                  <span className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#FEBC2E]" />
+                  <span className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#28C840]" />
+                </div>
+                <div className="flex-1 max-w-md mx-auto h-6 md:h-7 rounded-md bg-white border border-[var(--color-line)] px-3 flex items-center text-[11px] md:text-xs text-[var(--color-muted)] font-mono">
+                  {item.host}
+                </div>
+                <div className="w-12 shrink-0" />
               </div>
-              <div className="flex-1 max-w-md mx-auto h-6 md:h-7 rounded-md bg-white border border-[var(--color-line)] px-3 flex items-center text-[11px] md:text-xs text-[var(--color-muted)] font-mono">
-                {item.host}
+              {/* Screen content — full-page natural height */}
+              <div className="relative bg-white">
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  width={item.imageWidth}
+                  height={item.imageHeight}
+                  className="w-full h-auto block"
+                  sizes="(max-width: 1024px) 100vw, 1024px"
+                />
               </div>
-              <div className="w-12 shrink-0" />
-            </div>
-            {/* Screen content — full-page natural height */}
-            <div className="relative bg-white">
-              <Image
-                src={item.image}
-                alt={item.title}
-                width={item.imageWidth}
-                height={item.imageHeight}
-                className="w-full h-auto block"
-                sizes="(max-width: 1024px) 100vw, 1024px"
-              />
-            </div>
-          </motion.div>
+            </motion.div>
+          ) : null}
         </div>
       </div>
 

@@ -88,7 +88,7 @@ function sanitizeFilename(name: string): string {
     .slice(0, 120) || "file";
 }
 
-export default function ApplyForm() {
+export default function ApplyForm({ phoneVerifyEnabled = false }: { phoneVerifyEnabled?: boolean }) {
   const t = useTranslations("Apply.form");
   const locale = useLocale();
 
@@ -125,6 +125,15 @@ export default function ApplyForm() {
   const [verifyError, setVerifyError] = useState("");
   const [resendCooldownSec, setResendCooldownSec] = useState(0);
   const cooldownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // ─── Phone OTP verification state (parallel structure) ─────────
+  const [phoneVerifyStep, setPhoneVerifyStep] = useState<VerifyStep>("idle");
+  const [verifiedPhone, setVerifiedPhone] = useState<string | null>(null);
+  const [phoneVerifyToken, setPhoneVerifyToken] = useState<string | null>(null);
+  const [phoneCodeInput, setPhoneCodeInput] = useState("");
+  const [phoneVerifyError, setPhoneVerifyError] = useState("");
+  const [phoneResendCooldownSec, setPhoneResendCooldownSec] = useState(0);
+  const phoneCooldownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const {
     register,
@@ -200,6 +209,30 @@ export default function ApplyForm() {
     [watchedEmail]
   );
 
+  // Watch the phone field — same reset semantics as email.
+  const watchedPhone = useWatch({ control, name: "phone" });
+  const phoneCanonical = useMemo(
+    () => (watchedPhone || "").replace(/[^\d]/g, ""),
+    [watchedPhone]
+  );
+  useEffect(() => {
+    if (verifiedPhone && phoneCanonical !== verifiedPhone) {
+      setPhoneVerifyStep("idle");
+      setPhoneVerifyToken(null);
+      setVerifiedPhone(null);
+      setPhoneCodeInput("");
+      setPhoneVerifyError("");
+    }
+    if (phoneVerifyError) setPhoneVerifyError("");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phoneCanonical, verifiedPhone]);
+
+  // 010-XXXX-XXXX with optional dashes — same regex as the Zod schema.
+  const phoneLooksValid = useMemo(
+    () => /^010-?\d{4}-?\d{4}$/.test((watchedPhone || "").trim()),
+    [watchedPhone]
+  );
+
   // Resend cooldown ticker
   useEffect(() => {
     if (resendCooldownSec <= 0) return;
@@ -210,6 +243,17 @@ export default function ApplyForm() {
       if (cooldownTimerRef.current) clearInterval(cooldownTimerRef.current);
     };
   }, [resendCooldownSec]);
+
+  // Phone resend cooldown ticker (parallel to email)
+  useEffect(() => {
+    if (phoneResendCooldownSec <= 0) return;
+    phoneCooldownTimerRef.current = setInterval(() => {
+      setPhoneResendCooldownSec((s) => (s <= 1 ? 0 : s - 1));
+    }, 1000);
+    return () => {
+      if (phoneCooldownTimerRef.current) clearInterval(phoneCooldownTimerRef.current);
+    };
+  }, [phoneResendCooldownSec]);
 
   const sendCode = async () => {
     setVerifyError("");
@@ -270,6 +314,64 @@ export default function ApplyForm() {
     }
   };
 
+  const sendPhoneCode = async () => {
+    setPhoneVerifyError("");
+    const raw = (watchedPhone || "").trim();
+    if (!/^010-?\d{4}-?\d{4}$/.test(raw)) {
+      setPhoneVerifyError(t("errors.phoneFormat"));
+      return;
+    }
+    setPhoneVerifyStep("sending");
+    try {
+      const res = await fetch("/api/apply/send-phone-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: raw, locale }),
+      });
+      const j = await res.json().catch(() => null);
+      if (!res.ok) {
+        const fallback = res.status >= 500
+          ? t("verifyPhone.errorSendFailed")
+          : t("errors.unknown");
+        throw new Error(j?.error || fallback);
+      }
+      setPhoneVerifyStep("sent");
+      setPhoneResendCooldownSec(60);
+    } catch (e: unknown) {
+      setPhoneVerifyError(e instanceof Error ? e.message : t("errors.unknown"));
+      setPhoneVerifyStep("idle");
+    }
+  };
+
+  const submitPhoneCode = async () => {
+    setPhoneVerifyError("");
+    const raw = (watchedPhone || "").trim();
+    const code = phoneCodeInput.replace(/\D/g, "").slice(0, 6);
+    if (code.length !== 6) {
+      setPhoneVerifyError(t("verify.errorBadCode"));
+      return;
+    }
+    setPhoneVerifyStep("verifying");
+    try {
+      const res = await fetch("/api/apply/verify-phone-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: raw, code }),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok || !j?.token) throw new Error(j?.error || t("verify.errorBadCode"));
+      setPhoneVerifyToken(j.token);
+      // Store the canonical (digits-only) form so the watch effect doesn't
+      // false-trigger on dash whitespace changes.
+      setVerifiedPhone(raw.replace(/[^\d]/g, ""));
+      setPhoneVerifyStep("verified");
+      setPhoneCodeInput("");
+    } catch (e: unknown) {
+      setPhoneVerifyError(e instanceof Error ? e.message : t("errors.unknown"));
+      setPhoneVerifyStep("sent");
+    }
+  };
+
   const onPickFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
     e.target.value = "";
@@ -308,13 +410,31 @@ export default function ApplyForm() {
       setErrorMsg(t("verify.errorRequired"));
       return;
     }
+    // Same gate for the phone token — only when SMS verification is enabled.
+    // Compare on digits-only form so dashes typed after verifying don't
+    // trigger a false mismatch.
+    const submittedPhoneCanonical = data.phone.replace(/[^\d]/g, "");
+    if (phoneVerifyEnabled) {
+      if (phoneVerifyStep !== "verified" || !phoneVerifyToken || verifiedPhone !== submittedPhoneCanonical) {
+        setStatus("error");
+        setErrorMsg(t("verifyPhone.errorRequired"));
+        return;
+      }
+    }
     setStatus("submitting");
     setErrorMsg("");
     try {
       const res = await fetch("/api/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, attachments, website: honey, locale, verifyToken }),
+        body: JSON.stringify({
+          ...data,
+          attachments,
+          website: honey,
+          locale,
+          verifyToken,
+          phoneVerifyToken,
+        }),
       });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
@@ -328,6 +448,9 @@ export default function ApplyForm() {
       setVerifyToken(null);
       setVerifiedEmail(null);
       setVerifyStep("idle");
+      setPhoneVerifyToken(null);
+      setVerifiedPhone(null);
+      setPhoneVerifyStep("idle");
     } catch (e: unknown) {
       setStatus("error");
       setErrorMsg(e instanceof Error ? e.message : t("errors.unknown"));
@@ -474,14 +597,137 @@ export default function ApplyForm() {
       {/* ─── 01 Contact ────────────────────────────────────────── */}
       <section className="space-y-6">
       <SectionHeader number="01" title={t("sections.contact")} subtitle={t("sections.contactSub")} />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Field label={t("fields.name")} error={errors.name?.message}>
-          <input className={fieldBase} placeholder={t("placeholders.name")} maxLength={50} {...register("name")} />
-        </Field>
+      <Field label={t("fields.name")} error={errors.name?.message}>
+        <input className={fieldBase} placeholder={t("placeholders.name")} maxLength={50} {...register("name")} />
+      </Field>
+      {!phoneVerifyEnabled ? (
         <Field label={t("fields.phone")} error={errors.phone?.message}>
-          <input className={fieldBase} placeholder={t("placeholders.phone")} maxLength={30} {...register("phone")} />
+          <input
+            className={fieldBase}
+            type="tel"
+            inputMode="tel"
+            placeholder={t("placeholders.phone")}
+            maxLength={20}
+            {...register("phone")}
+          />
         </Field>
-      </div>
+      ) : (
+      <Field label={t("fields.phone")} error={phoneVerifyError ? undefined : errors.phone?.message}>
+        {phoneVerifyStep === "verified" ? (
+          <>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97, y: -2 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              className="flex items-center gap-3 h-12 px-3 rounded-lg bg-white relative overflow-hidden"
+              style={{ boxShadow: "0 0 0 1.5px var(--color-success), 0 1px 3px rgba(0,0,0,0.04)" }}
+            >
+              <span
+                className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center"
+                style={{ background: "var(--color-success)" }}
+              >
+                <Check size={13} className="text-white" strokeWidth={3} />
+              </span>
+              <span className="flex-1 text-sm text-[var(--color-ink)] truncate font-medium tracking-tight">
+                {verifiedPhone
+                  ? `${verifiedPhone.slice(0, 3)}-${verifiedPhone.slice(3, 7)}-${verifiedPhone.slice(7)}`
+                  : ""}
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setPhoneVerifyStep("idle");
+                  setPhoneVerifyToken(null);
+                  setVerifiedPhone(null);
+                  setPhoneCodeInput("");
+                  setPhoneVerifyError("");
+                }}
+                className="shrink-0 inline-flex items-center h-7 px-2.5 text-[11px] text-[var(--color-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-paper-2)] rounded-md transition"
+              >
+                {t("verify.change")}
+              </button>
+            </motion.div>
+            <p
+              className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium"
+              style={{ color: "var(--color-success)" }}
+            >
+              <Check size={12} strokeWidth={3} />
+              {t("verifyPhone.verifiedHint")}
+            </p>
+            <input type="hidden" {...register("phone")} />
+          </>
+        ) : (
+          <div className="flex gap-2">
+            <input
+              className={`${fieldBase} flex-1`}
+              type="tel"
+              inputMode="tel"
+              placeholder={t("placeholders.phone")}
+              maxLength={20}
+              {...register("phone")}
+            />
+            {(() => {
+              const showBtn =
+                phoneLooksValid ||
+                phoneVerifyStep === "sent" ||
+                phoneVerifyStep === "verifying" ||
+                phoneResendCooldownSec > 0;
+              return (
+                <button
+                  type="button"
+                  onClick={sendPhoneCode}
+                  disabled={!showBtn || phoneVerifyStep === "sending" || phoneResendCooldownSec > 0}
+                  aria-hidden={!showBtn}
+                  tabIndex={showBtn ? 0 : -1}
+                  className={`inline-flex items-center justify-center h-12 rounded-lg border border-[var(--color-line)] bg-white hover:border-[var(--color-ink)] disabled:cursor-not-allowed text-sm font-medium shrink-0 overflow-hidden whitespace-nowrap transition-[max-width,opacity,padding,margin,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                    showBtn
+                      ? "opacity-100 max-w-[200px] px-4 ml-0 translate-x-0"
+                      : "opacity-0 max-w-0 px-0 -ml-2 -translate-x-1 pointer-events-none border-transparent"
+                  }`}
+                >
+                  {phoneVerifyStep === "sending"
+                    ? t("verify.sending")
+                    : phoneResendCooldownSec > 0
+                    ? t("verify.resendIn", { sec: phoneResendCooldownSec })
+                    : phoneVerifyStep === "sent"
+                    ? t("verify.resend")
+                    : t("verifyPhone.sendCode")}
+                </button>
+              );
+            })()}
+          </div>
+        )}
+        {phoneVerifyStep === "sent" || phoneVerifyStep === "verifying" ? (
+          <div className="mt-3 flex flex-col gap-2 p-3 rounded-lg border border-[var(--color-line)] bg-[var(--color-paper-2)]">
+            <p className="text-xs text-[var(--color-muted)]">{t("verifyPhone.sentHint")}</p>
+            <div className="flex gap-2">
+              <input
+                inputMode="numeric"
+                pattern="\d{6}"
+                maxLength={6}
+                autoComplete="one-time-code"
+                placeholder="000000"
+                value={phoneCodeInput}
+                onChange={(e) => setPhoneCodeInput(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                className="flex-1 h-11 px-4 rounded-md border border-[var(--color-line)] bg-white focus:outline-none focus:border-[var(--color-ink)] font-mono tracking-[0.4em] text-center"
+              />
+              <button
+                type="button"
+                onClick={submitPhoneCode}
+                disabled={phoneCodeInput.length !== 6 || phoneVerifyStep === "verifying"}
+                className="inline-flex items-center justify-center h-11 px-5 rounded-md bg-[var(--color-ink)] text-white hover:opacity-80 disabled:opacity-40 transition text-sm font-medium shrink-0"
+              >
+                {phoneVerifyStep === "verifying" ? t("verify.verifying") : t("verify.confirm")}
+              </button>
+            </div>
+          </div>
+        ) : null}
+        {phoneVerifyError ? <p className="mt-2 text-sm text-red-600">{phoneVerifyError}</p> : null}
+        {phoneVerifyStep === "idle" && !errors.phone?.message ? (
+          <p className="mt-1.5 text-xs text-[var(--color-muted)]">{t("verifyPhone.hint")}</p>
+        ) : null}
+      </Field>
+      )}
       <Field label={t("fields.email")} error={verifyError ? undefined : errors.email?.message}>
           {verifyStep === "verified" ? (
             <>

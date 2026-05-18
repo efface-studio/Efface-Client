@@ -24,12 +24,17 @@ const defaultErrors: ApplyErrorMessages = {
   nameMin: "Name must be at least 2 characters.",
   emailFormat: "Please enter a valid email.",
   phoneMin: "Please enter a valid phone number.",
-  phoneFormat: "Only digits and -, +, space, parentheses are allowed.",
+  phoneFormat: "Only 010-prefixed mobile numbers are accepted.",
   serviceRequired: "Please select a service.",
   budgetRequired: "Please select a budget range.",
   descriptionMin: "Description must be at least 20 characters.",
   agreeRequired: "Please consent to the data policy.",
 };
+
+// 010-XXXX-XXXX with optional dashes. Server-side normalization in
+// lib/phone.ts is the source of truth; this is the user-facing gate
+// that fires before form submission.
+const KR_MOBILE_REGEX = /^010-?\d{4}-?\d{4}$/;
 
 /** Build a locale-aware Zod schema. Components pass translation strings from messages JSON. */
 export function buildApplySchema(messages: Partial<ApplyErrorMessages> = {}) {
@@ -39,8 +44,8 @@ export function buildApplySchema(messages: Partial<ApplyErrorMessages> = {}) {
     email: z.string().email(m.emailFormat),
     phone: z
       .string()
-      .min(8, m.phoneMin)
-      .regex(/^[0-9+\-\s()]+$/, m.phoneFormat),
+      .min(10, m.phoneMin)
+      .regex(KR_MOBILE_REGEX, m.phoneFormat),
     serviceType: z.enum(SERVICE_VALUES as unknown as [string, ...string[]], { message: m.serviceRequired }),
     budget: z.enum(BUDGET_VALUES as unknown as [string, ...string[]], { message: m.budgetRequired }),
     deadline: z.string().optional().or(z.literal("")),

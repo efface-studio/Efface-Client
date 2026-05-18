@@ -17,6 +17,23 @@ export type PortfolioStatic = {
   imageHeight: number;
 };
 
+// A single engineering troubleshooting case shown on the case-study page.
+// `pr` / `prLabel` are optional — some cases are operational (no code PR).
+export type TroubleshootingCase = {
+  title: string;
+  problem: string;
+  cause: string;
+  solution: string;
+  result: string;
+  pr?: string;       // GitHub PR URL
+  prLabel?: string;  // e.g. "#31 · Marquee.tsx — container gap removed"
+};
+
+export type FeatureHighlight = {
+  title: string;
+  detail: string;
+};
+
 export type PortfolioTranslated = {
   slug: string;
   title: string;
@@ -26,6 +43,8 @@ export type PortfolioTranslated = {
   summary: string;
   description: string;
   headline: string;
+  troubleshooting?: TroubleshootingCase[];
+  features?: FeatureHighlight[];
 };
 
 export type PortfolioItem = PortfolioStatic & PortfolioTranslated & {
@@ -33,6 +52,19 @@ export type PortfolioItem = PortfolioStatic & PortfolioTranslated & {
 };
 
 export const portfolioStatic: PortfolioStatic[] = [
+  {
+    slug: "EFFACE",
+    year: "2026",
+    client: "efface",
+    stack: ["Next.js 16", "TypeScript", "next-intl", "Tailwind v4", "Supabase", "Resend"],
+    host: "efface.dev",
+    liveUrl: "https://efface.dev",
+    isLive: true,
+    glow: "rgba(99, 102, 241, 0.35)",
+    image: "",
+    imageWidth: 0,
+    imageHeight: 0,
+  },
   {
     slug: "TEAMHARIBO",
     year: "2024",

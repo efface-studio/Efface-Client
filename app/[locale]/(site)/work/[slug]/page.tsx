@@ -113,36 +113,118 @@ export default async function CaseStudyPage(
             {item.headline}
           </h3>
 
-          <div
-            className="relative rounded-xl md:rounded-2xl overflow-hidden border border-[var(--color-line)] bg-white"
-            style={{
-              boxShadow: `0 40px 120px -20px ${item.glow.replace(/0\.\d+/, "0.5")}, 0 0 0 1px rgba(0,0,0,0.04)`,
-            }}
-          >
-            <div className="h-9 md:h-11 bg-[var(--color-paper-2)] flex items-center px-3 md:px-5 gap-3 border-b border-[var(--color-line)]">
-              <div className="flex gap-1.5 shrink-0">
-                <span className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#FF5F57]" />
-                <span className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#FEBC2E]" />
-                <span className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#28C840]" />
+          {item.image ? (
+            <div
+              className="relative rounded-xl md:rounded-2xl overflow-hidden border border-[var(--color-line)] bg-white"
+              style={{
+                boxShadow: `0 40px 120px -20px ${item.glow.replace(/0\.\d+/, "0.5")}, 0 0 0 1px rgba(0,0,0,0.04)`,
+              }}
+            >
+              <div className="h-9 md:h-11 bg-[var(--color-paper-2)] flex items-center px-3 md:px-5 gap-3 border-b border-[var(--color-line)]">
+                <div className="flex gap-1.5 shrink-0">
+                  <span className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#FF5F57]" />
+                  <span className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#FEBC2E]" />
+                  <span className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#28C840]" />
+                </div>
+                <div className="flex-1 max-w-md mx-auto h-6 md:h-7 rounded-md bg-white border border-[var(--color-line)] px-3 flex items-center text-[11px] md:text-xs text-[var(--color-muted)] font-mono">
+                  {item.host}
+                </div>
+                <div className="w-12 shrink-0" />
               </div>
-              <div className="flex-1 max-w-md mx-auto h-6 md:h-7 rounded-md bg-white border border-[var(--color-line)] px-3 flex items-center text-[11px] md:text-xs text-[var(--color-muted)] font-mono">
-                {item.host}
+              <div className="relative bg-white">
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  width={item.imageWidth}
+                  height={item.imageHeight}
+                  className="w-full h-auto block"
+                  sizes="(max-width: 1024px) 100vw, 1024px"
+                />
               </div>
-              <div className="w-12 shrink-0" />
             </div>
-            <div className="relative bg-white">
-              <Image
-                src={item.image}
-                alt={item.title}
-                width={item.imageWidth}
-                height={item.imageHeight}
-                className="w-full h-auto block"
-                sizes="(max-width: 1024px) 100vw, 1024px"
-              />
-            </div>
-          </div>
+          ) : null}
         </div>
       </div>
+
+      {/* ─── Troubleshooting ─────────────────────────────────────── */}
+      {item.troubleshooting && item.troubleshooting.length > 0 ? (
+        <div className="relative max-w-[1000px] mx-auto px-6 md:px-10 pb-8 md:pb-16">
+          <p className="text-xs tracking-[0.3em] text-[var(--color-muted)] uppercase mb-4">
+            — {tw("troubleshootingLabel")}
+          </p>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight mb-12 md:mb-16">
+            {tw("troubleshootingHeading")}
+          </h2>
+          <div className="space-y-5 md:space-y-6">
+            {item.troubleshooting.map((c, i) => (
+              <section
+                key={i}
+                className="rounded-2xl border border-[var(--color-line)] bg-white p-6 md:p-8"
+              >
+                <div className="flex items-baseline gap-3 mb-6">
+                  <span className="font-mono text-sm text-[var(--color-muted)] shrink-0">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="text-lg md:text-xl font-semibold tracking-tight">
+                    {c.title}
+                  </h3>
+                </div>
+                <div className="space-y-4">
+                  <TsRow label={tw("tsProblem")} value={c.problem} />
+                  <TsRow label={tw("tsCause")} value={c.cause} />
+                  <TsRow label={tw("tsSolution")} value={c.solution} accent />
+                  <TsRow label={tw("tsResult")} value={c.result} />
+                </div>
+                {c.pr ? (
+                  <a
+                    href={c.pr}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group mt-6 inline-flex items-center gap-2 h-9 pl-3 pr-3.5 rounded-full border border-[var(--color-line)] bg-[var(--color-paper-2)] text-xs font-medium hover:border-[var(--color-ink)] transition"
+                  >
+                    <span className="font-mono text-[var(--color-muted)] group-hover:text-[var(--color-ink)] transition-colors">
+                      {tw("tsViewPr")}
+                    </span>
+                    {c.prLabel ? (
+                      <span className="text-[var(--color-ink-2)] hidden sm:inline">
+                        {c.prLabel}
+                      </span>
+                    ) : null}
+                    <ArrowUpRight size={13} className="text-[var(--color-muted)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </a>
+                ) : null}
+              </section>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {/* ─── Key Features ────────────────────────────────────────── */}
+      {item.features && item.features.length > 0 ? (
+        <div className="relative max-w-[1000px] mx-auto px-6 md:px-10 pb-8 md:pb-16">
+          <p className="text-xs tracking-[0.3em] text-[var(--color-muted)] uppercase mb-4">
+            — {tw("featuresLabel")}
+          </p>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight mb-12 md:mb-16">
+            {tw("featuresHeading")}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+            {item.features.map((f, i) => (
+              <div
+                key={i}
+                className="rounded-2xl border border-[var(--color-line)] bg-white p-6 md:p-7"
+              >
+                <h3 className="text-base md:text-lg font-semibold tracking-tight mb-2.5">
+                  {f.title}
+                </h3>
+                <p className="text-sm text-[var(--color-ink-2)] leading-relaxed">
+                  {f.detail}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       <div className="relative max-w-[1280px] mx-auto px-6 md:px-10 pb-32">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-end border-t border-[var(--color-line)] pt-12">
@@ -195,6 +277,21 @@ function Meta({ label, value }: { label: string; value: string }) {
     <div>
       <div className="text-[11px] tracking-[0.3em] text-[var(--color-muted)] uppercase mb-2">{label}</div>
       <div className="text-base md:text-lg">{value}</div>
+    </div>
+  );
+}
+
+function TsRow({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-[64px_1fr] gap-1 sm:gap-4">
+      <div
+        className={`text-[11px] font-mono uppercase tracking-wider pt-0.5 ${
+          accent ? "text-[var(--color-ink)] font-semibold" : "text-[var(--color-muted)]"
+        }`}
+      >
+        {label}
+      </div>
+      <p className="text-sm text-[var(--color-ink-2)] leading-relaxed">{value}</p>
     </div>
   );
 }
