@@ -94,3 +94,66 @@ export function verifyVerifyToken(
   }
   return { ok: true };
 }
+
+// ─── Phone OTP variants ────────────────────────────────────────────
+// Phone hash/token use a "phone:" prefix in the HMAC input so a leaked
+// email hash/token can never be replayed against a phone submission and
+// vice versa. The payload field name (`p` instead of `e`) plus the
+// prefix makes them mutually unforgeable even if the same OTP_SECRET
+// is used.
+
+export function hashPhoneCode(phone: string, code: string): string {
+  return crypto
+    .createHmac("sha256", getSecret())
+    .update(`phone:${phone}:${code}`)
+    .digest("hex");
+}
+
+type PhoneVerifyPayload = { p: string; x: number };
+
+export function signPhoneVerifyToken(phone: string, ttlSec = 30 * 60): string {
+  const payload: PhoneVerifyPayload = {
+    p: phone,
+    x: Math.floor(Date.now() / 1000) + ttlSec,
+  };
+  const body = b64url(Buffer.from(JSON.stringify(payload)));
+  // Prefix the signed body with a domain separator so an email-token body
+  // can't be re-signed as a phone token even with the same secret.
+  const sig = b64url(
+    crypto.createHmac("sha256", getSecret()).update(`phone.${body}`).digest()
+  );
+  return `${body}.${sig}`;
+}
+
+export function verifyPhoneVerifyToken(
+  token: string,
+  expectedPhone: string
+): { ok: true } | { ok: false; reason: string } {
+  if (typeof token !== "string" || !token.includes(".")) {
+    return { ok: false, reason: "malformed" };
+  }
+  const [body, sig] = token.split(".");
+  const expected = b64url(
+    crypto.createHmac("sha256", getSecret()).update(`phone.${body}`).digest()
+  );
+  if (sig.length !== expected.length) return { ok: false, reason: "bad signature" };
+  if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) {
+    return { ok: false, reason: "bad signature" };
+  }
+  let payload: PhoneVerifyPayload;
+  try {
+    payload = JSON.parse(b64urlDecode(body).toString("utf8")) as PhoneVerifyPayload;
+  } catch {
+    return { ok: false, reason: "bad payload" };
+  }
+  if (typeof payload.p !== "string" || typeof payload.x !== "number") {
+    return { ok: false, reason: "bad payload shape" };
+  }
+  if (payload.x < Math.floor(Date.now() / 1000)) {
+    return { ok: false, reason: "expired" };
+  }
+  if (payload.p !== expectedPhone) {
+    return { ok: false, reason: "phone mismatch" };
+  }
+  return { ok: true };
+}

@@ -87,6 +87,38 @@ begin
 end;
 $$;
 
+-- ─── Phone OTP verification (Apply form) ─────────────────────────
+-- Mirror of email_verifications but keyed on a normalized 010 phone
+-- number ("01012345678"). The /api/apply route refuses to process a
+-- submission unless the submitter's phone has a matching verified row
+-- still within the JWT validity window.
+create table if not exists phone_verifications (
+  id uuid primary key default gen_random_uuid(),
+  phone text not null,
+  code_hash text not null,
+  attempts int not null default 0,
+  expires_at timestamptz not null,
+  verified_at timestamptz,
+  ip text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists phone_verifications_phone_idx
+  on phone_verifications(phone, created_at desc);
+create index if not exists phone_verifications_expires_idx
+  on phone_verifications(expires_at);
+
+alter table phone_verifications enable row level security;
+-- (No policies = service-role only access via SUPABASE_SERVICE_ROLE_KEY)
+
+create or replace function cleanup_old_phone_verifications() returns void
+language plpgsql security definer as $$
+begin
+  delete from phone_verifications
+   where created_at < now() - interval '24 hours';
+end;
+$$;
+
 -- ─── Cleanup function ────────────────────────────────────────────
 -- Deletes demo_jobs rows older than 7 days and their Storage objects.
 -- Schedule via Supabase Dashboard → Database → Cron Jobs:

@@ -133,7 +133,10 @@ export default async function ApplyPage({ params }: { params: Promise<{ locale: 
             </div>
           </div>
 
-          <ApplyForm />
+          {/* Phone OTP is gated on the SMS sender number being configured.
+             Until SOLAPI_SENDER_PHONE is set, the form runs email-only so a
+             missing sender can't break the live inquiry funnel. */}
+          <ApplyForm phoneVerifyEnabled={Boolean(process.env.SOLAPI_SENDER_PHONE)} />
         </div>
 
         <div className="mt-10 text-center text-xs text-[var(--color-muted)]">

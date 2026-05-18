@@ -102,11 +102,11 @@
     "periodLabel": "Duration",
     "fromLabel": "Starts at",
     "items": [
-      { "title": "Landing page", "desc": "Product launches, campaigns, hiring pages, and more.", "period": "1–2 weeks", "from": "USD 270" },
-      { "title": "Company / brand site", "desc": "About, portfolio, careers — multi-page sites with depth.", "period": "2–3 weeks", "from": "USD 700" },
-      { "title": "E-commerce", "desc": "Payments, inventory, and order management — ready to run yourself.", "period": "3–5 weeks", "from": "USD 1,400" },
-      { "title": "Internal tools / web apps", "desc": "Data-driven services, admin panels, dashboards.", "period": "3+ weeks", "from": "USD 1,200" },
-      { "title": "Mobile invitations", "desc": "Weddings, events, and other invitation pages — mobile-first.", "period": "1–3 days", "from": "USD 40" },
+      { "title": "Landing page", "desc": "Product launches, campaigns, hiring pages, and more.", "period": "1–2 weeks", "from": "USD 160" },
+      { "title": "Company / brand site", "desc": "About, portfolio, careers — multi-page sites with depth.", "period": "2–3 weeks", "from": "USD 440" },
+      { "title": "E-commerce", "desc": "Payments, inventory, and order management — ready to run yourself.", "period": "3–5 weeks", "from": "USD 880" },
+      { "title": "Internal tools / web apps", "desc": "Data-driven services, admin panels, dashboards.", "period": "3+ weeks", "from": "USD 800" },
+      { "title": "Mobile invitations", "desc": "Weddings, events, and other invitation pages — mobile-first.", "period": "1–3 days", "from": "USD 25" },
       { "title": "Site refresh", "desc": "Migrations, redesigns, and feature additions for existing sites.", "period": "Scope-based", "from": "Custom" }
     ]
   },
@@ -183,7 +183,16 @@
     "liveVisit": "Visit live site",
     "demoTry": "Open demo",
     "nextLabel": "Next",
-    "startSimilar": "Start a similar project"
+    "startSimilar": "Start a similar project",
+    "troubleshootingLabel": "Troubleshooting",
+    "troubleshootingHeading": "Problems hit while building",
+    "tsProblem": "Problem",
+    "tsCause": "Cause",
+    "tsSolution": "Solution",
+    "tsResult": "Result",
+    "tsViewPr": "View PR",
+    "featuresLabel": "Key Features",
+    "featuresHeading": "Features built from scratch"
   },
   "Portfolio": {
     "demoLinkLabel": "Open demo site",
@@ -196,6 +205,51 @@
     "liveVisit": "Visit live site",
     "demoTry": "Open demo",
     "items": [
+      {
+        "slug": "EFFACE",
+        "title": "efface studio site",
+        "category": "Studio site · Built in-house",
+        "role": "Strategy · Design · Full-stack Dev",
+        "platform": "Web · KO/EN",
+        "summary": "The official site for efface — our flagship, built by us.",
+        "description": "Our own site, built to demonstrate the exact capability efface offers as a studio.\nKorean/English bilingual, a real-time quote estimator, an inquiry form gated by two-step email + SMS verification, security headers and a WAF — built and operated at production-service quality.\nBelow is a case study of the real troubleshooting we hit while building it, and the key features we implemented.",
+        "headline": "Erase the complexity. Keep the effect.",
+        "troubleshooting": [
+          {
+            "title": "Infinite marquee loop jumped once per cycle",
+            "problem": "The tech-stack logo strip scrolls horizontally forever, but it visibly stuttered at the end of every cycle.",
+            "cause": "Rewinding the track with translateX(-50%) assumes the duplicate is exactly as wide as the original. But a container gap means N duplicated items produce 2N−1 gaps, not 2N — so the -50% rewind point was off by exactly one gap.",
+            "solution": "Removed the container gap and wrapped each chip in an equal right-padding wrapper, folding the spacing into the chip width. The duplicate then matches the original exactly.",
+            "result": "A perfectly seamless infinite loop with no visible seam.",
+            "pr": "https://github.com/efface-studio/Efface-Client/pull/31",
+            "prLabel": "#31 · components/sections/Marquee.tsx — removed container gap, added per-chip pr-4 shrink-0 wrapper"
+          },
+          {
+            "title": "Entry animation made loading feel slower",
+            "problem": "Hero content faded in on arrival, but users perceived the page as 'loading slowly'.",
+            "cause": "A JS motion library's entry animation only starts after hydration. So HTML already delivered by SSR sat invisible for a moment, looking like a blank screen.",
+            "solution": "Replaced the entry motion with CSS @keyframes. CSS animation plays on first paint without waiting for hydration; prefers-reduced-motion users are handled too.",
+            "result": "Content shows the instant it arrives, improving perceived load speed.",
+            "pr": "https://github.com/efface-studio/Efface-Client/pull/38",
+            "prLabel": "#37 dropped entry fades → #38 · app/globals.css + Hero.tsx — introduced CSS rise-in @keyframes"
+          },
+          {
+            "title": "OTP send blocked the API response",
+            "problem": "The inquiry-form email-code send API waited synchronously for the external mail send (hundreds of ms), making the response slow.",
+            "cause": "Mail delivery and the API response were on the same path, so the user waited out the full mail-server round trip.",
+            "solution": "Split the mail send off with Next.js's after() callback. Once the code row commits to the DB the response returns immediately; the mail goes out in the background.",
+            "result": "p50 response dropped below 500ms; send failures are tracked via separate logging.",
+            "pr": "https://github.com/efface-studio/Efface-Client/pull/20",
+            "prLabel": "#20 · app/api/apply/send-code/route.ts — moved the Resend send into an after() callback"
+          }
+        ],
+        "features": [
+          { "title": "Korean / English bilingual", "detail": "Built on next-intl with [locale] dynamic routing. Not just on-screen content — metadata and outbound email templates branch by locale too." },
+          { "title": "Two-step email + SMS OTP", "detail": "Blocks inquiry-form spam. HMAC-SHA256 code hashing and signed tokens implemented without an external library; SMS uses a SOLAPI integration with per-number and per-IP send limits." },
+          { "title": "Real-time quote estimator", "detail": "Pick a service type, page count, and add-on features — price and timeline compute live, and 'Apply with this spec' prefills the inquiry form with your selections." },
+          { "title": "Security fundamentals", "detail": "Full set of CSP / HSTS / X-Frame-Options headers, a Cloudflare WAF rate limit, form CSRF origin checks, a honeypot, and Zod input validation." }
+        ]
+      },
       { "slug": "TEAMHARIBO", "title": "Team branding site", "category": "Team site · Branding", "role": "Strategy · Design · Dev", "platform": "Web", "summary": "Colorful single-page site that captures the team's identity.", "description": "A single-page site introducing the team and their activities.\nMember colors are visualized as gradient badges, conveying the team's diversity. Deployed as a fast static site on Vercel.", "headline": "Built around the team's identity." },
       { "slug": "NEST", "title": "Internal ops admin", "category": "Internal tools · Admin", "role": "Product Design · Full-stack Dev", "platform": "Web", "summary": "An admin web app that runs the whole ops dashboard from one screen.", "description": "Users, schedules, work logs, meeting notes, approvals, expenses — all the data ops needs in one place.\nIncludes a preview mode you can browse without login, plus role-based access control, fast search, and snappy routing.", "headline": "One screen for the whole operation." },
       { "slug": "ROCKETSTORE", "title": "Korean-style e-commerce demo", "category": "E-commerce", "role": "Strategy · Design · Dev", "platform": "Web · Responsive", "summary": "A Korean-style e-commerce demo with a Coupang/Musinsa feel.", "description": "An e-commerce demo built around patterns familiar to Korean shoppers.\nIt ships with category/best/new/deal routing, product detail, a cart drawer, and search — all the flow of a production-ready store.", "headline": "From discovery to checkout, in one flow." },
@@ -359,7 +413,7 @@
       "placeholders": {
         "name": "Your name",
         "email": "you@example.com",
-        "phone": "+82 10-0000-0000",
+        "phone": "010-0000-0000",
         "deadline": "Pick a date",
         "selectDefault": "Select…",
         "description": "What kind of site do you need? Reference sites, key features, scope — anything helps. (min. 20 characters)",
@@ -388,6 +442,14 @@
         "change": "Change",
         "verifiedHint": "We'll reply to this address."
       },
+      "verifyPhone": {
+        "sendCode": "Send SMS code",
+        "sentHint": "Enter the 6-digit code from the SMS within 10 minutes.",
+        "hint": "Verify your Korean mobile number (010) for identity confirmation.",
+        "errorRequired": "Please verify your phone first.",
+        "errorSendFailed": "SMS failed. Please double-check the number.",
+        "verifiedHint": "Phone verified."
+      },
       "submit": "Submit",
       "submitting": "Submitting…",
       "errors": {
@@ -396,7 +458,7 @@
         "nameMin": "Name must be at least 2 characters.",
         "emailFormat": "Please enter a valid email.",
         "phoneMin": "Please enter a valid phone number.",
-        "phoneFormat": "Only digits and -, +, space, parentheses are allowed.",
+        "phoneFormat": "Only Korean mobile numbers (010-XXXX-XXXX) are accepted.",
         "serviceRequired": "Please select a service.",
         "budgetRequired": "Please select a budget range.",
         "descriptionMin": "Description must be at least 20 characters.",

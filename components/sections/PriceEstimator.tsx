@@ -16,25 +16,25 @@ const serviceConfig: {
   perPage: number;
   weeksPerPage: number;
 }[] = [
-  { key: "landing", basePrice: 35, baseWeeks: 1, perPage: 15, weeksPerPage: 0.2 },
-  { key: "brand", basePrice: 90, baseWeeks: 2, perPage: 12, weeksPerPage: 0.15 },
-  { key: "shop", basePrice: 180, baseWeeks: 3, perPage: 15, weeksPerPage: 0.2 },
-  { key: "webapp", basePrice: 200, baseWeeks: 3, perPage: 20, weeksPerPage: 0.25 },
+  { key: "landing", basePrice: 20, baseWeeks: 1, perPage: 10, weeksPerPage: 0.2 },
+  { key: "brand", basePrice: 55, baseWeeks: 2, perPage: 8, weeksPerPage: 0.15 },
+  { key: "shop", basePrice: 110, baseWeeks: 3, perPage: 10, weeksPerPage: 0.2 },
+  { key: "webapp", basePrice: 130, baseWeeks: 3, perPage: 13, weeksPerPage: 0.25 },
 ];
 
 const featureConfig: { key: string; price: number; weeks: number }[] = [
-  { key: "auth", price: 30, weeks: 0.5 },
-  { key: "payment", price: 60, weeks: 0.7 },
-  { key: "i18n", price: 25, weeks: 0.4 },
-  { key: "cms", price: 45, weeks: 0.6 },
-  { key: "search", price: 25, weeks: 0.4 },
-  { key: "ai", price: 50, weeks: 0.6 },
-  { key: "analytics", price: 20, weeks: 0.3 },
-  { key: "booking", price: 40, weeks: 0.6 },
-  { key: "chat", price: 30, weeks: 0.4 },
-  { key: "blog", price: 25, weeks: 0.4 },
-  { key: "seo", price: 15, weeks: 0.2 },
-  { key: "gallery", price: 20, weeks: 0.3 },
+  { key: "auth", price: 18, weeks: 0.5 },
+  { key: "payment", price: 35, weeks: 0.7 },
+  { key: "i18n", price: 15, weeks: 0.4 },
+  { key: "cms", price: 28, weeks: 0.6 },
+  { key: "search", price: 15, weeks: 0.4 },
+  { key: "ai", price: 30, weeks: 0.6 },
+  { key: "analytics", price: 12, weeks: 0.3 },
+  { key: "booking", price: 25, weeks: 0.6 },
+  { key: "chat", price: 18, weeks: 0.4 },
+  { key: "blog", price: 15, weeks: 0.4 },
+  { key: "seo", price: 8, weeks: 0.2 },
+  { key: "gallery", price: 12, weeks: 0.3 },
 ];
 
 function AnimatedNumber({ value, multiplier, prefix = "" }: { value: number; multiplier: number; prefix?: string }) {

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { applySchema, SERVICE_VALUES, BUDGET_VALUES, serviceLabel, budgetLabel } from "@/lib/schema";
-import { verifyVerifyToken } from "@/lib/otp";
+import { verifyVerifyToken, verifyPhoneVerifyToken } from "@/lib/otp";
+import { normalizeKrMobile } from "@/lib/phone";
 import koMessages from "@/messages/ko.json";
 import enMessages from "@/messages/en.json";
 
@@ -33,11 +34,87 @@ function rateLimit(ip: string): { ok: boolean; retryAfterSec?: number } {
 }
 
 function getClientIp(req: Request): string {
+  // `cf-connecting-ip` is the real client IP when traffic comes through the
+  // Cloudflare proxy. x-forwarded-for's first token would otherwise be a CF
+  // edge IP, not the visitor.
+  const cf = req.headers.get("cf-connecting-ip");
+  if (cf) return cf.trim();
   const xff = req.headers.get("x-forwarded-for");
   if (xff) return xff.split(",")[0].trim();
   const real = req.headers.get("x-real-ip");
   if (real) return real;
   return "unknown";
+}
+
+// ─── Request metadata collection ──────────────────────────────────────────
+// Everything we can derive about the submitter from request headers, shown
+// in the admin email to help triage spam / abuse. Not shown to the client.
+
+const COUNTRY_NAMES: Record<string, string> = {
+  KR: "대한민국", US: "미국", JP: "일본", CN: "중국", GB: "영국",
+  DE: "독일", FR: "프랑스", CA: "캐나다", AU: "호주", IN: "인도",
+  VN: "베트남", PH: "필리핀", SG: "싱가포르", HK: "홍콩", TW: "대만",
+  RU: "러시아", BR: "브라질", ID: "인도네시아", TH: "태국", MY: "말레이시아",
+};
+
+function summarizeUserAgent(ua: string): string {
+  if (!ua) return "-";
+  let os = "알 수 없음";
+  if (/iPhone|iPod/.test(ua)) os = "iOS";
+  else if (/iPad/.test(ua)) os = "iPadOS";
+  else if (/Android/.test(ua)) os = "Android";
+  else if (/Windows NT/.test(ua)) os = "Windows";
+  else if (/Mac OS X/.test(ua)) os = "macOS";
+  else if (/Linux/.test(ua)) os = "Linux";
+  let browser = "알 수 없음";
+  if (/Edg\//.test(ua)) browser = "Edge";
+  else if (/SamsungBrowser/.test(ua)) browser = "Samsung Internet";
+  else if (/Whale/.test(ua)) browser = "Whale";
+  else if (/OPR\/|Opera/.test(ua)) browser = "Opera";
+  else if (/Firefox\//.test(ua)) browser = "Firefox";
+  else if (/Chrome\//.test(ua)) browser = "Chrome";
+  else if (/Safari\//.test(ua)) browser = "Safari";
+  const device = /Mobile|Android|iPhone|iPod/.test(ua) ? "모바일" : "데스크톱";
+  return `${browser} · ${os} · ${device}`;
+}
+
+type RequestMeta = {
+  submittedAt: string;
+  ip: string;
+  country: string;
+  userAgent: string;
+  uaSummary: string;
+  referer: string;
+  acceptLanguage: string;
+  cfRay: string;
+  siteLocale: string;
+  phoneVerified: boolean;
+};
+
+function collectRequestMeta(req: Request, siteLocale: string): RequestMeta {
+  const ua = req.headers.get("user-agent") || "";
+  const cc = (req.headers.get("cf-ipcountry") || "").toUpperCase();
+  const country = cc
+    ? COUNTRY_NAMES[cc]
+      ? `${COUNTRY_NAMES[cc]} (${cc})`
+      : cc
+    : "-";
+  return {
+    submittedAt: new Intl.DateTimeFormat("ko-KR", {
+      timeZone: "Asia/Seoul",
+      dateStyle: "long",
+      timeStyle: "medium",
+    }).format(new Date()) + " (KST)",
+    ip: getClientIp(req),
+    country,
+    userAgent: ua || "-",
+    uaSummary: summarizeUserAgent(ua),
+    referer: req.headers.get("referer") || "-",
+    acceptLanguage: req.headers.get("accept-language") || "-",
+    cfRay: req.headers.get("cf-ray") || "-",
+    siteLocale: siteLocale === "ko" ? "한국어" : "English",
+    phoneVerified: Boolean(process.env.SOLAPI_SENDER_PHONE),
+  };
 }
 
 // ─── HTML escape & header sanitization ────────────────────────────────────
@@ -226,6 +303,7 @@ function adminEmailHtml(opts: {
   deadline: string;
   references: string;
   description: string;
+  meta: RequestMeta;
 }) {
   const body = `
 ${emailHeader("New inquiry")}
@@ -263,9 +341,34 @@ ${emailHeader("New inquiry")}
   </table>
 </td></tr>
 
-<tr><td style="padding:24px 32px 32px">
+<tr><td style="padding:24px 32px 8px">
   <div style="font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:0.2em;text-transform:uppercase;color:#737373;margin-bottom:10px">프로젝트 설명</div>
   <div style="background:#fafafa;border:1px solid #f0f0f0;border-radius:10px;padding:18px 20px;font-size:14px;color:#0a0a0a;line-height:1.7;white-space:pre-wrap;font-family:${FONT_STACK};word-break:break-word">${escape(opts.description)}</div>
+</td></tr>
+
+<tr><td style="padding:24px 32px 32px">
+  <div style="font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:0.2em;text-transform:uppercase;color:#737373;margin-bottom:4px">신청자 환경 정보</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    ${fieldRow("접수 시각", escape(opts.meta.submittedAt))}
+    ${fieldRow(
+      "인증 상태",
+      '<span style="color:#16a34a">✓ 이메일 인증됨</span>' +
+        (opts.meta.phoneVerified
+          ? ' &nbsp;·&nbsp; <span style="color:#16a34a">✓ 휴대폰 인증됨</span>'
+          : '')
+    )}
+    ${fieldRow("IP 주소", `<span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace">${escape(opts.meta.ip)}</span>`)}
+    ${fieldRow("접속 국가", escape(opts.meta.country))}
+    ${fieldRow("브라우저 · OS", escape(opts.meta.uaSummary))}
+    ${fieldRow("사이트 언어", escape(opts.meta.siteLocale))}
+    ${fieldRow("유입 경로", escape(opts.meta.referer))}
+    ${fieldRow("브라우저 언어", escape(opts.meta.acceptLanguage))}
+    ${fieldRow("User-Agent", `<span style="font-size:12px;color:#737373;font-family:ui-monospace,SFMono-Regular,Menlo,monospace">${escape(opts.meta.userAgent)}</span>`)}
+    ${fieldRow("Cloudflare Ray", `<span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace">${escape(opts.meta.cfRay)}</span>`)}
+  </table>
+  <div style="margin-top:12px;font-size:11px;color:#a3a3a3;line-height:1.6;font-family:${FONT_STACK}">
+    스팸·어뷰즈 식별을 위해 요청 헤더에서 자동 수집된 정보입니다. 신청자에게는 표시되지 않습니다.
+  </div>
 </td></tr>`;
   return emailShell(body);
 }
@@ -492,6 +595,35 @@ export async function POST(req: Request) {
     );
   }
 
+  // Phone verification gate. Mirror of the email check above — but only
+  // enforced when SMS verification is actually wired up (SOLAPI_SENDER_PHONE
+  // set). Until then the form runs email-only, so a missing sender number
+  // can't break the live inquiry funnel. The token is bound to the
+  // normalized phone number, so it can't be replayed across submissions.
+  if (process.env.SOLAPI_SENDER_PHONE) {
+    const phoneToken = (json as { phoneVerifyToken?: unknown }).phoneVerifyToken;
+    if (typeof phoneToken !== "string" || phoneToken.length === 0) {
+      return NextResponse.json(
+        { error: "휴대폰 인증이 필요합니다.", code: "phone_verification_required" },
+        { status: 400 }
+      );
+    }
+    const normalizedPhone = normalizeKrMobile(data.phone);
+    if (!normalizedPhone) {
+      return NextResponse.json(
+        { error: "010으로 시작하는 휴대폰 번호만 가능합니다.", code: "phone_format" },
+        { status: 400 }
+      );
+    }
+    const pv = verifyPhoneVerifyToken(phoneToken, normalizedPhone);
+    if (!pv.ok) {
+      return NextResponse.json(
+        { error: "휴대폰 인증이 만료되었거나 일치하지 않습니다. 코드를 다시 받아주세요.", code: "phone_verification_failed" },
+        { status: 400 }
+      );
+    }
+  }
+
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_EMAIL;
   const from = process.env.FROM_EMAIL || "efface <onboarding@resend.dev>";
@@ -529,6 +661,7 @@ export async function POST(req: Request) {
     deadline: sanitizeHeaderValue(data.deadline || "", 40),
     references: data.references ? data.references.slice(0, 500) : "",
     description: data.description, // body uses HTML escape, not header sanitize
+    meta: collectRequestMeta(req, locale),
   });
 
   const clientHtml = clientEmailHtml({
