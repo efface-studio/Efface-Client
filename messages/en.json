@@ -102,11 +102,11 @@
     "periodLabel": "Duration",
     "fromLabel": "Starts at",
     "items": [
-      { "title": "Landing page", "desc": "Product launches, campaigns, hiring pages, and more.", "period": "1–2 weeks", "from": "USD 160" },
-      { "title": "Company / brand site", "desc": "About, portfolio, careers — multi-page sites with depth.", "period": "2–3 weeks", "from": "USD 440" },
-      { "title": "E-commerce", "desc": "Payments, inventory, and order management — ready to run yourself.", "period": "3–5 weeks", "from": "USD 880" },
-      { "title": "Internal tools / web apps", "desc": "Data-driven services, admin panels, dashboards.", "period": "3+ weeks", "from": "USD 800" },
-      { "title": "Mobile invitations", "desc": "Weddings, events, and other invitation pages — mobile-first.", "period": "1–3 days", "from": "USD 25" },
+      { "title": "Landing page", "desc": "Product launches, campaigns, hiring pages, and more.", "period": "1–2 weeks", "from": "USD 100" },
+      { "title": "Company / brand site", "desc": "About, portfolio, careers — multi-page sites with depth.", "period": "2–3 weeks", "from": "USD 280" },
+      { "title": "E-commerce", "desc": "Payments, inventory, and order management — ready to run yourself.", "period": "3–5 weeks", "from": "USD 560" },
+      { "title": "Internal tools / web apps", "desc": "Data-driven services, admin panels, dashboards.", "period": "3+ weeks", "from": "USD 520" },
+      { "title": "Mobile invitations", "desc": "Weddings, events, and other invitation pages — mobile-first.", "period": "1–3 days", "from": "USD 20" },
       { "title": "Site refresh", "desc": "Migrations, redesigns, and feature additions for existing sites.", "period": "Scope-based", "from": "Custom" }
     ]
   },

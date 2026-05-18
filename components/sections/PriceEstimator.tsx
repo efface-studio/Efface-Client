@@ -16,25 +16,29 @@ const serviceConfig: {
   perPage: number;
   weeksPerPage: number;
 }[] = [
-  { key: "landing", basePrice: 20, baseWeeks: 1, perPage: 10, weeksPerPage: 0.2 },
-  { key: "brand", basePrice: 55, baseWeeks: 2, perPage: 8, weeksPerPage: 0.15 },
-  { key: "shop", basePrice: 110, baseWeeks: 3, perPage: 10, weeksPerPage: 0.2 },
-  { key: "webapp", basePrice: 130, baseWeeks: 3, perPage: 13, weeksPerPage: 0.25 },
+  { key: "landing", basePrice: 12, baseWeeks: 1, perPage: 4, weeksPerPage: 0.2 },
+  { key: "brand", basePrice: 35, baseWeeks: 2, perPage: 3, weeksPerPage: 0.15 },
+  { key: "shop", basePrice: 70, baseWeeks: 3, perPage: 4, weeksPerPage: 0.2 },
+  { key: "webapp", basePrice: 85, baseWeeks: 3, perPage: 5, weeksPerPage: 0.25 },
 ];
 
+// price values in 만원. efface positions on accessible pricing — keep these
+// low. Easy-to-build features (analytics/seo/gallery — mostly drop-in) are
+// near-free; genuinely complex ones (payment/ai/cms/booking) keep a modest
+// margin since they're the bulk of the actual build effort.
 const featureConfig: { key: string; price: number; weeks: number }[] = [
-  { key: "auth", price: 18, weeks: 0.5 },
-  { key: "payment", price: 35, weeks: 0.7 },
-  { key: "i18n", price: 15, weeks: 0.4 },
-  { key: "cms", price: 28, weeks: 0.6 },
-  { key: "search", price: 15, weeks: 0.4 },
-  { key: "ai", price: 30, weeks: 0.6 },
-  { key: "analytics", price: 12, weeks: 0.3 },
-  { key: "booking", price: 25, weeks: 0.6 },
-  { key: "chat", price: 18, weeks: 0.4 },
-  { key: "blog", price: 15, weeks: 0.4 },
-  { key: "seo", price: 8, weeks: 0.2 },
-  { key: "gallery", price: 12, weeks: 0.3 },
+  { key: "auth", price: 10, weeks: 0.5 },
+  { key: "payment", price: 22, weeks: 0.7 },
+  { key: "i18n", price: 6, weeks: 0.4 },
+  { key: "cms", price: 15, weeks: 0.6 },
+  { key: "search", price: 5, weeks: 0.4 },
+  { key: "ai", price: 18, weeks: 0.6 },
+  { key: "analytics", price: 3, weeks: 0.3 },
+  { key: "booking", price: 14, weeks: 0.6 },
+  { key: "chat", price: 6, weeks: 0.4 },
+  { key: "blog", price: 6, weeks: 0.4 },
+  { key: "seo", price: 2, weeks: 0.2 },
+  { key: "gallery", price: 4, weeks: 0.3 },
 ];
 
 function AnimatedNumber({ value, multiplier, prefix = "" }: { value: number; multiplier: number; prefix?: string }) {
