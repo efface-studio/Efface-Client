@@ -16,7 +16,7 @@ const serviceConfig: {
   perPage: number;
   weeksPerPage: number;
 }[] = [
-  { key: "landing", basePrice: 12, baseWeeks: 1, perPage: 4, weeksPerPage: 0.2 },
+  { key: "landing", basePrice: 12, baseWeeks: 1, perPage: 2, weeksPerPage: 0.2 },
   { key: "brand", basePrice: 35, baseWeeks: 2, perPage: 3, weeksPerPage: 0.15 },
   { key: "shop", basePrice: 70, baseWeeks: 3, perPage: 4, weeksPerPage: 0.2 },
   { key: "webapp", basePrice: 85, baseWeeks: 3, perPage: 5, weeksPerPage: 0.25 },
