@@ -29,8 +29,9 @@ const serviceConfig: {
 const featureConfig: { key: string; price: number; weeks: number }[] = [
   { key: "auth", price: 10, weeks: 0.5 },
   { key: "payment", price: 22, weeks: 0.7 },
-  { key: "i18n", price: 6, weeks: 0.4 },
-  { key: "cms", price: 15, weeks: 0.6 },
+  // CMS·multilingual are part of the package base (0-cost, included).
+  { key: "i18n", price: 0, weeks: 0 },
+  { key: "cms", price: 0, weeks: 0 },
   { key: "search", price: 5, weeks: 0.4 },
   { key: "ai", price: 18, weeks: 0.6 },
   // Google Analytics·GTM hookup ships with every package — 0-cost, included.
@@ -73,7 +74,7 @@ export default function PriceEstimator() {
   const [pages, setPages] = useState(5);
   // Default selection = the included (0-cost) features only, so the estimator
   // opens at exactly the package base price. Paid add-ons start unchecked.
-  const [picked, setPicked] = useState<Set<string>>(new Set(["seo", "analytics"]));
+  const [picked, setPicked] = useState<Set<string>>(new Set(["seo", "analytics", "cms", "i18n"]));
 
   const result = useMemo(() => {
     const s = serviceConfig.find((x) => x.key === service)!;
