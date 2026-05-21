@@ -37,9 +37,15 @@ export function timingSafeEqualHex(a: string, b: string): boolean {
 }
 
 // ─── Verification token (compact signed JWT-ish payload) ───────
-// Format: base64url(payload).base64url(hmac). Payload = {e: email, x: expSec}.
+// Format: base64url(payload).base64url(hmac). Payload =
+//   { e: email, x: expSec, j?: row_id }   for email tokens
+//   { p: phone, x: expSec, j?: row_id }   for phone tokens
+// `j` (= "jti") carries the email_verifications / phone_verifications row id
+// so /api/apply can mark the row consumed_at on first use, making replays
+// of a captured token fail. The field is optional for backward compat with
+// any token that pre-dates the migration.
 // Avoids pulling in a jwt library for a tiny use-case.
-type VerifyPayload = { e: string; x: number };
+type VerifyPayload = { e: string; x: number; j?: string };
 
 function b64url(buf: Buffer): string {
   return buf.toString("base64").replace(/=+$/g, "").replace(/\+/g, "-").replace(/\//g, "_");
@@ -49,10 +55,11 @@ function b64urlDecode(s: string): Buffer {
   return Buffer.from(s.replace(/-/g, "+").replace(/_/g, "/") + pad, "base64");
 }
 
-export function signVerifyToken(email: string, ttlSec = 30 * 60): string {
+export function signVerifyToken(email: string, ttlSec = 30 * 60, rowId?: string): string {
   const payload: VerifyPayload = {
     e: email.toLowerCase(),
     x: Math.floor(Date.now() / 1000) + ttlSec,
+    ...(rowId ? { j: rowId } : {}),
   };
   const body = b64url(Buffer.from(JSON.stringify(payload)));
   const sig = b64url(
@@ -64,7 +71,7 @@ export function signVerifyToken(email: string, ttlSec = 30 * 60): string {
 export function verifyVerifyToken(
   token: string,
   expectedEmail: string
-): { ok: true } | { ok: false; reason: string } {
+): { ok: true; jti?: string } | { ok: false; reason: string } {
   if (typeof token !== "string" || !token.includes(".")) {
     return { ok: false, reason: "malformed" };
   }
@@ -92,7 +99,7 @@ export function verifyVerifyToken(
   if (payload.e !== expectedEmail.toLowerCase()) {
     return { ok: false, reason: "email mismatch" };
   }
-  return { ok: true };
+  return { ok: true, jti: typeof payload.j === "string" ? payload.j : undefined };
 }
 
 // ─── Phone OTP variants ────────────────────────────────────────────
@@ -109,12 +116,13 @@ export function hashPhoneCode(phone: string, code: string): string {
     .digest("hex");
 }
 
-type PhoneVerifyPayload = { p: string; x: number };
+type PhoneVerifyPayload = { p: string; x: number; j?: string };
 
-export function signPhoneVerifyToken(phone: string, ttlSec = 30 * 60): string {
+export function signPhoneVerifyToken(phone: string, ttlSec = 30 * 60, rowId?: string): string {
   const payload: PhoneVerifyPayload = {
     p: phone,
     x: Math.floor(Date.now() / 1000) + ttlSec,
+    ...(rowId ? { j: rowId } : {}),
   };
   const body = b64url(Buffer.from(JSON.stringify(payload)));
   // Prefix the signed body with a domain separator so an email-token body
@@ -128,7 +136,7 @@ export function signPhoneVerifyToken(phone: string, ttlSec = 30 * 60): string {
 export function verifyPhoneVerifyToken(
   token: string,
   expectedPhone: string
-): { ok: true } | { ok: false; reason: string } {
+): { ok: true; jti?: string } | { ok: false; reason: string } {
   if (typeof token !== "string" || !token.includes(".")) {
     return { ok: false, reason: "malformed" };
   }
@@ -155,5 +163,5 @@ export function verifyPhoneVerifyToken(
   if (payload.p !== expectedPhone) {
     return { ok: false, reason: "phone mismatch" };
   }
-  return { ok: true };
+  return { ok: true, jti: typeof payload.j === "string" ? payload.j : undefined };
 }

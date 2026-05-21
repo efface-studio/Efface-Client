@@ -99,10 +99,14 @@ export default async function LocaleLayout({
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* Pretendard Variable dynamic-subset: browser loads only the unicode
-           ranges actually used on the page (~200KB for KR+Latin vs 2MB full). */}
+           ranges actually used on the page (~200KB for KR+Latin vs 2MB full).
+           SRI (`integrity`) ensures a compromised jsdelivr CDN can't swap in
+           altered CSS. Hash pinned to 1.3.9. */}
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css"
+          integrity="sha384-2nNKoOPayicGa+aRguOQuiZP+RqQ4G3jalfDeOgftkKD7zBM2gJXTwcFqCZltdv0"
+          crossOrigin="anonymous"
         />
         <meta name="theme-color" content="#0a0a0a" />
         <link rel="apple-touch-icon" href="/logo.svg" />

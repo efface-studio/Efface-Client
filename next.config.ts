@@ -10,7 +10,9 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 const cspIsProd = process.env.NODE_ENV === "production";
 const cspDirectives = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${cspIsProd ? "" : " 'unsafe-eval'"} https://efface.dev https://*.efface.dev`,
+  // 'unsafe-eval' is dev-only (Next HMR). The redundant own-domain entries
+  // (https://efface.dev / https://*.efface.dev) were folded into 'self'.
+  `script-src 'self' 'unsafe-inline'${cspIsProd ? "" : " 'unsafe-eval'"}`,
   "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
   "img-src 'self' data: blob: https://*.supabase.co",
   "font-src 'self' data: https://cdn.jsdelivr.net",
@@ -20,6 +22,7 @@ const cspDirectives = [
   "form-action 'self'",
   "base-uri 'self'",
   "object-src 'none'",
+  "block-all-mixed-content",
   "upgrade-insecure-requests",
 ].join("; ");
 
@@ -35,6 +38,17 @@ const securityHeaders = [
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=()",
   },
+  // Adobe legacy cross-domain policy — block Flash / Acrobat from reading
+  // resources cross-domain. We don't serve any, but the header costs nothing.
+  { key: "X-Permitted-Cross-Domain-Policies", value: "none" },
+  // Cross-Origin-Opener-Policy — isolates the browsing context from cross-
+  // origin windows that opened us, preventing Spectre-class side-channel
+  // leaks via window.opener and similar.
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+  // Cross-Origin-Resource-Policy — prevents arbitrary cross-site embeds of
+  // our pages/assets. 'same-site' allows efface.dev + subdomains while
+  // blocking unrelated origins.
+  { key: "Cross-Origin-Resource-Policy", value: "same-site" },
   // Cross-origin isolation hints
   { key: "X-DNS-Prefetch-Control", value: "on" },
   // HSTS — already auto-added by Vercel but explicit doesn't hurt

@@ -129,6 +129,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "잠시 후 다시 시도해 주세요." }, { status: 500 });
   }
 
-  const token = signVerifyToken(email, TOKEN_TTL_SEC);
+  // Embed the row id (jti) so /api/apply can mark the row consumed_at on
+  // first use — single-use enforcement against captured-token replay.
+  const token = signVerifyToken(email, TOKEN_TTL_SEC, row.id);
   return NextResponse.json({ ok: true, token, ttlSec: TOKEN_TTL_SEC });
 }
