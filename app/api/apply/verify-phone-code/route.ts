@@ -123,6 +123,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "잠시 후 다시 시도해 주세요." }, { status: 500 });
   }
 
-  const token = signPhoneVerifyToken(phone, TOKEN_TTL_SEC);
+  // Embed the row id (jti) for single-use enforcement at /api/apply.
+  const token = signPhoneVerifyToken(phone, TOKEN_TTL_SEC, row.id);
   return NextResponse.json({ ok: true, token, ttlSec: TOKEN_TTL_SEC });
 }

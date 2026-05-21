@@ -119,6 +119,16 @@ begin
 end;
 $$;
 
+-- ─── Single-use verify token tracking ────────────────────────────
+-- Once an email/phone verify code has been consumed by a successful
+-- /api/apply submission, the corresponding row's `consumed_at` is set.
+-- A captured-and-replayed verify token will fail because the row check
+-- in /api/apply requires `consumed_at IS NULL`.
+-- Migration is non-destructive (`add column if not exists`); the apply
+-- route fails open if these columns aren't present yet.
+alter table email_verifications add column if not exists consumed_at timestamptz;
+alter table phone_verifications add column if not exists consumed_at timestamptz;
+
 -- ─── Cleanup function ────────────────────────────────────────────
 -- Deletes demo_jobs rows older than 7 days and their Storage objects.
 -- Schedule via Supabase Dashboard → Database → Cron Jobs:

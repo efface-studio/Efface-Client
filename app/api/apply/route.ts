@@ -5,6 +5,7 @@ import { applySchema, SERVICE_VALUES, BUDGET_VALUES, serviceLabel, budgetLabel }
 import { verifyVerifyToken, verifyPhoneVerifyToken } from "@/lib/otp";
 import { normalizeKrMobile } from "@/lib/phone";
 import { originCheck, getClientIp as getRealClientIp } from "@/lib/security";
+import { getSupabaseAdmin } from "@/lib/supabase";
 import koMessages from "@/messages/ko.json";
 import enMessages from "@/messages/en.json";
 
@@ -600,6 +601,39 @@ export async function POST(req: Request) {
     );
   }
 
+  // Single-use enforcement (defense-in-depth against captured-token replay).
+  // The verify-code route embeds the email_verifications row id (`jti`) in the
+  // token. We atomically mark the row consumed and reject if it was already
+  // consumed. Fails open if the `consumed_at` column isn't migrated yet —
+  // logs a warning so the operator notices.
+  if (v.jti) {
+    const supabaseAdmin = getSupabaseAdmin();
+    const { data: consumedRow, error: consumeErr } = await supabaseAdmin
+      .from("email_verifications")
+      .update({ consumed_at: new Date().toISOString() })
+      .eq("id", v.jti)
+      .not("verified_at", "is", null)
+      .is("consumed_at", null)
+      .select("id")
+      .maybeSingle();
+    if (consumeErr) {
+      // Most likely: `consumed_at` column not yet added. Skip the check so
+      // the apply flow stays up; the migration in supabase/schema.sql closes
+      // this gap once applied.
+      if (/consumed_at/i.test(consumeErr.message)) {
+        console.warn("[apply] single-use check skipped (run schema migration):", consumeErr.message);
+      } else {
+        console.error("[apply] consume error:", consumeErr.message);
+        return NextResponse.json({ error: "잠시 후 다시 시도해 주세요." }, { status: 500 });
+      }
+    } else if (!consumedRow) {
+      return NextResponse.json(
+        { error: "이미 사용된 인증입니다. 코드를 다시 받아 주세요.", code: "verification_consumed" },
+        { status: 400 }
+      );
+    }
+  }
+
   // Phone verification gate. Mirror of the email check above — but only
   // enforced when SMS verification is actually wired up (SOLAPI_SENDER_PHONE
   // set). Until then the form runs email-only, so a missing sender number
@@ -626,6 +660,31 @@ export async function POST(req: Request) {
         { error: "휴대폰 인증이 만료되었거나 일치하지 않습니다. 코드를 다시 받아주세요.", code: "phone_verification_failed" },
         { status: 400 }
       );
+    }
+    // Single-use consumption (same pattern as email).
+    if (pv.jti) {
+      const supabaseAdmin = getSupabaseAdmin();
+      const { data: consumedRow, error: consumeErr } = await supabaseAdmin
+        .from("phone_verifications")
+        .update({ consumed_at: new Date().toISOString() })
+        .eq("id", pv.jti)
+        .not("verified_at", "is", null)
+        .is("consumed_at", null)
+        .select("id")
+        .maybeSingle();
+      if (consumeErr) {
+        if (/consumed_at/i.test(consumeErr.message)) {
+          console.warn("[apply] phone single-use check skipped (run schema migration):", consumeErr.message);
+        } else {
+          console.error("[apply] phone consume error:", consumeErr.message);
+          return NextResponse.json({ error: "잠시 후 다시 시도해 주세요." }, { status: 500 });
+        }
+      } else if (!consumedRow) {
+        return NextResponse.json(
+          { error: "이미 사용된 인증입니다. 코드를 다시 받아주세요.", code: "phone_verification_consumed" },
+          { status: 400 }
+        );
+      }
     }
   }
 
