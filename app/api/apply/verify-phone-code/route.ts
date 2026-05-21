@@ -3,6 +3,7 @@ import { z } from "zod";
 import { hashPhoneCode, signPhoneVerifyToken, timingSafeEqualHex } from "@/lib/otp";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { normalizeKrMobile } from "@/lib/phone";
+import { originCheck, getClientIp, checkRateLimit, hashForLog } from "@/lib/security";
 
 export const runtime = "nodejs";
 
@@ -14,21 +15,22 @@ const bodySchema = z.object({
 const MAX_ATTEMPTS = 5;
 const TOKEN_TTL_SEC = 30 * 60;
 
-function originCheck(req: Request): boolean {
-  const origin = req.headers.get("origin") || req.headers.get("referer") || "";
-  const host = req.headers.get("host") || "";
-  if (process.env.NODE_ENV !== "production") return true;
-  if (!origin) return false;
-  try {
-    return new URL(origin).host === host;
-  } catch {
-    return false;
-  }
-}
+// Mirror of verify-code's per-IP backstop.
+const RATE_LIMIT_PER_IP = 30;
+const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000;
 
 export async function POST(req: Request) {
   if (!originCheck(req)) {
     return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 403 });
+  }
+
+  const ip = getClientIp(req);
+  const rl = checkRateLimit(`verify-phone-code:${ip}`, RATE_LIMIT_PER_IP, RATE_LIMIT_WINDOW_MS);
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: "요청이 너무 많습니다. 잠시 후 다시 시도해주세요." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfterSec ?? 60) } }
+    );
   }
 
   let json: unknown;
@@ -73,11 +75,9 @@ export async function POST(req: Request) {
     console.error("[verify-phone-code] select error:", selErr.message);
     return NextResponse.json({ error: "잠시 후 다시 시도해 주세요." }, { status: 500 });
   }
+  const GENERIC_WRONG_CODE = { error: "코드가 일치하지 않거나 만료되었습니다. 코드를 다시 받아주세요." };
   if (!row) {
-    return NextResponse.json(
-      { error: "코드가 만료되었거나 없습니다. 코드를 다시 받아주세요." },
-      { status: 400 }
-    );
+    return NextResponse.json(GENERIC_WRONG_CODE, { status: 400 });
   }
   if (row.attempts >= MAX_ATTEMPTS) {
     return NextResponse.json(
@@ -86,15 +86,32 @@ export async function POST(req: Request) {
     );
   }
 
+  // Optimistic-concurrency claim of an attempt slot — same CAS pattern as the
+  // email verify route. Serializes concurrent verifies on the same row so an
+  // attacker can't parallel-brute-force a single code's 5-attempt budget.
+  const { data: claimed, error: claimErr } = await supabase
+    .from("phone_verifications")
+    .update({ attempts: row.attempts + 1 })
+    .eq("id", row.id)
+    .eq("attempts", row.attempts)
+    .select("attempts")
+    .maybeSingle();
+  if (claimErr) {
+    console.error("[verify-phone-code] CAS error:", claimErr.message);
+    return NextResponse.json({ error: "잠시 후 다시 시도해 주세요." }, { status: 500 });
+  }
+  if (!claimed) {
+    return NextResponse.json(
+      { error: "동시 요청이 많습니다. 잠시 후 다시 시도해주세요." },
+      { status: 429 }
+    );
+  }
+
   const submittedHash = hashPhoneCode(phone, code);
   const match = timingSafeEqualHex(submittedHash, row.code_hash);
 
   if (!match) {
-    await supabase
-      .from("phone_verifications")
-      .update({ attempts: row.attempts + 1 })
-      .eq("id", row.id);
-    return NextResponse.json({ error: "코드가 일치하지 않습니다." }, { status: 400 });
+    return NextResponse.json(GENERIC_WRONG_CODE, { status: 400 });
   }
 
   const { error: updateErr } = await supabase
@@ -102,7 +119,7 @@ export async function POST(req: Request) {
     .update({ verified_at: new Date().toISOString() })
     .eq("id", row.id);
   if (updateErr) {
-    console.error("[verify-phone-code] update error:", updateErr.message);
+    console.error(`[verify-phone-code] update error: ${updateErr.message} (user=${hashForLog(phone)})`);
     return NextResponse.json({ error: "잠시 후 다시 시도해 주세요." }, { status: 500 });
   }
 

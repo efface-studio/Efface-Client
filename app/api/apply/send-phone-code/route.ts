@@ -4,6 +4,7 @@ import { generateCode, hashPhoneCode } from "@/lib/otp";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { normalizeKrMobile } from "@/lib/phone";
 import { sendSms } from "@/lib/solapi";
+import { originCheck, getClientIp } from "@/lib/security";
 
 export const runtime = "nodejs";
 
@@ -22,29 +23,6 @@ const MAX_SENDS_PER_PHONE_PER_HOUR = 5;
 // single IP would otherwise burn through credits even with per-phone
 // caps. 20/hr is generous for one human filling and re-filling.
 const MAX_SENDS_PER_IP_PER_HOUR = 20;
-
-function getClientIp(req: Request): string {
-  // Cloudflare's `cf-connecting-ip` is the real client IP when traffic
-  // comes through the CF proxy. Fall back to xff/x-real-ip in case the
-  // request bypassed CF (preview deployments, local dev, etc.).
-  const cf = req.headers.get("cf-connecting-ip");
-  if (cf) return cf;
-  const xff = req.headers.get("x-forwarded-for");
-  if (xff) return xff.split(",")[0].trim();
-  return req.headers.get("x-real-ip") ?? "unknown";
-}
-
-function originCheck(req: Request): boolean {
-  const origin = req.headers.get("origin") || req.headers.get("referer") || "";
-  const host = req.headers.get("host") || "";
-  if (process.env.NODE_ENV !== "production") return true;
-  if (!origin) return false;
-  try {
-    return new URL(origin).host === host;
-  } catch {
-    return false;
-  }
-}
 
 function smsText(code: string, ttlMin: number) {
   // Keep under 90 bytes (KR SMS limit) to avoid auto-promotion to LMS

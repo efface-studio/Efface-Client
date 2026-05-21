@@ -5,10 +5,12 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 // Content Security Policy — restricts where scripts, styles, images, and connections can load from.
 // 'unsafe-inline' on style-src is unavoidable for Tailwind v4 + motion inline styles.
-// 'unsafe-eval' on script-src is needed only for Next.js dev mode (HMR); harmless in prod since Next removes eval.
+// 'unsafe-eval' is dev-only (Next HMR uses it). Production drops it entirely so an
+// XSS payload that slips past 'unsafe-inline' still can't invoke eval/new Function.
+const cspIsProd = process.env.NODE_ENV === "production";
 const cspDirectives = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://efface.dev https://*.efface.dev",
+  `script-src 'self' 'unsafe-inline'${cspIsProd ? "" : " 'unsafe-eval'"} https://efface.dev https://*.efface.dev`,
   "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
   "img-src 'self' data: blob: https://*.supabase.co",
   "font-src 'self' data: https://cdn.jsdelivr.net",

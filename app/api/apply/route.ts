@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
+import crypto from "node:crypto";
 import { Resend } from "resend";
 import { applySchema, SERVICE_VALUES, BUDGET_VALUES, serviceLabel, budgetLabel } from "@/lib/schema";
 import { verifyVerifyToken, verifyPhoneVerifyToken } from "@/lib/otp";
 import { normalizeKrMobile } from "@/lib/phone";
+import { originCheck, getClientIp as getRealClientIp } from "@/lib/security";
 import koMessages from "@/messages/ko.json";
 import enMessages from "@/messages/en.json";
 
@@ -33,18 +35,8 @@ function rateLimit(ip: string): { ok: boolean; retryAfterSec?: number } {
   return { ok: true };
 }
 
-function getClientIp(req: Request): string {
-  // `cf-connecting-ip` is the real client IP when traffic comes through the
-  // Cloudflare proxy. x-forwarded-for's first token would otherwise be a CF
-  // edge IP, not the visitor.
-  const cf = req.headers.get("cf-connecting-ip");
-  if (cf) return cf.trim();
-  const xff = req.headers.get("x-forwarded-for");
-  if (xff) return xff.split(",")[0].trim();
-  const real = req.headers.get("x-real-ip");
-  if (real) return real;
-  return "unknown";
-}
+// Re-export under the original name so existing usages keep working.
+const getClientIp = getRealClientIp;
 
 // ─── Request metadata collection ──────────────────────────────────────────
 // Everything we can derive about the submitter from request headers, shown
@@ -123,7 +115,10 @@ function escape(s: string) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+    .replace(/"/g, "&quot;")
+    // Escape single-quote too so values dropped into any single-quoted
+    // attribute context in a future template change can't break out.
+    .replace(/'/g, "&#39;");
 }
 
 // Strip CR/LF and stray null bytes so user input can't smuggle SMTP headers
@@ -139,23 +134,25 @@ function sanitizeHeaderValue(v: string, maxLen = 200): string {
 }
 
 // ─── Attachment validation ────────────────────────────────────────────────
-// Whitelist of MIME types we accept. The file uploader on the client filters
-// already, but the server is the source of truth.
-const ALLOWED_MIME = new Set([
-  "image/png",
-  "image/jpeg",
-  "image/jpg",
-  "image/webp",
-  "image/gif",
-  "application/pdf",
-  "application/zip",
-  "application/x-zip-compressed",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "application/vnd.ms-powerpoint",
-  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-  "application/octet-stream",
-]);
+// Whitelist of MIME types we accept, each paired with the file extensions
+// that are allowed to carry that type. The pairing closes the "client says
+// .pdf but contents are HTML" / polyglot smuggling gap — we reject anything
+// whose filename extension doesn't match the declared content-type.
+const ALLOWED_MIME_EXTS: Record<string, readonly string[]> = {
+  "image/png": ["png"],
+  "image/jpeg": ["jpg", "jpeg"],
+  "image/jpg": ["jpg", "jpeg"],
+  "image/webp": ["webp"],
+  "image/gif": ["gif"],
+  "application/pdf": ["pdf"],
+  "application/zip": ["zip"],
+  "application/x-zip-compressed": ["zip"],
+  "application/msword": ["doc"],
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ["docx"],
+  "application/vnd.ms-powerpoint": ["ppt"],
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation": ["pptx"],
+};
+const ALLOWED_MIME = new Set(Object.keys(ALLOWED_MIME_EXTS));
 
 const MAX_ATTACHMENT_BYTES_PER_FILE = 6 * 1024 * 1024; // 6MB after base64 decode
 const MAX_ATTACHMENTS = 3;
@@ -191,8 +188,17 @@ function sanitizeAttachments(raw: unknown): { ok: true; list: RawAttachment[] } 
       return { ok: false, reason: "invalid attachment shape" };
     }
     const item = a as RawAttachment;
-    const contentType = item.contentType || "application/octet-stream";
-    if (!ALLOWED_MIME.has(contentType)) return { ok: false, reason: `disallowed mime: ${contentType}` };
+    const contentType = item.contentType;
+    if (!contentType || !ALLOWED_MIME.has(contentType)) {
+      return { ok: false, reason: `disallowed mime: ${contentType}` };
+    }
+    // Enforce filename extension matches the declared MIME — closes the
+    // "report.exe.pdf"-style and polyglot-file smuggling gap.
+    const ext = (item.filename.toLowerCase().match(/\.([a-z0-9]+)$/)?.[1]) ?? "";
+    const allowedExts = ALLOWED_MIME_EXTS[contentType];
+    if (!allowedExts || !allowedExts.includes(ext)) {
+      return { ok: false, reason: `mime/ext mismatch: ${contentType} vs .${ext}` };
+    }
     if (item.base64.length > MAX_ATTACHMENT_B64_LEN) return { ok: false, reason: "attachment too large" };
     if (!isValidBase64(item.base64)) return { ok: false, reason: "malformed base64" };
     const size = approxDecodedBytes(item.base64);
@@ -494,24 +500,10 @@ ${emailHeader(T.eyebrow, "#0a0a0a")}
 
 // ─── Main handler ─────────────────────────────────────────────────────────
 export async function POST(req: Request) {
-  // Origin check (CSRF). In production, require Origin/Referer match the host.
-  const origin = req.headers.get("origin") || req.headers.get("referer") || "";
-  const host = req.headers.get("host") || "";
-  if (process.env.NODE_ENV === "production") {
-    if (!origin) return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 403 });
-    try {
-      const originHost = new URL(origin).host;
-      if (originHost !== host) return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 403 });
-    } catch {
-      return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 403 });
-    }
-  } else if (origin && host) {
-    try {
-      const originHost = new URL(origin).host;
-      if (originHost !== host) return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 403 });
-    } catch {
-      return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 403 });
-    }
+  // Origin / CSRF check — shared helper enforces in production (Vercel
+  // production + preview), permissive in local dev only.
+  if (!originCheck(req)) {
+    return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 403 });
   }
 
   // Rate limit per IP (production only)
@@ -541,25 +533,38 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "잘못된 요청 형식입니다." }, { status: 400 });
   }
 
+  // Server-generated ticket id (YYMMDD-NNNN). Used for both the real flow and
+  // the honeypot decoy below — so bots can't distinguish a "trapped" response
+  // (previously hardcoded "000000-0000") from a real submission.
+  const newTicketId = (): string => {
+    const now = new Date();
+    const yy = String(now.getFullYear()).slice(2);
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const dd = String(now.getDate()).padStart(2, "0");
+    // crypto.randomInt — unbiased, suitable for ids (no security impact, just
+    // collision quality). 4 digits keeps the ticket short for human triage.
+    const rnd = crypto.randomInt(0, 10000).toString().padStart(4, "0");
+    return `${yy}${mm}${dd}-${rnd}`;
+  };
+
   // Honeypot — bots fill the hidden "website" field; humans never see it.
-  // Return a success-looking response so we don't tip off the bot.
+  // Return a plausible success response (random ticket id, not a constant)
+  // so bots can't fingerprint detection by the ticket value.
   if (json && typeof json === "object") {
     const honey = (json as { website?: unknown }).website;
     if (typeof honey === "string" && honey.length > 0) {
-      return NextResponse.json({ ok: true, ticketId: "000000-0000" });
+      return NextResponse.json({ ok: true, ticketId: newTicketId() });
     }
   }
 
   // Pick locale from body. Defaults to KR.
   const locale = pickLocale((json as { locale?: unknown })?.locale);
 
-  // Validate attachments before schema (large attachments don't need schema validation)
-  const att = sanitizeAttachments((json as { attachments?: unknown })?.attachments);
-  if (!att.ok) {
-    console.error("[apply] attachment rejected:", att.reason);
-    return NextResponse.json({ error: "첨부 파일을 다시 확인해 주세요." }, { status: 400 });
-  }
-
+  // ─── Cheap validation first ──────────────────────────────────────────
+  // Order matters: schema parse → enum sanity → token verification → ONLY
+  // THEN attachment decode/validation. Attachment processing is by far the
+  // most expensive step (up to 15 MB of base64 decode), so we make sure the
+  // request is authentic before we spend that work.
   const parsed = applySchema.safeParse(json);
   if (!parsed.success) {
     return NextResponse.json(
@@ -624,6 +629,14 @@ export async function POST(req: Request) {
     }
   }
 
+  // ─── Now the expensive work — attachment decode/validation ───────────
+  // Only runs after we've confirmed the request is authentic.
+  const att = sanitizeAttachments((json as { attachments?: unknown })?.attachments);
+  if (!att.ok) {
+    console.error("[apply] attachment rejected:", att.reason);
+    return NextResponse.json({ error: "첨부 파일을 다시 확인해 주세요." }, { status: 400 });
+  }
+
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_EMAIL;
   const from = process.env.FROM_EMAIL || "efface <onboarding@resend.dev>";
@@ -636,13 +649,7 @@ export async function POST(req: Request) {
     );
   }
 
-  // Ticket id — server-generated, no user input
-  const now = new Date();
-  const yy = String(now.getFullYear()).slice(2);
-  const mm = String(now.getMonth() + 1).padStart(2, "0");
-  const dd = String(now.getDate()).padStart(2, "0");
-  const rnd = Math.floor(Math.random() * 10000).toString().padStart(4, "0");
-  const ticketId = `${yy}${mm}${dd}-${rnd}`;
+  const ticketId = newTicketId();
 
   // Sanitize anything that goes into email headers (replyTo, subject, filenames).
   const safeName = sanitizeHeaderValue(data.name, 60);
@@ -676,6 +683,11 @@ export async function POST(req: Request) {
   const attachments = att.list.map((a) => ({
     filename: a.filename,
     content: a.base64,
+    // Pass the validated content-type explicitly so Resend doesn't infer it
+    // from the filename. The validator already enforces filename-ext matches
+    // contentType, but being explicit prevents drift if Resend changes its
+    // inference rules.
+    contentType: a.contentType,
   }));
 
   const resend = new Resend(apiKey);

@@ -3,6 +3,7 @@ import { Resend } from "resend";
 import { z } from "zod";
 import { generateCode, hashCode } from "@/lib/otp";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { originCheck, getClientIp, hashForLog } from "@/lib/security";
 
 export const runtime = "nodejs";
 
@@ -13,31 +14,16 @@ const bodySchema = z.object({
 
 // Code TTL: 10 minutes.
 const CODE_TTL_MIN = 10;
-// Cap how many Resend sends an email can trigger in a rolling hour. The check
-// runs inside the `after()` callback, so it doesn't add latency to the user-
-// visible response — the row is still inserted; only the outbound email is
-// suppressed once the cap is hit. Pairs with the Cloudflare edge rate limit
-// (which currently only covers /api/apply, not /api/apply/send-code) as
-// defense in depth against OTP spam abusing our Resend quota.
+// Cap how many Resend sends an email can trigger in a rolling hour. Now
+// pre-checked (before DB insert) so attackers can't pollute the table by
+// rotating addresses.
 const MAX_SENDS_PER_EMAIL_PER_HOUR = 5;
-
-function getClientIp(req: Request): string {
-  const xff = req.headers.get("x-forwarded-for");
-  if (xff) return xff.split(",")[0].trim();
-  return req.headers.get("x-real-ip") ?? "unknown";
-}
-
-function originCheck(req: Request): boolean {
-  const origin = req.headers.get("origin") || req.headers.get("referer") || "";
-  const host = req.headers.get("host") || "";
-  if (process.env.NODE_ENV !== "production") return true;
-  if (!origin) return false;
-  try {
-    return new URL(origin).host === host;
-  } catch {
-    return false;
-  }
-}
+// Per-IP cap — closes the "rotate the email field to a new address per
+// request" abuse vector flagged in the security audit. Without this, the
+// per-email cap was trivially bypassable since each request used a fresh
+// email and never hit the count check. Cap is generous enough for a real
+// user retrying after typos, tight enough to bound Resend cost abuse.
+const MAX_SENDS_PER_IP_PER_HOUR = 20;
 
 function codeEmailHtml(code: string, locale: "ko" | "en", ttlMin: number) {
   const ko = locale === "ko";
@@ -102,6 +88,39 @@ export async function POST(req: Request) {
   }
 
   const supabase = getSupabaseAdmin();
+  const ip = getClientIp(req);
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+
+  // ─── Pre-checks: bound abuse BEFORE inserting/sending ────────────────
+  // Both caps run before any DB write so an attacker rotating email
+  // addresses can't pollute the table to exhaustion.
+
+  // Per-email cap (matches the user-visible '5/hr' guidance).
+  const { count: emailCount } = await supabase
+    .from("email_verifications")
+    .select("id", { count: "exact", head: true })
+    .eq("email", email)
+    .gte("created_at", oneHourAgo);
+  if ((emailCount ?? 0) >= MAX_SENDS_PER_EMAIL_PER_HOUR) {
+    return NextResponse.json(
+      { error: "1시간 동안 5회를 초과했습니다. 잠시 후 다시 시도해주세요." },
+      { status: 429 }
+    );
+  }
+
+  // Per-IP cap — closes the email-rotation bypass.
+  const { count: ipCount } = await supabase
+    .from("email_verifications")
+    .select("id", { count: "exact", head: true })
+    .eq("ip", ip)
+    .gte("created_at", oneHourAgo);
+  if ((ipCount ?? 0) >= MAX_SENDS_PER_IP_PER_HOUR) {
+    return NextResponse.json(
+      { error: "요청이 너무 많습니다. 잠시 후 다시 시도해주세요." },
+      { status: 429 }
+    );
+  }
+
   const code = generateCode();
   const codeHash = hashCode(email, code);
   const expiresAt = new Date(Date.now() + CODE_TTL_MIN * 60 * 1000).toISOString();
@@ -110,7 +129,7 @@ export async function POST(req: Request) {
     email,
     code_hash: codeHash,
     expires_at: expiresAt,
-    ip: getClientIp(req),
+    ip,
   });
 
   if (insertErr) {
@@ -121,26 +140,8 @@ export async function POST(req: Request) {
   const subject = locale === "ko" ? `[efface] 인증 코드: ${code}` : `[efface] Your verification code: ${code}`;
 
   // Resend send runs in `after()` so the user-visible response returns as soon
-  // as the DB row commits (~200ms). Before sending we check how many rows
-  // exist for this email in the last hour — if it's over the cap, we drop the
-  // send silently. The row still exists (verify-code will still find it for a
-  // legitimate user that hit the cap as a side effect of retries), but
-  // outbound Resend volume is bounded.
+  // as the DB row commits (~200ms).
   after(async () => {
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-    const { count, error: countErr } = await supabase
-      .from("email_verifications")
-      .select("id", { count: "exact", head: true })
-      .eq("email", email)
-      .gte("created_at", oneHourAgo);
-    if (countErr) {
-      console.error("[send-code] rate-check error:", countErr.message);
-      return;
-    }
-    if ((count ?? 0) > MAX_SENDS_PER_EMAIL_PER_HOUR) {
-      console.warn(`[send-code] rate limit hit for ${email} (count=${count})`);
-      return;
-    }
     const resend = new Resend(apiKey);
     try {
       const send = await resend.emails.send({
@@ -150,7 +151,9 @@ export async function POST(req: Request) {
         html: codeEmailHtml(code, locale, CODE_TTL_MIN),
       });
       if (send.error) {
-        console.error("[send-code] resend error:", send.error.name);
+        // Log a hashed email id rather than the raw address — Vercel logs
+        // are long-retention; we don't want PII in them.
+        console.error(`[send-code] resend error: ${send.error.name} (user=${hashForLog(email)})`);
       }
     } catch (e: unknown) {
       console.error("[send-code] resend threw:", e instanceof Error ? e.name : "unknown");
