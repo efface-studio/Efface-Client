@@ -155,7 +155,14 @@ async function sendReadyEmail({ email, name, ticketId, demoUrl }) {
 }
 
 function escapeHtml(s) {
-  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  // Includes single-quote so values interpolated into single-quoted attribute
+  // contexts can't break out — matches the apply route's escape().
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 const server = http.createServer(async (req, res) => {
