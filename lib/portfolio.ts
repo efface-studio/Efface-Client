@@ -61,9 +61,9 @@ export const portfolioStatic: PortfolioStatic[] = [
     liveUrl: "https://efface.dev",
     isLive: true,
     glow: "rgba(99, 102, 241, 0.35)",
-    image: "",
-    imageWidth: 0,
-    imageHeight: 0,
+    image: "/portfolio/efface.png",
+    imageWidth: 1440,
+    imageHeight: 9000,
   },
   {
     slug: "TEAMHARIBO",
