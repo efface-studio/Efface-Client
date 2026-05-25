@@ -49,6 +49,10 @@ const securityHeaders = [
   // our pages/assets. 'same-site' allows efface.dev + subdomains while
   // blocking unrelated origins.
   { key: "Cross-Origin-Resource-Policy", value: "same-site" },
+  // Origin-Agent-Cluster — opts the document into a separate agent cluster
+  // keyed only on origin. Browsers can isolate the process more aggressively,
+  // reducing the blast radius of any same-site (different-origin) compromise.
+  { key: "Origin-Agent-Cluster", value: "?1" },
   // Cross-origin isolation hints
   { key: "X-DNS-Prefetch-Control", value: "on" },
   // HSTS — already auto-added by Vercel but explicit doesn't hurt
