@@ -61,7 +61,7 @@ export const portfolioStatic: PortfolioStatic[] = [
     liveUrl: "https://efface.dev",
     isLive: true,
     glow: "rgba(99, 102, 241, 0.35)",
-    image: "/portfolio/efface.png",
+    image: "/portfolio/efface-v2.png",
     // Retina (2x DPR) full-page capture, trimmed to actual content end.
     // Next/image serves down-scaled webp/avif variants per client.
     imageWidth: 2880,
